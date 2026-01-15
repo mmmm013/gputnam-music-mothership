@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, Play, Pause, RefreshCw, Star, Menu } from 'lucide-react';
+import { Search, Play, Pause, RefreshCw, Star, Menu, Download, Music } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
-// GPM CONFIGURATION
+// GPM CONFIG
 const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -41,21 +41,17 @@ export default function Hero() {
     async function fetchTracks() {
       setLoading(true);
       const currentFP = FEATURED_ROTATION[currentFPIndex];
-      const { data, error } = await supabase.from('tracks').select('*').ilike('tags', `%${currentFP.mood_tag}%`).limit(50);
+      const { data, error } = await supabase.from('tracks').select('*').ilike('tags', `%${currentFP.mood_tag}%`).limit(6); // Cap at 6 for "Track-Tastes"
       if (!error && data) setPlaylist(data);
       setLoading(false);
     }
     fetchTracks();
   }, [currentFPIndex]);
 
-  // SCRUBBER: Removes "015 -", "g putnam music -", etc.
   const cleanTitle = (track: any) => {
     if (!track) return 'Loading...';
     let text = track.title || track.name || 'Unknown';
-    text = text.replace(/^\d+\s*-\s*/, '');
-    text = text.replace(/g\s*putnam\s*music\s*-\s*/i, '');
-    text = text.replace(/\s*-\s*[Mm]$/, '');
-    text = text.replace(/\.mp3|\.wav|\.m4a/gi, '').replace(/_/g, ' ');
+    text = text.replace(/^\d+\s*-\s*/, '').replace(/g\s*putnam\s*music\s*-\s*/i, '').replace(/\s*-\s*[Mm]$/, '').replace(/\.mp3|\.wav|\.m4a/gi, '').replace(/_/g, ' ');
     return text;
   };
 
@@ -75,60 +71,91 @@ export default function Hero() {
   const activeTrack = playlist[currentTrackIndex];
 
   return (
-    // BRANDING: AMBER (#FFCA28) & WHEAT (#F5DEB3) -> GPM IDENTITY
-    <section className="relative min-h-screen w-full bg-[#FFCA28] text-[#3E2723] pt-24 flex flex-col items-center overflow-hidden font-sans">
+    // BRANDING: DREAM THE STREAM GOLD GRADIENT (#FFD54F -> #FF8F00)
+    <section className="relative min-h-screen w-full bg-gradient-to-b from-[#FFD54F] to-[#FF8F00] text-[#3E2723] pt-32 flex flex-col items-center overflow-hidden font-sans">
       
-      <nav className="absolute top-0 w-full p-6 flex justify-between items-center bg-[#F5DEB3]/90 backdrop-blur-sm z-50 border-b border-[#3E2723]/10">
-        <div className="flex gap-6 text-xs font-bold tracking-[0.2em] uppercase text-[#3E2723]">
-          <span className="cursor-pointer hover:text-[#D2691E]">GPM Home</span>
-          <span className="cursor-pointer hover:text-[#D2691E]">Artists</span>
-          <span className="cursor-pointer hover:text-[#D2691E]">K-Series</span>
-          <span className="cursor-pointer hover:text-[#D2691E] flex items-center gap-1"><Star size={10}/> Heroes</span>
+      {/* NAVIGATION BAR */}
+      <nav className="absolute top-0 w-full p-4 flex flex-col md:flex-row justify-between items-center bg-[#FFD54F]/90 backdrop-blur-md z-50 border-b border-[#3E2723]/10 shadow-sm">
+        
+        {/* LOGO AREA */}
+        <div className="flex items-center gap-3 mb-4 md:mb-0">
+          <img src="/gpm_logp.jpg" alt="GPM Logo" className="w-12 h-12 rounded-md object-cover border border-[#3E2723]/20" />
+          <span className="font-black text-lg tracking-tight text-[#3E2723]">G Putnam Music, LLC</span>
         </div>
-        <Menu size={24} className="text-[#3E2723]" />
+
+        {/* NEW MENU STRUCTURE */}
+        <div className="flex flex-wrap justify-center gap-6 text-xs font-bold tracking-[0.1em] uppercase text-[#3E2723]">
+          <a href="https://2kleigh.com" target="_blank" className="hover:text-white transition border-b-2 border-transparent hover:border-[#3E2723] pb-1">Kleigh</a>
+          <a href="/jazz" className="hover:text-white transition border-b-2 border-transparent hover:border-[#3E2723] pb-1">Jazz</a>
+          <a href="/heroes" className="hover:text-white transition border-b-2 border-transparent hover:border-[#3E2723] pb-1">Heroes</a>
+          <a href="/join" className="hover:text-white transition border-b-2 border-transparent hover:border-[#3E2723] pb-1">Join the Pride (CUBs)</a>
+          <a href="/uru" className="hover:text-white transition border-b-2 border-transparent hover:border-[#3E2723] pb-1">URU</a>
+          <a href="/mip" className="bg-[#3E2723] text-[#FFD54F] px-3 py-1 rounded-full hover:scale-105 transition flex items-center gap-1">
+            <Download size={10} /> MIP
+          </a>
+        </div>
       </nav>
 
       {activeTrack && (
         <audio ref={audioRef} src={activeTrack.public_url || activeTrack.url} onEnded={() => setCurrentTrackIndex((prev) => (prev + 1) % playlist.length)} autoPlay={isPlaying} />
       )}
 
+      {/* HEADER */}
       <div className="container mx-auto px-4 text-center z-10 mt-8">
-        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-[#3E2723] mb-2 drop-shadow-sm">G Putnam <br/> Music</h1>
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-[#3E2723] mb-2 drop-shadow-sm text-shadow">G Putnam <br/> Music</h1>
         <h2 className="text-5xl md:text-7xl font-black text-[#3E2723] italic tracking-tight mb-8 opacity-90 border-b-4 border-[#3E2723] inline-block pb-2">MOODs</h2>
         
+        {/* SEARCH BAR */}
         <div className="max-w-xl mx-auto relative mb-16">
-          <input type="text" placeholder="How are you feeling? (e.g. 'Heroes', 'Love')" className="w-full bg-[#F5DEB3] border border-[#3E2723] placeholder-[#3E2723]/50 text-[#3E2723] font-bold text-xl px-8 py-6 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-[#3E2723]" />
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-[#3E2723] rounded-xl text-[#F5DEB3]"><Search size={24} /></button>
+          <input type="text" placeholder="Find Your Perfect Mood..." className="w-full bg-[#FFF8E1] border-2 border-[#3E2723] placeholder-[#3E2723]/50 text-[#3E2723] font-bold text-xl px-8 py-6 rounded-full shadow-xl focus:outline-none focus:ring-4 focus:ring-[#3E2723]/20" />
+          <button className="absolute right-3 top-1/2 -translate-y-1/2 p-4 bg-[#3E2723] rounded-full text-[#FFD54F] hover:scale-110 transition"><Search size={20} /></button>
         </div>
       </div>
 
+      {/* THE STOREFRONT */}
       <div className="container mx-auto px-4 pb-20 grid md:grid-cols-2 gap-8 items-start max-w-6xl z-10">
-        {/* PLAYER UI: AMBER/WHEAT */}
-        <div className="bg-[#F5DEB3] border border-[#3E2723] rounded-xl shadow-2xl overflow-hidden h-[400px] flex flex-col">
-          <div className="p-6 border-b border-[#3E2723]/20 bg-[#FFE082]">
+        
+        {/* LEFT: TRACK LIST */}
+        <div className="bg-[#FFF8E1] border-2 border-[#3E2723] rounded-2xl shadow-[8px_8px_0px_0px_rgba(62,39,35,1)] overflow-hidden h-[450px] flex flex-col">
+          <div className="p-6 border-b-2 border-[#3E2723] bg-[#FFECB3]">
             <div className="flex justify-between items-center">
-              <div><span className="text-xs font-bold text-[#3E2723]/70 uppercase tracking-widest">Wounded & Willing Collection</span><h3 className="text-xl font-bold text-[#3E2723]">{currentFP.title}</h3></div>
-              <RefreshCw size={16} className="text-[#3E2723] animate-spin-slow opacity-50" />
+              <div>
+                <span className="text-xs font-black text-[#3E2723] uppercase tracking-widest bg-[#FFD54F] px-2 py-1 rounded">Free Samples (FP)</span>
+                <h3 className="text-2xl font-black text-[#3E2723] mt-2 leading-none">Wounded & Willing <br/><span className="italic text-[#E65100]">Track-Tastes</span></h3>
+              </div>
+              <RefreshCw size={20} className="text-[#3E2723] animate-spin-slow opacity-80" />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-hide">
-            {loading ? <p className="text-[#3E2723]/50 text-center py-10">Loading GPM Catalog...</p> : playlist.map((track, idx) => (
-              <div key={track.id || idx} onClick={() => playTrack(idx)} className={`group flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${idx === currentTrackIndex ? 'bg-[#3E2723] text-[#F5DEB3]' : 'bg-[#FFF8E1] text-[#3E2723] hover:bg-white'}`}>
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="w-8 h-8 flex items-center justify-center bg-black/5 rounded-full">{idx === currentTrackIndex && isPlaying ? <span className="animate-pulse">lıl</span> : <Play size={10} fill="currentColor" />}</div>
-                  <span className="font-bold text-sm truncate">{cleanTitle(track)}</span>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
+            {loading ? <p className="text-[#3E2723]/50 text-center py-10 font-bold">Curating Track-Tastes...</p> : playlist.map((track, idx) => (
+              <div key={track.id || idx} onClick={() => playTrack(idx)} className={`group flex items-center justify-between p-4 rounded-xl cursor-pointer transition border-2 ${idx === currentTrackIndex ? 'bg-[#3E2723] text-[#FFD54F] border-[#3E2723]' : 'bg-white text-[#3E2723] border-[#3E2723]/10 hover:border-[#3E2723] hover:translate-x-1'}`}>
+                <div className="flex items-center gap-4 overflow-hidden">
+                  <div className="font-mono font-bold opacity-50">0{idx + 1}</div>
+                  <span className="font-bold text-lg truncate">{cleanTitle(track)}</span>
                 </div>
+                {idx === currentTrackIndex && isPlaying ? <div className="animate-pulse w-3 h-3 bg-[#FFD54F] rounded-full"></div> : <Play size={16} fill="currentColor" />}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-[#3E2723] p-8 rounded-3xl shadow-2xl text-center border border-[#F5DEB3]/50 h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
-           <div className="w-40 h-40 bg-[#FFCA28] rounded-full flex items-center justify-center mb-6 shadow-xl relative z-10 ring-4 ring-[#F5DEB3]/50">
-              <button onClick={togglePlay} className="hover:scale-110 transition">{isPlaying ? <Pause size={56} className="text-[#3E2723]" fill="currentColor" /> : <Play size={56} className="text-[#3E2723] ml-2" fill="currentColor" />}</button>
+        {/* RIGHT: PLAYER VISUAL */}
+        <div className="bg-[#3E2723] p-8 rounded-2xl shadow-[8px_8px_0px_0px_rgba(255,213,79,1)] text-center border-2 border-[#3E2723] h-[450px] flex flex-col items-center justify-center relative overflow-hidden">
+           {/* BIG PLAY BUTTON */}
+           <div className="w-48 h-48 bg-[#FFD54F] rounded-full flex items-center justify-center mb-8 shadow-2xl relative z-10 ring-8 ring-[#FFECB3]/20 border-4 border-[#3E2723]">
+              <button onClick={togglePlay} className="hover:scale-110 transition active:scale-95">
+                {isPlaying ? <Pause size={72} className="text-[#3E2723]" fill="currentColor" /> : <Play size={72} className="text-[#3E2723] ml-3" fill="currentColor" />}
+              </button>
            </div>
-           <div className="relative z-10"><h2 className="text-2xl font-black text-white mb-2 max-w-xs mx-auto leading-tight">{cleanTitle(activeTrack)}</h2><p className="text-[#F5DEB3] font-bold uppercase tracking-widest text-xs">G Putnam Music, LLC</p></div>
+           
+           <div className="relative z-10 w-full px-8">
+             <div className="h-1 w-20 bg-[#FFD54F] mx-auto mb-4 rounded-full opacity-50"></div>
+             <h2 className="text-3xl font-black text-[#FFD54F] mb-1 leading-tight truncate">{cleanTitle(activeTrack)}</h2>
+             <p className="text-[#FFECB3] font-bold uppercase tracking-widest text-xs opacity-70">G Putnam Music, LLC</p>
+           </div>
         </div>
+
       </div>
     </section>
   );
