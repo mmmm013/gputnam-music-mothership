@@ -12,15 +12,15 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // --- ROTATION: 3 HOURS 33 MINUTES ---
 const ROTATION_MS = 12780000;
 
-// THE 6 EMOTIONAL STATES (Replacing Genres)
-// These map to your 6 Earmarked Playlists
+// THE 6 FIXED FPs (WOUNDED & WILLING COLLECTION)
+// These feature the 3 Band Members: Kleigh, Michael Scherer, GPM
 const FEATURED_ROTATION = [
-  { id: 'FP1', title: 'GPM: ENERGIZED', mood_tag: 'energy' },     // Was Pop
-  { id: 'FP2', title: 'GPM: SOPHISTICATED', mood_tag: 'classy' }, // Was Jazz
-  { id: 'FP3', title: 'GPM: SOULFUL', mood_tag: 'soul' },         // Was Acoustic
-  { id: 'FP4', title: 'GPM: RAW EMOTION', mood_tag: 'raw' },      // Was Studio
-  { id: 'FP5', title: 'GPM: ATMOSPHERIC', mood_tag: 'ambient' },  // Was Moods
-  { id: 'FP6', title: 'GPM: MELANCHOLY', mood_tag: 'sad' }        // Was Piano
+  { id: 'FP1', title: 'KLEIGH: POP ANTHEMS', mood_tag: 'energy' },
+  { id: 'FP2', title: 'MICHAEL SCHERER: JAZZ MASTERS', mood_tag: 'classy' },
+  { id: 'FP3', title: 'GPM: STUDIO SESSIONS', mood_tag: 'raw' },
+  { id: 'FP4', title: 'KLEIGH: ACOUSTIC SOUL', mood_tag: 'soul' },
+  { id: 'FP5', title: 'GPM: MOODS & AMBIENCE', mood_tag: 'ambient' },
+  { id: 'FP6', title: 'SCHERER: PIANO LOUNGE', mood_tag: 'sad' }
 ];
 
 export default function Hero() {
@@ -33,9 +33,8 @@ export default function Hero() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 1. ROTATION TIMER
+  // 1. ROTATION TIMER (Syncs Wounded & Willing Exposure)
   useEffect(() => {
-    // Sync rotation across all GPM domains based on time
     const now = Date.now();
     const cyclePosition = Math.floor(now / ROTATION_MS) % FEATURED_ROTATION.length;
     setCurrentFPIndex(cyclePosition);
@@ -46,19 +45,18 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
-  // 2. FETCH TRACKS (Six Sigma Data Retrieval)
+  // 2. FETCH TRACKS (Based on the Active FP's Mood Tag)
   useEffect(() => {
     async function fetchTracks() {
       setLoading(true);
       const currentFP = FEATURED_ROTATION[currentFPIndex];
-      console.log(`GPM Catalog: Loading Emotional State '${currentFP.mood_tag}'...`);
+      console.log(`GPM Rotation: Loading '${currentFP.title}'...`);
 
-      // Query Supabase for tracks matching the MOOD TAG
       const { data, error } = await supabase
         .from('tracks') 
         .select('*')
-        .ilike('tags', `%${currentFP.mood_tag}%`) // Subjective matching
-        .limit(50); // Fetch up to 50 tracks for the "Black Box" list
+        .ilike('tags', `%${currentFP.mood_tag}%`)
+        .limit(50);
 
       if (!error && data) {
         setPlaylist(data);
@@ -68,15 +66,13 @@ export default function Hero() {
     fetchTracks();
   }, [currentFPIndex]);
 
-  // 3. SANITIZER (Clean Naming Convention)
-  // Removes "052 -", ".mp3", and underscores for display
+  // 3. SANITIZER (Clean Naming - No Artifacts)
   const cleanTitle = (track: any) => {
     if (!track) return 'Loading...';
-    // Use metadata title if available, otherwise scrub filename
     let text = track.title || track.name || 'Unknown Track';
-    return text.replace(/^\d+\s*-\s*/, '') // Remove "001 - "
-               .replace(/\.mp3$/i, '')     // Remove ".mp3"
-               .replace(/_/g, ' ');        // Swap underscores for spaces
+    return text.replace(/^\d+\s*-\s*/, '')
+               .replace(/\.mp3$/i, '')
+               .replace(/_/g, ' ');
   };
 
   // 4. AUDIO CONTROLS
@@ -92,13 +88,34 @@ export default function Hero() {
     setIsPlaying(true);
   };
 
+  // 5. MOOD SEARCH HANDLER (User Purpose)
+  const handleMoodSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(`Synonymical Tool: analyzing '${moodInput}'...`);
+    setLoading(true);
+    
+    // User overrides the Rotation with their specific Need
+    const { data, error } = await supabase
+      .from('tracks')
+      .select('*')
+      .textSearch('tags', moodInput)
+      .limit(50);
+
+    if (data && data.length > 0) {
+      setPlaylist(data); // "Black Box" becomes "Mood Box"
+      setCurrentTrackIndex(0);
+      setIsPlaying(true);
+    }
+    setLoading(false);
+  };
+
   const currentFP = FEATURED_ROTATION[currentFPIndex];
   const activeTrack = playlist[currentTrackIndex];
 
   return (
     <section className="relative min-h-screen w-full bg-[#FFCA28] text-[#3E2723] pt-24 flex flex-col items-center">
       
-      {/* HIDDEN ENGINE */}
+      {/* AUDIO ENGINE */}
       {activeTrack && (
         <audio 
           ref={audioRef}
@@ -120,8 +137,8 @@ export default function Hero() {
           Discover music that matches your exact emotional state.
         </p>
 
-        {/* MOOD SEARCH */}
-        <div className="max-w-xl mx-auto relative mb-16">
+        {/* MOOD SEARCH (The Listener's Tool) */}
+        <form onSubmit={handleMoodSearch} className="max-w-xl mx-auto relative mb-16">
           <input 
             type="text" 
             value={moodInput}
@@ -129,32 +146,30 @@ export default function Hero() {
             placeholder="How are you feeling? (e.g. 'Reflective', 'Hyped')"
             className="w-full bg-[#FFD54F] border border-[#3E2723] placeholder-[#3E2723]/50 text-[#3E2723] font-bold text-xl px-8 py-6 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-[#3E2723]"
           />
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-[#3E2723] rounded-xl text-[#FFCA28]">
+          <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-[#3E2723] rounded-xl text-[#FFCA28]">
             <Search size={24} />
           </button>
-        </div>
+        </form>
       </div>
 
-      {/* THE "BLACK BOX" (NOW A SCROLLABLE TRACK LIST) */}
+      {/* THE "BLACK BOX" (Storefront) */}
       <div className="container mx-auto px-4 pb-20 grid md:grid-cols-2 gap-8 items-start max-w-6xl">
         
-        {/* LEFT: THE TRACK LIST (E-Commerce Storefront) */}
+        {/* LEFT: THE TRACK LIST */}
         <div className="bg-black border border-[#3E2723] rounded-xl shadow-2xl overflow-hidden h-[400px] flex flex-col">
-          {/* Header */}
           <div className="p-6 border-b border-white/10 bg-[#3E2723]">
             <div className="flex justify-between items-center">
               <div>
-                <span className="text-xs font-bold text-[#FFCA28] uppercase tracking-widest">Current Rotation</span>
+                <span className="text-xs font-bold text-[#FFCA28] uppercase tracking-widest">Wounded & Willing Collection</span>
                 <h3 className="text-xl font-bold text-white">{currentFP.title}</h3>
               </div>
               <RefreshCw size={16} className="text-[#FFCA28] animate-spin-slow opacity-70" />
             </div>
           </div>
 
-          {/* List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {loading ? (
-              <p className="text-white/50 text-center py-10">Loading GPM Catalog...</p>
+              <p className="text-white/50 text-center py-10">Connecting to GPM Catalog...</p>
             ) : (
               playlist.map((track, idx) => (
                 <div 
@@ -169,7 +184,6 @@ export default function Hero() {
                     <span className="font-bold text-sm truncate">{cleanTitle(track)}</span>
                   </div>
                   
-                  {/* User Interactions (Love, Download, Share) */}
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
                     <button className="p-1 hover:text-red-500"><Heart size={14} /></button>
                     <button className="p-1 hover:text-blue-400"><Share2 size={14} /></button>
@@ -181,7 +195,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* RIGHT: ACTIVE PLAYER VISUAL */}
+        {/* RIGHT: PLAYER VISUAL */}
         <div className="bg-[#3E2723] p-8 rounded-3xl shadow-2xl text-center border border-[#FFCA28]/20 h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
            <div className="absolute inset-0 opacity-10 bg-[url('/gpm_logo.png')] bg-center bg-contain bg-no-repeat"></div>
            
@@ -195,15 +209,6 @@ export default function Hero() {
              <h2 className="text-2xl font-black text-white mb-2">{cleanTitle(activeTrack)}</h2>
              <p className="text-[#FFCA28] font-bold uppercase tracking-widest text-xs">G Putnam Music, LLC</p>
            </div>
-
-           {/* Audio Visualizer Bar (Fake) */}
-           {isPlaying && (
-             <div className="flex gap-1 mt-8 h-8 items-end justify-center">
-               {[...Array(20)].map((_, i) => (
-                 <div key={i} className="w-1 bg-[#FFCA28] animate-music-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${Math.random() * 100}%` }}></div>
-               ))}
-             </div>
-           )}
         </div>
 
       </div>
