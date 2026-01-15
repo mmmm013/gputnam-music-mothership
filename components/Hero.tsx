@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, Play, Pause, RefreshCw, Star, Menu } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
+// GPM CONFIGURATION
 const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -47,13 +48,13 @@ export default function Hero() {
     fetchTracks();
   }, [currentFPIndex]);
 
+  // SCRUBBER: Removes "015 -", "g putnam music -", etc.
   const cleanTitle = (track: any) => {
     if (!track) return 'Loading...';
     let text = track.title || track.name || 'Unknown';
-    // THE SCRUBBER: Removes "015 -", "g putnam music -", extensions, and trailing " - M"
     text = text.replace(/^\d+\s*-\s*/, '');
     text = text.replace(/g\s*putnam\s*music\s*-\s*/i, '');
-    text = text.replace(/\s*-\s*[Mm]$/, ''); // Removes " - M"
+    text = text.replace(/\s*-\s*[Mm]$/, '');
     text = text.replace(/\.mp3|\.wav|\.m4a/gi, '').replace(/_/g, ' ');
     return text;
   };
@@ -74,7 +75,7 @@ export default function Hero() {
   const activeTrack = playlist[currentTrackIndex];
 
   return (
-    // BRANDING: AMBER (#FFCA28) BACKGROUND + WHEAT (#F5DEB3) ACCENTS
+    // BRANDING: AMBER (#FFCA28) & WHEAT (#F5DEB3) -> GPM IDENTITY
     <section className="relative min-h-screen w-full bg-[#FFCA28] text-[#3E2723] pt-24 flex flex-col items-center overflow-hidden font-sans">
       
       <nav className="absolute top-0 w-full p-6 flex justify-between items-center bg-[#F5DEB3]/90 backdrop-blur-sm z-50 border-b border-[#3E2723]/10">
@@ -102,6 +103,7 @@ export default function Hero() {
       </div>
 
       <div className="container mx-auto px-4 pb-20 grid md:grid-cols-2 gap-8 items-start max-w-6xl z-10">
+        {/* PLAYER UI: AMBER/WHEAT */}
         <div className="bg-[#F5DEB3] border border-[#3E2723] rounded-xl shadow-2xl overflow-hidden h-[400px] flex flex-col">
           <div className="p-6 border-b border-[#3E2723]/20 bg-[#FFE082]">
             <div className="flex justify-between items-center">
