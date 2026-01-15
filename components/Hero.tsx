@@ -1,123 +1,209 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Search, Play, Pause, RefreshCw } from 'lucide-react';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
+import { Search, Play, Pause, RefreshCw, Volume2, Heart, Download, Share2 } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
-// GPM ROTATION CONFIG: 6 Featured Playlists
-// Rotates every 3 Hours 33 Minutes (12,780,000 ms)
-const ROTATION_TIME = 12780000;
+// --- CONFIGURATION ---
+const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const FEATURED_PLAYLISTS = [
-  { id: 'FP1', title: 'GPM: POP ANTHEMS', mood: 'energetic' },
-  { id: 'FP2', title: 'JAZZ: MICHAEL SCHERER', mood: 'classy' },
-  { id: 'FP3', title: 'KLEIGH: ACOUSTIC SOUL', mood: 'soulful' },
-  { id: 'FP4', title: 'GPM: STUDIO SESSIONS', mood: 'raw' },
-  { id: 'FP5', title: 'GPM: MOODS & AMBIENCE', mood: 'chill' },
-  { id: 'FP6', title: 'SCHERER: PIANO LOUNGE', mood: 'melancholy' }
+// --- ROTATION: 3 HOURS 33 MINUTES ---
+const ROTATION_MS = 12780000;
+
+// THE 6 EMOTIONAL STATES (Replacing Genres)
+// These map to your 6 Earmarked Playlists
+const FEATURED_ROTATION = [
+  { id: 'FP1', title: 'GPM: ENERGIZED', mood_tag: 'energy' },     // Was Pop
+  { id: 'FP2', title: 'GPM: SOPHISTICATED', mood_tag: 'classy' }, // Was Jazz
+  { id: 'FP3', title: 'GPM: SOULFUL', mood_tag: 'soul' },         // Was Acoustic
+  { id: 'FP4', title: 'GPM: RAW EMOTION', mood_tag: 'raw' },      // Was Studio
+  { id: 'FP5', title: 'GPM: ATMOSPHERIC', mood_tag: 'ambient' },  // Was Moods
+  { id: 'FP6', title: 'GPM: MELANCHOLY', mood_tag: 'sad' }        // Was Piano
 ];
 
 export default function Hero() {
-  const [moodInput, setMoodInput] = useState('');
   const [currentFPIndex, setCurrentFPIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [moodInput, setMoodInput] = useState('');
+  const [playlist, setPlaylist] = useState<any[]>([]);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // ROTATION LOGIC: Updates the "Black Box" FP every 3h 33m
+  // 1. ROTATION TIMER
   useEffect(() => {
+    // Sync rotation across all GPM domains based on time
+    const now = Date.now();
+    const cyclePosition = Math.floor(now / ROTATION_MS) % FEATURED_ROTATION.length;
+    setCurrentFPIndex(cyclePosition);
+
     const interval = setInterval(() => {
-      setCurrentFPIndex((prev) => (prev + 1) % FEATURED_PLAYLISTS.length);
-    }, ROTATION_TIME);
+      setCurrentFPIndex((prev) => (prev + 1) % FEATURED_ROTATION.length);
+    }, ROTATION_MS);
     return () => clearInterval(interval);
   }, []);
 
-  const currentFP = FEATURED_PLAYLISTS[currentFPIndex];
+  // 2. FETCH TRACKS (Six Sigma Data Retrieval)
+  useEffect(() => {
+    async function fetchTracks() {
+      setLoading(true);
+      const currentFP = FEATURED_ROTATION[currentFPIndex];
+      console.log(`GPM Catalog: Loading Emotional State '${currentFP.mood_tag}'...`);
 
-  const handleMoodSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(`Searching Supabase for synonym match: ${moodInput}`);
+      // Query Supabase for tracks matching the MOOD TAG
+      const { data, error } = await supabase
+        .from('tracks') 
+        .select('*')
+        .ilike('tags', `%${currentFP.mood_tag}%`) // Subjective matching
+        .limit(50); // Fetch up to 50 tracks for the "Black Box" list
+
+      if (!error && data) {
+        setPlaylist(data);
+      }
+      setLoading(false);
+    }
+    fetchTracks();
+  }, [currentFPIndex]);
+
+  // 3. SANITIZER (Clean Naming Convention)
+  // Removes "052 -", ".mp3", and underscores for display
+  const cleanTitle = (track: any) => {
+    if (!track) return 'Loading...';
+    // Use metadata title if available, otherwise scrub filename
+    let text = track.title || track.name || 'Unknown Track';
+    return text.replace(/^\d+\s*-\s*/, '') // Remove "001 - "
+               .replace(/\.mp3$/i, '')     // Remove ".mp3"
+               .replace(/_/g, ' ');        // Swap underscores for spaces
   };
 
+  // 4. AUDIO CONTROLS
+  const togglePlay = () => {
+    if (audioRef.current) {
+      isPlaying ? audioRef.current.pause() : audioRef.current.play();
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const playTrack = (index: number) => {
+    setCurrentTrackIndex(index);
+    setIsPlaying(true);
+  };
+
+  const currentFP = FEATURED_ROTATION[currentFPIndex];
+  const activeTrack = playlist[currentTrackIndex];
+
   return (
-    // BRANDING UPDATE: LIGHTER AMBER BACKGROUND (#FFCA28)
     <section className="relative min-h-screen w-full bg-[#FFCA28] text-[#3E2723] pt-24 flex flex-col items-center">
       
-      {/* 1. GPM BRANDING HEADLINE */}
+      {/* HIDDEN ENGINE */}
+      {activeTrack && (
+        <audio 
+          ref={audioRef}
+          src={activeTrack.public_url || activeTrack.url}
+          onEnded={() => setCurrentTrackIndex((prev) => (prev + 1) % playlist.length)}
+          autoPlay={isPlaying}
+        />
+      )}
+
+      {/* HEADER */}
       <div className="container mx-auto px-4 text-center z-10">
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-[#3E2723] mb-2">
           G Putnam <br/> Music
         </h1>
-        {/* REPLACED ORANGE WITH DEEP BROWN */}
         <h2 className="text-5xl md:text-7xl font-black text-[#3E2723] italic tracking-tight mb-8 opacity-90 border-b-4 border-[#3E2723] inline-block pb-2">
           MOODs
         </h2>
-        
         <p className="text-[#3E2723] text-lg max-w-xl mx-auto mb-12 font-bold">
-          Discover the revolutionary approach to music streaming that matches your exact mood.
+          Discover music that matches your exact emotional state.
         </p>
 
-        {/* 2. THE MOOD SEARCH - Thin Brown Border */}
-        <form onSubmit={handleMoodSearch} className="max-w-xl mx-auto relative mb-16">
+        {/* MOOD SEARCH */}
+        <div className="max-w-xl mx-auto relative mb-16">
           <input 
             type="text" 
             value={moodInput}
             onChange={(e) => setMoodInput(e.target.value)}
-            placeholder="Enter a mood... (e.g. 'Longing', 'Hype')"
-            className="w-full bg-[#FFD54F] border border-[#3E2723] placeholder-[#3E2723]/50 text-[#3E2723] font-bold text-xl px-8 py-6 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-[#3E2723] transition-all"
+            placeholder="How are you feeling? (e.g. 'Reflective', 'Hyped')"
+            className="w-full bg-[#FFD54F] border border-[#3E2723] placeholder-[#3E2723]/50 text-[#3E2723] font-bold text-xl px-8 py-6 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-[#3E2723]"
           />
-          <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-[#3E2723] rounded-xl text-[#FFCA28] hover:scale-105 transition">
+          <button className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-[#3E2723] rounded-xl text-[#FFCA28]">
             <Search size={24} />
           </button>
-        </form>
+        </div>
       </div>
 
-      {/* 3. THE "BLACK BOX" (System Status -> Featured Playlists) */}
-      <div className="container mx-auto px-4 pb-20 grid md:grid-cols-2 gap-8 items-end max-w-6xl">
+      {/* THE "BLACK BOX" (NOW A SCROLLABLE TRACK LIST) */}
+      <div className="container mx-auto px-4 pb-20 grid md:grid-cols-2 gap-8 items-start max-w-6xl">
         
-        {/* LEFT: The "System Status" Box - THIN BROWN BORDER */}
-        <div className="bg-black border border-[#3E2723] p-8 rounded-xl shadow-2xl font-mono relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-1 h-full bg-[#3E2723]"></div>
-          
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#FFCA28]/70">System Status: ONLINE</span>
-            <RefreshCw size={14} className="text-[#FFCA28] animate-spin-slow opacity-70" />
+        {/* LEFT: THE TRACK LIST (E-Commerce Storefront) */}
+        <div className="bg-black border border-[#3E2723] rounded-xl shadow-2xl overflow-hidden h-[400px] flex flex-col">
+          {/* Header */}
+          <div className="p-6 border-b border-white/10 bg-[#3E2723]">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-xs font-bold text-[#FFCA28] uppercase tracking-widest">Current Rotation</span>
+                <h3 className="text-xl font-bold text-white">{currentFP.title}</h3>
+              </div>
+              <RefreshCw size={16} className="text-[#FFCA28] animate-spin-slow opacity-70" />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-white mb-1">CURRENT ROTATION</h3>
-            <p className="text-sm text-neutral-400 mb-4">Refreshes every 3h 33m</p>
-            
-            <div className="p-4 bg-[#1a1a1a] rounded-lg border border-[#3E2723]/50">
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="w-10 h-10 flex items-center justify-center bg-[#3E2723] text-[#FFCA28] rounded-full hover:scale-110 transition border border-[#FFCA28]/20"
+          {/* List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {loading ? (
+              <p className="text-white/50 text-center py-10">Loading GPM Catalog...</p>
+            ) : (
+              playlist.map((track, idx) => (
+                <div 
+                  key={track.id || idx}
+                  onClick={() => playTrack(idx)}
+                  className={`group flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${idx === currentTrackIndex ? 'bg-[#FFCA28] text-[#3E2723]' : 'bg-white/5 text-white hover:bg-white/10'}`}
                 >
-                  {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
-                </button>
-                <div>
-                  <p className="text-xs text-[#FFCA28] uppercase tracking-widest font-bold">Now Featuring</p>
-                  <p className="text-white font-bold text-lg">{currentFP.title}</p>
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="w-8 h-8 flex items-center justify-center bg-black/20 rounded-full">
+                      {idx === currentTrackIndex && isPlaying ? <span className="animate-pulse">lıl</span> : <Play size={10} fill="currentColor" />}
+                    </div>
+                    <span className="font-bold text-sm truncate">{cleanTitle(track)}</span>
+                  </div>
+                  
+                  {/* User Interactions (Love, Download, Share) */}
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                    <button className="p-1 hover:text-red-500"><Heart size={14} /></button>
+                    <button className="p-1 hover:text-blue-400"><Share2 size={14} /></button>
+                    <button className="p-1 hover:text-green-400"><Download size={14} /></button>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-white/10 flex justify-between text-[10px] uppercase tracking-widest text-neutral-500">
-              <span>Next Shift: +3h 33m</span>
-              <span>Source: GPM Catalog</span>
-            </div>
+              ))
+            )}
           </div>
         </div>
 
-        {/* RIGHT: Visual / Player Placeholder - THIN BROWN BORDER */}
-        <div className="relative aspect-square md:aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-[#3E2723]">
-          <div className="absolute inset-0 flex items-center justify-center">
-             <div className="text-center">
-               <div className="w-20 h-20 bg-[#3E2723] rounded-full mx-auto mb-4 animate-pulse flex items-center justify-center border border-[#FFCA28]/30">
-                 <Play size={40} className="text-[#FFCA28] ml-2" fill="currentColor" />
-               </div>
-               <p className="text-[#FFCA28] font-bold tracking-widest">GPM AUDIO ENGINE</p>
+        {/* RIGHT: ACTIVE PLAYER VISUAL */}
+        <div className="bg-[#3E2723] p-8 rounded-3xl shadow-2xl text-center border border-[#FFCA28]/20 h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+           <div className="absolute inset-0 opacity-10 bg-[url('/gpm_logo.png')] bg-center bg-contain bg-no-repeat"></div>
+           
+           <div className="w-32 h-32 bg-[#FFCA28] rounded-full flex items-center justify-center mb-6 shadow-xl relative z-10">
+              <button onClick={togglePlay} className="hover:scale-110 transition">
+                {isPlaying ? <Pause size={48} className="text-[#3E2723]" fill="currentColor" /> : <Play size={48} className="text-[#3E2723] ml-2" fill="currentColor" />}
+              </button>
+           </div>
+           
+           <div className="relative z-10">
+             <h2 className="text-2xl font-black text-white mb-2">{cleanTitle(activeTrack)}</h2>
+             <p className="text-[#FFCA28] font-bold uppercase tracking-widest text-xs">G Putnam Music, LLC</p>
+           </div>
+
+           {/* Audio Visualizer Bar (Fake) */}
+           {isPlaying && (
+             <div className="flex gap-1 mt-8 h-8 items-end justify-center">
+               {[...Array(20)].map((_, i) => (
+                 <div key={i} className="w-1 bg-[#FFCA28] animate-music-bar" style={{ animationDelay: `${i * 0.1}s`, height: `${Math.random() * 100}%` }}></div>
+               ))}
              </div>
-          </div>
+           )}
         </div>
 
       </div>
