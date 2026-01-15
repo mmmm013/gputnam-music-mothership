@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Zap } from 'lucide-react';
 
-// THE 6 FEATURED PLAYLISTS (Free-Play Rotation)
 const PLAYLISTS = [
   { id: '13795325', title: 'KLEIGH: POP ANTHEMS' },
   { id: '13795325', title: 'MICHAEL SCHERER: JAZZ MASTERS' }, 
@@ -23,7 +21,6 @@ export default function Hero() {
   const [currentPlaylistIndex, setCurrentPlaylistIndex] = useState(0);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
 
-  // Rotate content every 4 hours
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPlaylistIndex((prev) => (prev + 1) % PLAYLISTS.length);
@@ -37,23 +34,13 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-black text-white pt-20">
-      
-      {/* 1. BACKGROUND VISUALS */}
       <div className="absolute inset-0 z-0">
-         <div 
-           className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"
-           style={{ backgroundImage: `url(${currentBg})`, opacity: 0.6 }}
-         />
+         <div className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000" style={{ backgroundImage: `url(${currentBg})`, opacity: 0.6 }} />
          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black" />
       </div>
 
-      {/* 2. MAIN CONTENT */}
       <div className="relative z-10 container mx-auto px-4 pt-20 pb-32 flex flex-col items-center text-center">
-        
-        {/* BRANDING */}
-        <h1 className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-pink-200 to-pink-500 tracking-tighter drop-shadow-2xl mb-4">
-          IT'S KLEIGH
-        </h1>
+        <h1 className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-pink-200 to-pink-500 tracking-tighter drop-shadow-2xl mb-4">IT'S KLEIGH</h1>
         
         <div className="inline-flex items-center gap-2 border border-pink-500/30 bg-black/50 backdrop-blur-md px-6 py-2 rounded-full mb-12">
           <span className="relative flex h-2 w-2">
@@ -65,23 +52,17 @@ export default function Hero() {
           </span>
         </div>
 
-        {/* FEATURED PLAYLIST (THE DISCO PLAYER) */}
         <div className="w-full max-w-5xl relative z-20 group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-[2.5rem] opacity-75 blur group-hover:opacity-100 transition duration-1000"></div>
           <div className="relative aspect-video md:aspect-[21/9] rounded-[2rem] overflow-hidden bg-black shadow-2xl ring-1 ring-white/10">
              <iframe 
                 key={currentPlaylist.id} 
                 src={`https://disco.ac/e/p/${currentPlaylist.id}?color=%23ec4899&theme=dark`}
-                width="100%" 
-                height="100%" 
-                frameBorder="0" 
-                allowTransparency={true} 
-                allow="encrypted-media"
+                width="100%" height="100%" frameBorder="0" 
+                allowTransparency={true} allow="encrypted-media"
                 className="w-full h-full"
               ></iframe>
           </div>
         </div>
-
       </div>
     </section>
   );
