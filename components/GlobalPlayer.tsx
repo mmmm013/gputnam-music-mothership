@@ -5,10 +5,10 @@ import { Pause, Play } from 'lucide-react';
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // FINAL VALIDATION TEXT
+  // NEW VERSION IDENTIFIER: "v3.0"
   const [track, setTrack] = useState({
-    title: "GPM SYSTEM ONLINE", 
-    artist: "Select a Track from the Rotation",
+    title: "GPM ENGINE v3.0", 
+    artist: "System Ready. Select Track.",
     url: "", 
     moodColor: "#8B4513"
   });

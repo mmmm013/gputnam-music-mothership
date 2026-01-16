@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation';
 
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
 
-// --- INVENTORY CONFIGURATION ---
+// --- COLORS ---
 const BRAND_GPM = "#FFC107"; // Amber
-const BRAND_KLEIGH = "#A0522D"; // Sienna (No Orange)
+const BRAND_KLEIGH = "#A0522D"; // Sienna
 const BRAND_SCHERER = "#DAA520"; // Gold
 
+// --- SOURCES ---
 const SCHERER_FILENAMES = [
   "Breakfast!.mp3", "Dance Party.mp3", "Going Outside.mp3", "Imaginary Zoo.mp3", 
   "Jump.mp3", "Like a Bunny.mp3", "Nighttime.mp3", "Perfect Day.mp3", 
@@ -29,11 +30,15 @@ export default function FeaturedPlaylists() {
   const [activeTheme, setActiveTheme] = useState({ primary: BRAND_GPM, secondary: "#F5DEB3" });
 
   useEffect(() => {
+    // LOAD SOURCES
     setSlot2(KLEIGH_POOL[0]);
     const randomScherer = SCHERER_FILENAMES[Math.floor(Math.random() * SCHERER_FILENAMES.length)];
     setSlot4({
-      filename: randomScherer, title: "Scherer Magic", artist: "GPM & Michael Scherer",
-      type: "CO-COPYRIGHT", moodTheme: { primary: BRAND_SCHERER, secondary: "#F5DEB3" }
+      filename: randomScherer, 
+      title: "Scherer Magic", 
+      artist: "GPM & Michael Scherer",
+      type: "CO-COPYRIGHT", 
+      moodTheme: { primary: BRAND_SCHERER, secondary: "#F5DEB3" }
     });
   }, []);
 
@@ -43,10 +48,13 @@ export default function FeaturedPlaylists() {
     if (item.isLink) {
       router.push(item.url);
     } else {
+      // FREEPLAY LOGIC: DIRECT DISPATCH
       const event = new CustomEvent('play-track', { 
         detail: { 
           url: `${BUCKET_URL}/${item.filename}`, 
-          title: item.title, artist: item.artist, type: item.type,
+          title: item.title, 
+          artist: item.artist, 
+          type: item.type,
           moodTheme: item.moodTheme 
         } 
       });
@@ -67,8 +75,10 @@ export default function FeaturedPlaylists() {
 
   const gridItems = [
     { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", action: "READ STORY", icon: "BookOpen", isLink: true, url: "/heroes", moodTheme: { primary: BRAND_GPM } },
+    // SLOT 2: FREEPLAY AUDIO
     { ...currentSlot2, id: 2, action: "PLAY NOW", icon: "Music", isLink: false },
     { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: "Users", isLink: true, url: "/who", moodTheme: { primary: BRAND_GPM } },
+    // SLOT 4: FREEPLAY AUDIO
     { ...currentSlot4, id: 4, action: "PLAY NOW", icon: "Play", isLink: false },
     { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", action: "LEARN MORE", icon: "Anchor", isLink: true, url: "/ships", moodTheme: { primary: BRAND_GPM } }
   ];
