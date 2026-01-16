@@ -6,67 +6,76 @@ import { useRouter } from 'next/navigation';
 // --- CONFIGURATION ---
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
 
-// --- THE AUDIO & MOOD REGISTRY ---
-// Each track now carries a 'moodColor' property.
-const audioRegistry = [
+// --- GPMC INVENTORY (POOLS) ---
+// We define "Pools" of tracks. The Engine picks from these.
+// NOTE: Ensure these EXACT filenames exist in your 'tracks' bucket.
+
+const KLEIGH_POOL = [
   { 
-    filename: "kleigh.mp3", 
+    filename: "038 - kleigh - bought into your game.mp3", // The Real Master File
     title: "Bought Into Your Game", 
     artist: "Kleigh", 
     type: "GPMC LEGACY",
-    moodColor: "#DAA520" // Goldenrod (Legacy Mood)
-  },
-  { 
-    filename: "scherer.mp3", 
-    title: "Featured Composition", 
-    artist: "GPM & Michael Scherer", 
-    type: "CO-COPYRIGHT",
-    moodColor: "#CD853F" // Peru (Collaborator Mood)
-  },
-  { 
-    filename: "nelson.mp3", 
-    title: "Signature Sound", 
-    artist: "GPM & Erik W Nelson", 
-    type: "CO-COPYRIGHT",
-    moodColor: "#A0522D" // Sienna (Collaborator Mood)
-  },
+    moodTheme: { primary: "#A0522D", secondary: "#FFBF00" } // Sienna/Amber
+  }
+  // Add more Kleigh tracks here in the future
+];
+
+const GPM_POOL = [
   { 
     filename: "first-note.mp3", 
     title: "The First Note (Theme)", 
     artist: "G Putnam Music", 
     type: "SONIC BRAND",
-    moodColor: "#8B4513" // Saddle Brown (Brand Mood)
+    moodTheme: { primary: "#FFC107", secondary: "#F5DEB3" } // Amber/Wheat
+  }
+];
+
+const COLLAB_POOL = [
+  { 
+    filename: "scherer-feature.mp3", 
+    title: "Featured Composition", 
+    artist: "GPM & Michael Scherer", 
+    type: "CO-COPYRIGHT",
+    moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" } // Goldenrod (Neutral)
+  },
+  { 
+    filename: "nelson-feature.mp3", 
+    title: "Signature Sound", 
+    artist: "GPM & Erik W Nelson", 
+    type: "CO-COPYRIGHT (Operational)", // Internal Tag Only
+    moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" }
   }
 ];
 
 export default function FeaturedPlaylists() {
   const router = useRouter();
-  const [rotatedTracks, setRotatedTracks] = useState<any[]>([]);
-  const [activeMood, setActiveMood] = useState("#8B4513"); // Default Brand Color
+  const [slot2, setSlot2] = useState<any>(null);
+  const [slot4, setSlot4] = useState<any>(null);
+  
+  // Default Mood: GPM Brand (Amber/Wheat)
+  const [activeTheme, setActiveTheme] = useState({ primary: "#FFC107", secondary: "#F5DEB3" });
 
-  // --- THE ENGINE: SHUFFLE & DEAL ---
+  // --- THE ENGINE: RUN THE POOLS ---
   useEffect(() => {
-    // Randomize the tracks on load
-    const shuffled = [...audioRegistry].sort(() => 0.5 - Math.random());
-    setRotatedTracks(shuffled);
-    
-    // Set initial mood based on the first track in the slot
-    if (shuffled[0]) {
-      setActiveMood(shuffled[0].moodColor);
-    }
-  }, []);
+    // 1. Pick a random Kleigh track for Slot 2
+    const randomKleigh = KLEIGH_POOL[Math.floor(Math.random() * KLEIGH_POOL.length)];
+    setSlot2(randomKleigh);
 
-  const slot2_Track = rotatedTracks[0] || audioRegistry[3];
-  const slot4_Track = rotatedTracks[1] || audioRegistry[0];
+    // 2. Pick a random Collab or GPM track for Slot 4
+    const mixPool = [...GPM_POOL, ...COLLAB_POOL];
+    const randomMix = mixPool[Math.floor(Math.random() * mixPool.length)];
+    setSlot4(randomMix);
+  }, []);
 
   const handleInteract = (item: any) => {
     if (item.isLink) {
       router.push(item.url);
     } else {
-      // 1. UPDATE MOOD INSTANTLY
-      if (item.moodColor) setActiveMood(item.moodColor);
+      // 1. SET MOOD (The Visual Reaction)
+      if (item.moodTheme) setActiveTheme(item.moodTheme);
 
-      // 2. PLAY AUDIO
+      // 2. PLAY AUDIO (The Delivery)
       const event = new CustomEvent('play-track', { 
         detail: { 
           url: `${BUCKET_URL}/${item.filename}`, 
@@ -79,7 +88,10 @@ export default function FeaturedPlaylists() {
     }
   };
 
-  // --- THE GRID (Dynamic Colors) ---
+  // Safe Fallback if hydration lags
+  const currentSlot2 = slot2 || KLEIGH_POOL[0];
+  const currentSlot4 = slot4 || GPM_POOL[0];
+
   const gridItems = [
     { 
       id: 1, 
@@ -93,12 +105,12 @@ export default function FeaturedPlaylists() {
     },
     { 
       id: 2, 
-      // SLOT 2: DYNAMIC AUDIO
-      title: slot2_Track.title, 
-      subtitle: slot2_Track.artist,
-      type: slot2_Track.type, 
-      filename: slot2_Track.filename,
-      moodColor: slot2_Track.moodColor,
+      // SLOT 2: RESERVED FOR KLEIGH POOL
+      title: currentSlot2.title, 
+      subtitle: currentSlot2.artist,
+      type: currentSlot2.type, 
+      filename: currentSlot2.filename,
+      moodTheme: currentSlot2.moodTheme,
       action: "PLAY NOW",
       icon: <Music size={24} />,
       isLink: false
@@ -115,12 +127,12 @@ export default function FeaturedPlaylists() {
     },
     { 
       id: 4, 
-      // SLOT 4: DYNAMIC AUDIO
-      title: slot4_Track.title, 
-      subtitle: slot4_Track.artist,
-      type: slot4_Track.type, 
-      filename: slot4_Track.filename,
-      moodColor: slot4_Track.moodColor,
+      // SLOT 4: RESERVED FOR MIX POOL
+      title: currentSlot4.title, 
+      subtitle: currentSlot4.artist,
+      type: currentSlot4.type, 
+      filename: currentSlot4.filename,
+      moodTheme: currentSlot4.moodTheme,
       action: "PLAY NOW",
       icon: <Play size={24} />,
       isLink: false
@@ -139,16 +151,16 @@ export default function FeaturedPlaylists() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-8">
-      {/* HEADER: Reacts to Active Mood */}
-      <div className="flex items-center justify-between mb-8 border-b pb-4 transition-colors duration-700" 
-           style={{ borderColor: `${activeMood}33` }}>
-        <h2 className="text-3xl font-black uppercase transition-colors duration-700" 
-            style={{ color: activeMood }}>
+      {/* HEADER: Dynamic Mood Reaction */}
+      <div className="flex items-center justify-between mb-8 border-b pb-4 transition-colors duration-700"
+           style={{ borderColor: `${activeTheme.primary}44` }}>
+        <h2 className="text-3xl font-black uppercase transition-colors duration-700"
+            style={{ color: activeTheme.primary }}>
           GPMC Universal Rotation
         </h2>
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest opacity-60 transition-colors duration-700"
-             style={{ color: activeMood }}>
-           <RefreshCw size={14} /> Live Moods
+             style={{ color: activeTheme.primary }}>
+           <RefreshCw size={14} /> Live Mix
         </div>
       </div>
 
@@ -159,17 +171,16 @@ export default function FeaturedPlaylists() {
                className="group cursor-pointer bg-[#FFFDF5] rounded-2xl p-6 shadow-md border border-[#2C241B]/10 hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-full min-h-[220px]">
             
             <div>
-              {/* ICON: Reacts to Individual Mood if active, or Active Mood */}
               <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 text-white transition-colors duration-500"
-                   style={{ backgroundColor: activeMood }}>
+                   style={{ backgroundColor: activeTheme.primary }}>
                 {item.icon}
               </div>
               
-              <h3 className="text-lg font-bold mb-1 group-hover:opacity-80 transition leading-tight"
-                  style={{ color: activeMood }}>
+              <h3 className="text-lg font-bold mb-1 transition leading-tight"
+                  style={{ color: activeTheme.primary }}>
                 {item.title}
               </h3>
-              <p className="text-xs opacity-60 mb-2" style={{ color: activeMood }}>
+              <p className="text-xs opacity-60 mb-2" style={{ color: activeTheme.primary }}>
                 {item.subtitle}
               </p>
               <div className="text-[10px] font-black uppercase tracking-widest opacity-40">
@@ -177,8 +188,8 @@ export default function FeaturedPlaylists() {
               </div>
             </div>
             
-            <div className="mt-4 flex items-center gap-2 text-xs font-bold uppercase opacity-0 group-hover:opacity-100 transition duration-300"
-                 style={{ color: activeMood }}>
+            <div className="mt-4 flex items-center gap-2 text-xs font-bold uppercase opacity-0 group-hover:opacity-100 transition"
+                 style={{ color: activeTheme.primary }}>
                {item.action}
             </div>
           </div>
