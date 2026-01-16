@@ -1,62 +1,48 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
+import { Play, BookOpen, Music, Users, Anchor, RefreshCw, Cpu, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// --- CONFIGURATION: SINGLE SOURCE OF TRUTH ---
+// --- CONFIGURATION ---
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
 
-// --- THE "FIRST NOTE" PLAYLIST INVENTORY ---
-// These are the 5-6 tracks that will rotate through the "Listen" slots.
-// YOU MUST ENSURE THESE EXACT FILENAMES EXIST IN YOUR 'tracks' BUCKET.
-const firstNotePlaylist = [
-  {
-    artist: "Kleigh",
-    title: "Bought Into Your Game",
-    filename: "038 - kleigh - bought into your game.mp3",
-    type: "GPMC LEGACY"
-  },
-  {
-    artist: "GPM & Michael Scherer",
-    title: "Featured Composition",
-    filename: "scherer-feature.mp3", 
-    type: "CO-COPYRIGHT"
-  },
-  {
-    artist: "GPM & Erik W Nelson",
-    title: "Signature Sound",
-    filename: "nelson-feature.mp3",
-    type: "CO-COPYRIGHT"
-  },
-  {
-    artist: "G Putnam Music",
-    title: "The First Note (Theme)",
-    filename: "first-note.mp3",
-    type: "SONIC BRAND"
-  },
-  // Add more tracks here as your catalog grows
+// --- AUDIO REGISTRY (MC BOT DATA) ---
+const audioRegistry = [
+  { filename: "kleigh.mp3", title: "Bought Into Your Game", artist: "Kleigh", type: "GPMC LEGACY" },
+  { filename: "scherer.mp3", title: "Featured Composition", artist: "GPM & Michael Scherer", type: "CO-COPYRIGHT" },
+  { filename: "nelson.mp3", title: "Signature Sound", artist: "GPM & Erik W Nelson", type: "CO-COPYRIGHT" },
+  { filename: "first-note.mp3", title: "The First Note (Theme)", artist: "G Putnam Music", type: "SONIC BRAND" }
+];
+
+// --- LEGACY REGISTRY (LF BOT DATA) ---
+const legacyQuotes = [
+  { title: "Okinawa 1945", subtitle: "Grandpa's Journal", type: "HERO ARCHIVE", action: "READ LOG" },
+  { title: "The Wheat Fields", subtitle: "L Cole Farms", type: "ROOTS", action: "VIEW FARM" },
+  { title: "Family Lineage", subtitle: "The Putnam History", type: "HERO ARCHIVE", action: "EXPLORE" }
 ];
 
 export default function FeaturedPlaylists() {
   const router = useRouter();
+  const [activeBot, setActiveBot] = useState<'MC' | 'LF'>('MC'); // Default to Music Curator
   const [rotatedTracks, setRotatedTracks] = useState<any[]>([]);
+  const [rotatedLegacy, setRotatedLegacy] = useState<any[]>([]);
 
-  // --- THE ENGINE: SHUFFLE & DEAL ---
+  // --- THE ENGINE ---
   useEffect(() => {
-    // Six Sigma: Randomize the playlist on load to ensure equal exposure distribution
-    const shuffled = [...firstNotePlaylist].sort(() => 0.5 - Math.random());
-    setRotatedTracks(shuffled);
-  }, []);
+    // 1. MC BOT: Shuffle Audio
+    setRotatedTracks([...audioRegistry].sort(() => 0.5 - Math.random()));
+    // 2. LF BOT: Shuffle Quotes
+    setRotatedLegacy([...legacyQuotes].sort(() => 0.5 - Math.random()));
+  }, [activeBot]); // Re-run when Bot changes
 
-  // Hydration safety: Default to index 0 and 1 if client hasn't loaded yet
-  const slot2_Track = rotatedTracks[0] || firstNotePlaylist[0];
-  const slot4_Track = rotatedTracks[1] || firstNotePlaylist[1];
+  const slot2_Track = rotatedTracks[0] || audioRegistry[3];
+  const slot4_Track = rotatedTracks[1] || audioRegistry[0];
+  const slot2_Legacy = rotatedLegacy[0] || legacyQuotes[0];
 
   const handleInteract = (item: any) => {
     if (item.isLink) {
       router.push(item.url);
     } else {
-      // Fire the Global Audio Event
       const event = new CustomEvent('play-track', { 
         detail: { 
           url: `${BUCKET_URL}/${item.filename}`, 
@@ -69,70 +55,61 @@ export default function FeaturedPlaylists() {
     }
   };
 
-  // --- THE UNIVERSAL ROTATION GRID (A-B-A-B-A) ---
-  const gridItems = [
-    { 
-      id: 1, 
-      title: "Grandpa's Story", 
-      subtitle: "The Okinawa Legacy",
-      type: "HERO LEGACY", 
-      action: "READ STORY",
-      icon: <BookOpen size={24} />,
-      isLink: true,
-      url: "/heroes" 
-    },
-    { 
-      id: 2, 
-      // SLOT 2: DYNAMIC LISTENER (The Sonic Handshake)
-      title: slot2_Track.title, 
-      subtitle: slot2_Track.artist,
-      type: slot2_Track.type, 
-      filename: slot2_Track.filename,
-      action: "PLAY NOW",
-      icon: <Music size={24} />,
-      isLink: false
-    },
-    { 
-      id: 3, 
-      title: "Who is G Putnam Music", 
-      subtitle: "The Origin Story",
-      type: "ARTIST BIO", 
-      action: "DISCOVER",
-      icon: <Users size={24} />,
-      isLink: true,
-      url: "/who"
-    },
-    { 
-      id: 4, 
-      // SLOT 4: DYNAMIC LISTENER (The Deep Dive)
-      title: slot4_Track.title, 
-      subtitle: slot4_Track.artist,
-      type: slot4_Track.type, 
-      filename: slot4_Track.filename,
-      action: "PLAY NOW",
-      icon: <Play size={24} />,
-      isLink: false
-    },
-    { 
-      id: 5, 
-      title: "The SHIPS Engine", 
-      subtitle: "Sponsorship Model",
-      type: "BUSINESS", 
-      action: "LEARN MORE",
-      icon: <Anchor size={24} />,
-      isLink: true,
-      url: "/ships" 
+  // --- DYNAMIC GRID GENERATOR ---
+  const getGridItems = () => {
+    const commonSlots = [
+      { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", icon: <BookOpen size={24} />, isLink: true, url: "/heroes", action: "READ STORY" },
+      { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", icon: <Users size={24} />, isLink: true, url: "/who", action: "DISCOVER" },
+      { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", icon: <Anchor size={24} />, isLink: true, url: "/ships", action: "LEARN MORE" }
+    ];
+
+    if (activeBot === 'MC') {
+      // MC MODE: Insert Music into Slots 2 & 4
+      return [
+        commonSlots[0],
+        { id: 2, title: slot2_Track.title, subtitle: slot2_Track.artist, type: slot2_Track.type, filename: slot2_Track.filename, icon: <Music size={24} />, isLink: false, action: "PLAY NOW" },
+        commonSlots[1],
+        { id: 4, title: slot4_Track.title, subtitle: slot4_Track.artist, type: slot4_Track.type, filename: slot4_Track.filename, icon: <Play size={24} />, isLink: false, action: "PLAY NOW" },
+        commonSlots[2]
+      ];
+    } else {
+      // LF MODE: Insert Legacy Content into Slot 2, Keep Slot 4 Music
+      return [
+        commonSlots[0],
+        { id: 2, title: slot2_Legacy.title, subtitle: slot2_Legacy.subtitle, type: slot2_Legacy.type, icon: <BookOpen size={24} />, isLink: true, url: "/heroes", action: slot2_Legacy.action }, // SWAPPED FOR TEXT
+        commonSlots[1],
+        { id: 4, title: slot4_Track.title, subtitle: slot4_Track.artist, type: slot4_Track.type, filename: slot4_Track.filename, icon: <Play size={24} />, isLink: false, action: "PLAY NOW" },
+        commonSlots[2]
+      ];
     }
-  ];
+  };
+
+  const gridItems = getGridItems();
+  const themeColor = activeBot === 'MC' ? '#8B4513' : '#CD853F'; // Sienna vs Peru (Wheat-ish)
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-8">
-      <div className="flex items-center justify-between mb-8 border-b border-[#8B4513]/20 pb-4">
-        <h2 className="text-3xl font-black uppercase text-[#8B4513]">
-          GPMC Universal Rotation
+      
+      {/* SYSTEM CONTROL BAR */}
+      <div className="flex items-center justify-between mb-8 border-b pb-4" style={{ borderColor: `${themeColor}33` }}>
+        <h2 className="text-3xl font-black uppercase transition-colors duration-500" style={{ color: themeColor }}>
+          {activeBot === 'MC' ? 'Universal Rotation' : 'Legacy Archives'}
         </h2>
-        <div className="flex items-center gap-2 text-[#8B4513] text-xs font-bold uppercase tracking-widest opacity-60">
-           <RefreshCw size={14} /> Live Mix
+        
+        {/* BOT TOGGLE SWITCH */}
+        <div className="flex gap-2 bg-[#EEE8D6] p-1 rounded-lg">
+           <button 
+             onClick={() => setActiveBot('MC')}
+             className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-black tracking-widest transition-all ${activeBot === 'MC' ? 'bg-[#8B4513] text-white shadow-md' : 'text-[#8B4513] opacity-50 hover:opacity-100'}`}
+           >
+             <Terminal size={12} /> MC.EXE
+           </button>
+           <button 
+             onClick={() => setActiveBot('LF')}
+             className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-black tracking-widest transition-all ${activeBot === 'LF' ? 'bg-[#CD853F] text-white shadow-md' : 'text-[#8B4513] opacity-50 hover:opacity-100'}`}
+           >
+             <Cpu size={12} /> LF.EXE
+           </button>
         </div>
       </div>
 
@@ -143,7 +120,8 @@ export default function FeaturedPlaylists() {
                className="group cursor-pointer bg-[#FFFDF5] rounded-2xl p-6 shadow-md border border-[#2C241B]/10 hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-full min-h-[220px]">
             
             <div>
-              <div className="bg-[#FFD54F] w-12 h-12 rounded-full flex items-center justify-center text-[#2C241B] mb-4 group-hover:bg-[#8B4513] group-hover:text-white transition">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-[#2C241B] mb-4 text-white transition duration-500`}
+                   style={{ backgroundColor: activeBot === 'MC' ? '#FFD54F' : '#E6C288' }}>
                 {item.icon}
               </div>
               

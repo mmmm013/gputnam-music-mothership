@@ -23,3 +23,9 @@
 
 ---
 *Specs Locked for Retrieval.*
+
+## 4. USER-COMMAND INTERFACE (2026-01-16)
+**Feature:** System Control Bar.
+**Function:** Users can manually toggle between Agents.
+* **MC.EXE:** Activates Music Curator Mode (High Rotation).
+* **LF.EXE:** Activates Legacy/Farm Mode (Story Focus, Wheat Theme).
