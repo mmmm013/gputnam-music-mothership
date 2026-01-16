@@ -5,7 +5,7 @@ import { Pause, Play } from 'lucide-react';
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // DEFAULT STATE: READY MODE
+  // DEFAULT STATE: "Ready" (Not "Diagnostic")
   const [track, setTrack] = useState({
     title: "GPM Audio Engine",
     artist: "Select a Track from the Rotation",
@@ -14,17 +14,16 @@ export default function GlobalPlayer() {
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- THE LISTENER (CIRCUIT) ---
+  // --- THE LISTENER (WAKES UP WHEN YOU CLICK A CARD) ---
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
       const incoming = e.detail;
-      console.log("Mothership Audio Engine Received:", incoming);
+      console.log("Audio Signal Received:", incoming);
 
       setTrack({
         title: incoming.title,
         artist: incoming.artist,
         url: incoming.url,
-        // Fallback to Brand Brown if no mood provided
         moodColor: incoming.moodTheme?.primary || incoming.moodColor || "#8B4513"
       });
       
@@ -39,7 +38,7 @@ export default function GlobalPlayer() {
   useEffect(() => {
     if (audioRef.current && track.url) {
       if (isPlaying) {
-        audioRef.current.play().catch(err => console.error("Playback Error:", err));
+        audioRef.current.play().catch(err => console.error("Playback Failed:", err));
       } else {
         audioRef.current.pause();
       }
