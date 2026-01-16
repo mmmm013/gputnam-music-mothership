@@ -1,13 +1,13 @@
 'use client';
 import Link from 'next/link';
-import { Menu, Music, User, Trophy, Ship } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 export default function Header() {
   return (
     <header className="flex justify-between items-center p-6 bg-[#FDF6E3] text-[#2C241B] border-b border-[#2C241B]/5">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-[#C04000] rounded-full flex items-center justify-center text-white font-black text-xs">GP</div>
-        <span className="font-black tracking-tighter uppercase text-lg">Dream the Stream</span>
+        {/* Replaced 'GP' logo with Template text style */}
+        <span className="font-serif italic text-[#C04000] opacity-80">Dream the Stream</span>
       </div>
       
       <nav className="hidden md:flex gap-6 text-xs font-bold uppercase tracking-widest opacity-80 items-center">
