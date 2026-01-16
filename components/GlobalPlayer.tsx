@@ -1,30 +1,26 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Pause, Play, Radio } from 'lucide-react';
+import { Pause, Play } from 'lucide-react';
 
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // TRACER CONFIGURATION: VISUAL & AUDIO HARDCODE
   const [track, setTrack] = useState({
-    title: "TRACER SIGNAL: ONLINE", 
-    artist: "Pipeline Validation Mode",
-    // DIRECT LINK TO SUPABASE FILE (Bypassing logic)
-    url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks/Jump.mp3", 
-    moodColor: "#DC143C" // CRIMSON RED (Visual Proof of Update)
+    title: "GPM SYSTEM ONLINE", 
+    artist: "Select a Track from the Rotation",
+    url: "", 
+    moodColor: "#8B4513" // RESTORED SIENNA DEFAULT
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- THE LISTENER ---
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
-      console.log("TRACER RECEIVED:", e.detail);
       const incoming = e.detail;
       setTrack({
         title: incoming.title,
         artist: incoming.artist,
         url: incoming.url,
-        moodColor: incoming.moodTheme?.primary || "#DC143C"
+        // FORCE SIENNA for Kleigh, GOLD for Scherer
+        moodColor: incoming.moodTheme?.primary || incoming.moodColor || "#8B4513"
       });
       setIsPlaying(true);
     };
@@ -33,16 +29,10 @@ export default function GlobalPlayer() {
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
 
-  // --- AUDIO ENGINE ---
   useEffect(() => {
     if (audioRef.current && track.url) {
       if (isPlaying) {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.error("Autoplay Prevented:", error);
-          });
-        }
+        audioRef.current.play().catch(err => console.error("Playback Failed:", err));
       } else {
         audioRef.current.pause();
       }
@@ -50,34 +40,26 @@ export default function GlobalPlayer() {
   }, [isPlaying, track.url]);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 shadow-2xl border-t-4 border-white z-50 text-white"
-         style={{ backgroundColor: track.moodColor }}> {/* FORCED COLOR */}
+    <div className="fixed bottom-0 left-0 right-0 bg-[#2C241B] text-[#FFFDF5] p-4 shadow-2xl border-t z-50 transition-colors duration-500"
+         style={{ borderColor: track.moodColor }}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        
-        {/* DIAGNOSTIC INFO */}
         <div className="flex flex-col">
-          <h4 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
-            <Radio size={18} className="animate-pulse"/> {track.title}
+          <h4 className="text-sm font-bold uppercase tracking-widest transition-colors duration-500"
+              style={{ color: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}>
+            {track.title}
           </h4>
-          <p className="text-xs font-mono opacity-80">{track.artist}</p>
+          <p className="text-xs opacity-60">{track.artist}</p>
         </div>
-
-        {/* CONTROLS */}
         <div className="flex items-center gap-6">
           <button 
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition shadow-lg"
+            onClick={() => track.url && setIsPlaying(!isPlaying)}
+            className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white transition text-[#2C241B]"
+            style={{ backgroundColor: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}
           >
-            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
         </div>
-
-        {/* ENGINE */}
-        <audio 
-          ref={audioRef} 
-          src={track.url} 
-          onEnded={() => setIsPlaying(false)}
-        />
+        <audio ref={audioRef} src={track.url} onEnded={() => setIsPlaying(false)} />
       </div>
     </div>
   );
