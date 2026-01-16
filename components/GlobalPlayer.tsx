@@ -4,11 +4,13 @@ import { Pause, Play } from 'lucide-react';
 
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
+  
+  // FINAL VALIDATION TEXT
   const [track, setTrack] = useState({
     title: "GPM SYSTEM ONLINE", 
     artist: "Select a Track from the Rotation",
     url: "", 
-    moodColor: "#8B4513" // RESTORED SIENNA DEFAULT
+    moodColor: "#8B4513"
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -19,23 +21,17 @@ export default function GlobalPlayer() {
         title: incoming.title,
         artist: incoming.artist,
         url: incoming.url,
-        // FORCE SIENNA for Kleigh, GOLD for Scherer
-        moodColor: incoming.moodTheme?.primary || incoming.moodColor || "#8B4513"
+        moodColor: incoming.moodTheme?.primary || "#8B4513"
       });
       setIsPlaying(true);
     };
-
     window.addEventListener('play-track', handleTrackSelect as EventListener);
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
 
   useEffect(() => {
     if (audioRef.current && track.url) {
-      if (isPlaying) {
-        audioRef.current.play().catch(err => console.error("Playback Failed:", err));
-      } else {
-        audioRef.current.pause();
-      }
+      isPlaying ? audioRef.current.play().catch(console.error) : audioRef.current.pause();
     }
   }, [isPlaying, track.url]);
 
