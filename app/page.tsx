@@ -2,14 +2,16 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
 import AudioPlayer from '@/components/AudioPlayer';
+import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 
 export default function Home() {
   const [mood, setMood] = useState('');
   return (
     <main className="min-h-screen bg-[#FBC02D] text-[#2C241B] font-serif flex flex-col">
       <Header />
-      {/* Reduced padding on mobile (p-6 instead of p-12) */}
-      <div className="flex-1 max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12 p-6 md:p-8 items-center pb-32">
+      
+      {/* HERO SECTION */}
+      <div className="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12 p-6 md:p-8 items-center pb-12">
         <div className="space-y-6 md:space-y-8">
           <h1 className="text-5xl md:text-8xl font-black leading-tight text-[#2C241B]">
             Dream the Stream <br /> <span className="text-[#3E2723]">MOODs</span>
@@ -31,6 +33,12 @@ export default function Home() {
                 alt="Artist Portrait" className="w-full h-full object-cover rounded-3xl shadow-2xl transform rotate-2" />
         </div>
       </div>
+
+      {/* FEATURED PLAYLISTS SECTION (Restored) */}
+      <div className="bg-[#FDF6E3] w-full py-12 flex-1">
+        <FeaturedPlaylists />
+      </div>
+
       <AudioPlayer />
     </main>
   );
