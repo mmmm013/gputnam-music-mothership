@@ -6,8 +6,7 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center p-6 bg-[#FDF6E3] text-[#2C241B] border-b border-[#2C241B]/5">
       <div className="flex items-center gap-2">
-        {/* Replaced 'GP' logo with Template text style */}
-        <span className="font-serif italic text-[#C04000] opacity-80">Dream the Stream</span>
+        <span className="font-serif italic text-[#C04000] text-xl opacity-80">Dream the Stream</span>
       </div>
       
       <nav className="hidden md:flex gap-6 text-xs font-bold uppercase tracking-widest opacity-80 items-center">
@@ -21,10 +20,7 @@ export default function Header() {
           </button>
         </Link>
       </nav>
-
-      <div className="md:hidden">
-        <Menu />
-      </div>
+      <div className="md:hidden"><Menu /></div>
     </header>
   );
 }

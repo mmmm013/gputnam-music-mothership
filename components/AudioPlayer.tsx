@@ -1,13 +1,13 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, SkipForward, Volume2 } from 'lucide-react';
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [track, setTrack] = useState({ title: 'Loading Library...', artist: 'GPM Archives' });
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Auto-Load the first track
+  // Auto-Load a track to prove audio works
   useEffect(() => {
     setTrack({ title: '038 - kleigh - bought into your game', artist: 'G Putnam Music' });
   }, []);
@@ -31,7 +31,6 @@ export default function AudioPlayer() {
              <div className="text-xs opacity-50 uppercase tracking-widest">{track.artist}</div>
            </div>
         </div>
-        {/* The Audio Engine */}
         <audio ref={audioRef} src="https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/038%20-%20kleigh%20-%20bought%20into%20your%20game.mp3" />
       </div>
     </div>
