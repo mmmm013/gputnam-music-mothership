@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// 1. THE CORE GPM LIBRARY (The Pool of Artists)
+// 1. THE CORE GPM LIBRARY (Updated for Co-Copyright Status)
 const trackLibrary = [
   {
     artist: "Kleigh",
@@ -12,16 +12,18 @@ const trackLibrary = [
     type: "GPMC LEGACY"
   },
   {
-    artist: "Michael Scherer",
+    // UPDATED: Co-Copyright Status
+    artist: "GPM & Michael Scherer",
     title: "Featured Composition",
     url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/scherer-feature.mp3",
-    type: "GPMC ARTIST"
+    type: "CO-COPYRIGHT"
   },
   {
-    artist: "Erik W Nelson",
+    // UPDATED: Co-Copyright Status
+    artist: "GPM & Erik W Nelson",
     title: "Signature Sound",
     url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/nelson-feature.mp3",
-    type: "GPMC ARTIST"
+    type: "CO-COPYRIGHT"
   },
   {
     artist: "G Putnam Music",
@@ -35,14 +37,14 @@ export default function FeaturedPlaylists() {
   const router = useRouter();
   const [rotatedTracks, setRotatedTracks] = useState<any[]>([]);
 
-  // 2. THE ROTATION ENGINE (Runs on every page load)
+  // 2. THE ROTATION ENGINE
   useEffect(() => {
-    // Shuffle the library to get a random mix
+    // Shuffle the library on load
     const shuffled = [...trackLibrary].sort(() => 0.5 - Math.random());
     setRotatedTracks(shuffled);
   }, []);
 
-  // Default to first two if hydration hasn't happened yet
+  // Default fallbacks for Server Side Rendering consistency
   const slot2 = rotatedTracks[0] || trackLibrary[3];
   const slot4 = rotatedTracks[1] || trackLibrary[0];
 
