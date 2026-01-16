@@ -13,7 +13,7 @@ const KLEIGH_POOL = [
     title: "Bought Into Your Game", 
     artist: "Kleigh", 
     type: "GPMC LEGACY",
-    moodTheme: { primary: "#A0522D", secondary: "#FFBF00" } 
+    moodTheme: { primary: "#A0522D", secondary: "#FFBF00" } // Sienna/Amber
   }
 ];
 
@@ -23,23 +23,25 @@ const GPM_POOL = [
     title: "The First Note (Theme)", 
     artist: "G Putnam Music", 
     type: "SONIC BRAND",
-    moodTheme: { primary: "#FFC107", secondary: "#F5DEB3" } 
+    moodTheme: { primary: "#FFC107", secondary: "#F5DEB3" } // Amber/Wheat
   }
 ];
 
+// --- THE MAGIC POOL ---
 const COLLAB_POOL = [
   { 
     filename: "scherer-feature.mp3", 
-    title: "Featured Composition", 
+    // CLEVER USE: "Scherer Magic" becomes the Title Identity
+    title: "Scherer Magic", 
     artist: "GPM & Michael Scherer", 
     type: "CO-COPYRIGHT",
-    moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" } 
+    moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" } // Goldenrod ("Magic" Gold)
   },
   { 
     filename: "nelson-feature.mp3", 
     title: "Signature Sound", 
     artist: "GPM & Erik W Nelson", 
-    type: "CO-COPYRIGHT (Operational)", 
+    type: "CO-COPYRIGHT", 
     moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" }
   }
 ];
@@ -51,8 +53,11 @@ export default function FeaturedPlaylists() {
   const [activeTheme, setActiveTheme] = useState({ primary: "#FFC107", secondary: "#F5DEB3" });
 
   useEffect(() => {
+    // 1. Kleigh in Slot 2
     const randomKleigh = KLEIGH_POOL[Math.floor(Math.random() * KLEIGH_POOL.length)];
     setSlot2(randomKleigh);
+
+    // 2. Mix (GPM or Scherer Magic) in Slot 4
     const mixPool = [...GPM_POOL, ...COLLAB_POOL];
     const randomMix = mixPool[Math.floor(Math.random() * mixPool.length)];
     setSlot4(randomMix);
