@@ -24,8 +24,9 @@ export default function Home() {
               placeholder="Enter a mood..."
               className="w-full bg-[#FDF6E3]/50 border border-[#2C241B]/10 rounded-full px-6 py-4 text-lg focus:outline-none placeholder-[#2C241B]/50" />
           </div>
-          <button className="w-full md:w-auto bg-[#C04000] text-white px-8 py-4 rounded-lg font-black uppercase tracking-widest shadow-lg">
-            Get Music Maykers Now
+          {/* BRANDING FIXED HERE */}
+          <button className="w-full md:w-auto bg-[#C04000] text-white px-8 py-4 rounded-lg font-black uppercase tracking-widest shadow-lg hover:bg-[#A03000] transition">
+            Start Your Stream
           </button>
         </div>
         <div className="hidden md:block relative h-[500px] w-full">
@@ -34,7 +35,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FEATURED PLAYLISTS SECTION (Restored) */}
+      {/* FEATURED PLAYLISTS SECTION */}
       <div className="bg-[#FDF6E3] w-full py-12 flex-1">
         <FeaturedPlaylists />
       </div>
