@@ -3,32 +3,33 @@ import { useState, useEffect } from 'react';
 import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// 1. THE CORE GPM LIBRARY (Updated for Co-Copyright Status)
+// 1. SINGLE SOURCE OF TRUTH: The 'tracks' Bucket
+// We have updated all paths to point to /tracks/ instead of /songs/
+const BASE_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
+
 const trackLibrary = [
   {
     artist: "Kleigh",
     title: "Bought Into Your Game",
-    url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/038%20-%20kleigh%20-%20bought%20into%20your%20game.mp3",
+    url: `${BASE_URL}/038 - kleigh - bought into your game.mp3`,
     type: "GPMC LEGACY"
   },
   {
-    // UPDATED: Co-Copyright Status
     artist: "GPM & Michael Scherer",
     title: "Featured Composition",
-    url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/scherer-feature.mp3",
+    url: `${BASE_URL}/scherer-feature.mp3`,
     type: "CO-COPYRIGHT"
   },
   {
-    // UPDATED: Co-Copyright Status
     artist: "GPM & Erik W Nelson",
     title: "Signature Sound",
-    url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/nelson-feature.mp3",
+    url: `${BASE_URL}/nelson-feature.mp3`,
     type: "CO-COPYRIGHT"
   },
   {
     artist: "G Putnam Music",
     title: "The First Note",
-    url: "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/songs/first-note.mp3",
+    url: `${BASE_URL}/first-note.mp3`,
     type: "SONIC BRAND"
   }
 ];
@@ -44,7 +45,7 @@ export default function FeaturedPlaylists() {
     setRotatedTracks(shuffled);
   }, []);
 
-  // Default fallbacks for Server Side Rendering consistency
+  // Default fallbacks
   const slot2 = rotatedTracks[0] || trackLibrary[3];
   const slot4 = rotatedTracks[1] || trackLibrary[0];
 
