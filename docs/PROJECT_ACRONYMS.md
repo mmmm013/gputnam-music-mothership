@@ -31,3 +31,9 @@
 
 ---
 *Protocol Saved for Retrieval.*
+
+## IV. AUTOMATION AGENTS (BOTS)
+| Acronym | Definition | Role/Context |
+| :--- | :--- | :--- |
+| **MC BOT** | **Music Curator Bot** | Manages Audio & MIP Rotation. |
+| **LF BOT** | **Legacy/Farm Bot** | Manages History & LCF Narrative. |
