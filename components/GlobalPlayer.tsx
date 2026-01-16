@@ -4,44 +4,32 @@ import { Pause, Play } from 'lucide-react';
 
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // DEFAULT STATE: "Ready"
   const [track, setTrack] = useState({
-    title: "GPM Audio Engine (Live)",  // CHANGED THIS LINE TO FORCE UPDATE
+    title: "GPM AP | LIVE", // DMAIC CONTROL: Visual confirmation of new code
     artist: "Select a Track from the Rotation",
     url: "", 
     moodColor: "#8B4513"
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- THE LISTENER ---
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
       const incoming = e.detail;
-      console.log("Audio Signal Received:", incoming);
-
       setTrack({
         title: incoming.title,
         artist: incoming.artist,
         url: incoming.url,
         moodColor: incoming.moodTheme?.primary || incoming.moodColor || "#8B4513"
       });
-      
       setIsPlaying(true);
     };
-
     window.addEventListener('play-track', handleTrackSelect as EventListener);
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
 
-  // --- CONTROLLER ---
   useEffect(() => {
     if (audioRef.current && track.url) {
-      if (isPlaying) {
-        audioRef.current.play().catch(err => console.error("Playback Failed:", err));
-      } else {
-        audioRef.current.pause();
-      }
+      isPlaying ? audioRef.current.play().catch(err => console.error(err)) : audioRef.current.pause();
     }
   }, [isPlaying, track.url]);
 

@@ -3,32 +3,21 @@ import { useState, useEffect } from 'react';
 import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-// --- CONFIGURATION ---
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
 
-// --- INVENTORY: KLEIGH (Legacy) ---
+// --- POOL 1: KLEIGH (Legacy) ---
 const KLEIGH_POOL = [
   { 
     filename: "038 - kleigh - bought into your game.mp3", 
     title: "Bought Into Your Game", 
     artist: "Kleigh", 
     type: "GPMC LEGACY",
-    moodTheme: { primary: "#A0522D", secondary: "#FFBF00" } // Sienna
+    moodTheme: { primary: "#A0522D", secondary: "#FFBF00" }
   }
 ];
 
-// --- INVENTORY: GPM (Brand) ---
-const GPM_POOL = [
-  { 
-    filename: "first-note.mp3", 
-    title: "The First Note (Theme)", 
-    artist: "G Putnam Music", 
-    type: "SONIC BRAND",
-    moodTheme: { primary: "#FFC107", secondary: "#F5DEB3" } // Amber
-  }
-];
-
-// --- INVENTORY: SCHERER (NEW - FROM YOUR SCREENSHOT) ---
+// --- POOL 2: SCHERER MAGIC (The Singalongs Inventory) ---
+// Transcribed directly from your Supabase Evidence
 const SCHERER_FILENAMES = [
   "Breakfast!.mp3", 
   "Dance Party.mp3", 
@@ -51,19 +40,17 @@ export default function FeaturedPlaylists() {
   const [activeTheme, setActiveTheme] = useState({ primary: "#FFC107", secondary: "#F5DEB3" });
 
   useEffect(() => {
-    // 1. Setup Kleigh (Slot 2)
+    // SLOT 2: KLEIGH
     setSlot2(KLEIGH_POOL[0]);
 
-    // 2. Setup Scherer Magic (Slot 4) - RANDOM SELECTION
-    // We pick a random file, but wrap it in the "Scherer Magic" Brand
+    // SLOT 4: SCHERER MAGIC (Randomized)
     const randomFile = SCHERER_FILENAMES[Math.floor(Math.random() * SCHERER_FILENAMES.length)];
-    
     setSlot4({
       filename: randomFile,
-      title: "Scherer Magic",           // BRANDING STRATEGY
-      artist: "GPM & Michael Scherer",  // LEGAL/BUSINESS
+      title: "Scherer Magic",
+      artist: "GPM & Michael Scherer",
       type: "CO-COPYRIGHT",
-      moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" } // Goldenrod
+      moodTheme: { primary: "#DAA520", secondary: "#F5DEB3" }
     });
   }, []);
 
@@ -72,10 +59,10 @@ export default function FeaturedPlaylists() {
       router.push(item.url);
     } else {
       if (item.moodTheme) setActiveTheme(item.moodTheme);
-      
+      // DISPATCH THE SIGNAL
       const event = new CustomEvent('play-track', { 
         detail: { 
-          url: `${BUCKET_URL}/${item.filename}`, // Maps to real Supabase file
+          url: `${BUCKET_URL}/${item.filename}`, 
           title: item.title, 
           artist: item.artist,
           type: item.type,
@@ -93,7 +80,7 @@ export default function FeaturedPlaylists() {
     { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", action: "READ STORY", icon: <BookOpen size={24} />, isLink: true, url: "/heroes" },
     { id: 2, title: currentSlot2.title, subtitle: currentSlot2.artist, type: currentSlot2.type, filename: currentSlot2.filename, moodTheme: currentSlot2.moodTheme, action: "PLAY NOW", icon: <Music size={24} />, isLink: false },
     { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: <Users size={24} />, isLink: true, url: "/who" },
-    { id: 4, title: currentSlot4.title, subtitle: currentSlot4.artist, type: currentSlot4.type, filename: currentSlot4.filename, moodTheme: currentSlot4.moodTheme, action: "PLAY NOW", icon: <Play size={24} />, isLink: false }, // SCHERER SLOT
+    { id: 4, title: currentSlot4.title, subtitle: currentSlot4.artist, type: currentSlot4.type, filename: currentSlot4.filename, moodTheme: currentSlot4.moodTheme, action: "PLAY NOW", icon: <Play size={24} />, isLink: false },
     { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", action: "LEARN MORE", icon: <Anchor size={24} />, isLink: true, url: "/ships" }
   ];
 
