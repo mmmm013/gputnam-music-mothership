@@ -5,16 +5,16 @@ import { Pause, Play } from 'lucide-react';
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // DEFAULT STATE: "Ready" (Not "Diagnostic")
+  // DEFAULT STATE: "Ready"
   const [track, setTrack] = useState({
-    title: "GPM Audio Engine",
+    title: "GPM Audio Engine (Live)",  // CHANGED THIS LINE TO FORCE UPDATE
     artist: "Select a Track from the Rotation",
     url: "", 
     moodColor: "#8B4513"
   });
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- THE LISTENER (WAKES UP WHEN YOU CLICK A CARD) ---
+  // --- THE LISTENER ---
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
       const incoming = e.detail;
@@ -34,7 +34,7 @@ export default function GlobalPlayer() {
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
 
-  // --- PLAYBACK CONTROLLER ---
+  // --- CONTROLLER ---
   useEffect(() => {
     if (audioRef.current && track.url) {
       if (isPlaying) {
@@ -49,8 +49,6 @@ export default function GlobalPlayer() {
     <div className="fixed bottom-0 left-0 right-0 bg-[#2C241B] text-[#FFFDF5] p-4 shadow-2xl border-t z-50 transition-colors duration-500"
          style={{ borderColor: track.moodColor }}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        
-        {/* TRACK INFO */}
         <div className="flex flex-col">
           <h4 className="text-sm font-bold uppercase tracking-widest transition-colors duration-500"
               style={{ color: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}>
@@ -58,8 +56,6 @@ export default function GlobalPlayer() {
           </h4>
           <p className="text-xs opacity-60">{track.artist}</p>
         </div>
-
-        {/* CONTROLS */}
         <div className="flex items-center gap-6">
           <button 
             onClick={() => track.url && setIsPlaying(!isPlaying)}
@@ -69,13 +65,7 @@ export default function GlobalPlayer() {
             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
         </div>
-
-        {/* HIDDEN ENGINE */}
-        <audio 
-          ref={audioRef} 
-          src={track.url} 
-          onEnded={() => setIsPlaying(false)}
-        />
+        <audio ref={audioRef} src={track.url} onEnded={() => setIsPlaying(false)} />
       </div>
     </div>
   );
