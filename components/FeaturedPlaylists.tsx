@@ -4,11 +4,9 @@ import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
-
-// --- CONFIG ---
-const BRAND_GPM = "#FFC107"; // Amber (Links)
-const BRAND_KLEIGH = "#A0522D"; // Sienna (Audio)
-const BRAND_SCHERER = "#DAA520"; // Gold (Audio)
+const BRAND_GPM = "#FFC107";
+const BRAND_KLEIGH = "#A0522D";
+const BRAND_SCHERER = "#DAA520";
 
 const SCHERER_FILENAMES = [
   "Breakfast!.mp3", "Dance Party.mp3", "Going Outside.mp3", "Imaginary Zoo.mp3", 
@@ -26,38 +24,28 @@ export default function FeaturedPlaylists() {
   const router = useRouter();
   const [slot2, setSlot2] = useState<any>(null);
   const [slot4, setSlot4] = useState<any>(null);
-  const [activeTheme, setActiveTheme] = useState({ primary: BRAND_GPM, secondary: "#F5DEB3" });
+  const [activeTheme, setActiveTheme] = useState({ primary: BRAND_GPM });
 
   useEffect(() => {
     setSlot2(KLEIGH_POOL[0]);
-    const randomScherer = SCHERER_FILENAMES[Math.floor(Math.random() * SCHERER_FILENAMES.length)];
     setSlot4({
-      filename: randomScherer, 
-      title: "Scherer Magic", 
-      artist: "GPM & Michael Scherer", 
-      type: "CO-COPYRIGHT", 
+      filename: SCHERER_FILENAMES[Math.floor(Math.random() * SCHERER_FILENAMES.length)],
+      title: "Scherer Magic", artist: "GPM & Michael Scherer", type: "CO-COPYRIGHT",
       moodTheme: { primary: BRAND_SCHERER, secondary: "#F5DEB3" }
     });
   }, []);
 
   const handleInteract = (item: any) => {
     if (item.moodTheme?.primary) setActiveTheme(item.moodTheme);
-
     if (item.isLink) {
       router.push(item.url);
     } else {
-      // --- THE SIGNAL ---
-      console.log("Dispatching Audio:", item.title);
-      const event = new CustomEvent('play-track', { 
+      window.dispatchEvent(new CustomEvent('play-track', { 
         detail: { 
-          url: `${BUCKET_URL}/${item.filename}`, 
-          title: item.title, 
-          artist: item.artist, 
-          type: item.type,
-          moodTheme: item.moodTheme 
+          url: `${BUCKET_URL}/${item.filename}`, title: item.title, 
+          artist: item.artist, moodTheme: item.moodTheme 
         } 
-      });
-      window.dispatchEvent(event);
+      }));
     }
   };
 
@@ -69,14 +57,12 @@ export default function FeaturedPlaylists() {
     return <Play size={24} />;
   };
 
-  const currentSlot2 = slot2 || KLEIGH_POOL[0];
-  const currentSlot4 = slot4 || { title: "Loading...", artist: "GPM" };
-
   const gridItems = [
     { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", action: "READ STORY", icon: "BookOpen", isLink: true, url: "/heroes", moodTheme: { primary: BRAND_GPM } },
-    { ...currentSlot2, id: 2, action: "PLAY NOW", icon: "Music", isLink: false }, // FP AUDIO
-    { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: "Users", isLink: true, url: "/who", moodTheme: { primary: BRAND_GPM } },
-    { ...currentSlot4, id: 4, action: "PLAY NOW", icon: "Play", isLink: false }, // FP AUDIO
+    { ...(slot2 || KLEIGH_POOL[0]), id: 2, action: "PLAY NOW", icon: "Music", isLink: false },
+    // SLOT 3 UPDATED TITLE
+    { id: 3, title: "GPM Is?", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: "Users", isLink: true, url: "/who", moodTheme: { primary: BRAND_GPM } },
+    { ...(slot4 || { title: "Loading..." }), id: 4, action: "PLAY NOW", icon: "Play", isLink: false },
     { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", action: "LEARN MORE", icon: "Anchor", isLink: true, url: "/ships", moodTheme: { primary: BRAND_GPM } }
   ];
 
