@@ -10,12 +10,12 @@ export default function Header() {
     <header className="sticky top-0 z-40 bg-[#8B4513] border-b border-[#D2B48C]/20 shadow-lg transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
         
-        {/* BRAND IDENTITY: LOGO (JPG) + TEXT */}
+        {/* BRAND IDENTITY */}
         <Link href="/" className="flex items-center gap-4 group">
-          {/* MOTHERSHIP STANDARD: JPG LOGO */}
+          {/* LOGO: alt="" PREVENTS REPETITION IF BROKEN */}
           <img 
             src="/gpm_logo.jpg" 
-            alt="G Putnam Music" 
+            alt="" 
             className="h-12 w-auto object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-all" 
           />
           <div className="flex flex-col">
