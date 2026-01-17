@@ -4,11 +4,9 @@ import { Pause, Play } from 'lucide-react';
 
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // NEW IDENTIFIER: "GPM AUDIO v4" (Confirms Update)
   const [track, setTrack] = useState({
-    title: "GPM AUDIO v4", 
-    artist: "System Synced. Ready.",
+    title: "GPM ENGINE", 
+    artist: "System Ready.", // Default State
     url: "", 
     moodColor: "#8B4513"
   });
@@ -16,44 +14,47 @@ export default function GlobalPlayer() {
 
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
-      // --- THE CATCH ---
-      console.log("Player Caught Signal:", e.detail);
-      const incoming = e.detail;
+      // FORCE DISPLAY OVERRIDE
+      // If the data sent has "Music Maykers", we clean it visibly here too.
+      let safeArtist = e.detail.artist || "G Putnam Music";
+      if (safeArtist.toLowerCase().includes("mayker")) safeArtist = "G Putnam Music";
+
       setTrack({
-        title: incoming.title,
-        artist: incoming.artist,
-        url: incoming.url,
-        moodColor: incoming.moodTheme?.primary || "#8B4513"
+        title: e.detail.title, 
+        artist: safeArtist, // <--- THE FILTER
+        url: e.detail.url, 
+        moodColor: e.detail.moodTheme?.primary || "#8B4513"
       });
       setIsPlaying(true);
     };
+
     window.addEventListener('play-track', handleTrackSelect as EventListener);
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
 
+  // ... (Keep existing Playback Logic)
   useEffect(() => {
     if (audioRef.current && track.url) {
-      isPlaying ? audioRef.current.play().catch(console.error) : audioRef.current.pause();
+      if (isPlaying) {
+        audioRef.current.play().catch(e => console.error("Playback Error:", e));
+      } else {
+        audioRef.current.pause();
+      }
     }
   }, [isPlaying, track.url]);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#2C241B] text-[#FFFDF5] p-4 shadow-2xl border-t z-50 transition-colors duration-500"
-         style={{ borderColor: track.moodColor }}>
+    <div className="fixed bottom-0 left-0 right-0 bg-[#2C241B] text-[#FFFDF5] p-4 shadow-2xl border-t z-50 transition-colors duration-500" style={{ borderColor: track.moodColor }}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex flex-col">
-          <h4 className="text-sm font-bold uppercase tracking-widest transition-colors duration-500"
-              style={{ color: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}>
+          {/* DISPLAY TITLE AND ARTIST ONLY. NEVER FILENAME. */}
+          <h4 className="text-sm font-bold uppercase tracking-widest transition-colors duration-500" style={{ color: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}>
             {track.title}
           </h4>
           <p className="text-xs opacity-60">{track.artist}</p>
         </div>
         <div className="flex items-center gap-6">
-          <button 
-            onClick={() => track.url && setIsPlaying(!isPlaying)}
-            className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white transition text-[#2C241B]"
-            style={{ backgroundColor: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}
-          >
+          <button onClick={() => track.url && setIsPlaying(!isPlaying)} className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white transition text-[#2C241B]" style={{ backgroundColor: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}>
             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
         </div>
