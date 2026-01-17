@@ -13,13 +13,18 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* NAV UPDATED: "R-Tists" */}
-        <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase text-[#2C241B]">
-          <Link href="/artists" className="hover:text-[#A0522D] transition-colors">R-Tists</Link>
-          <Link href="/ships" className="hover:text-[#DAA520] transition-colors">SHIPS Engine</Link>
-          <Link href="/accolades" className="hover:text-[#A0522D] transition-colors">Accolades</Link>
+        {/* EXPANDED NAVIGATION (Added KLEIGH) */}
+        <nav className="hidden md:flex items-center gap-6 text-[10px] lg:text-xs font-bold tracking-widest uppercase text-[#2C241B]">
+          <Link href="/artists" className="hover:text-[#A0522D] transition-colors">R-TISTS</Link>
+          <Link href="/kleigh" className="hover:text-[#A0522D] transition-colors">KLEIGH</Link> {/* NEW */}
+          <Link href="/ships" className="hover:text-[#DAA520] transition-colors">SHIPS</Link>
+          <Link href="/mip" className="hover:text-[#A0522D] transition-colors">MIP</Link>
+          <Link href="/heroes" className="hover:text-[#DAA520] transition-colors">HEROES</Link>
+          <Link href="/uru" className="hover:text-[#A0522D] transition-colors">URU</Link>
+          <Link href="/accolades" className="hover:text-[#DAA520] transition-colors">ACCOLADES</Link>
         </nav>
 
+        {/* MOBILE MENU TRIGGER */}
         <button className="md:hidden text-[#2C241B]">
           <Menu size={24} />
         </button>
