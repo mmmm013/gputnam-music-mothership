@@ -5,7 +5,6 @@ import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 import { ArrowRight, Music } from 'lucide-react';
 
 const STORAGE_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
-// CRITICAL: This matches the file you showed in Finder 'k-hero.jpg'
 const HERO_IMAGE = `${STORAGE_URL}/k-hero.jpg`; 
 
 export default function Home() {
@@ -24,6 +23,9 @@ export default function Home() {
               <span className="text-[#8B4513] italic font-serif">Stream</span> <br/>
               MOODs
             </h1>
+            <p className="text-lg md:text-xl font-medium text-[#8B4513]/80 max-w-md leading-relaxed">
+              An inviting space to match your music to your moment.
+            </p>
             <button className="bg-[#A0522D] text-[#FFFDF5] px-8 py-4 rounded-full font-bold tracking-widest hover:bg-[#8B4513] transition shadow-xl flex items-center gap-2">
               START LISTENING <ArrowRight size={18} />
             </button>
@@ -33,17 +35,17 @@ export default function Home() {
           <div className="relative h-[500px] w-full bg-[#8B4513] rounded-sm p-4 shadow-2xl flex flex-col md:flex-row shadow-[#8B4513]/40 border-4 border-[#5D4037]">
             <div className="w-full h-full border-2 border-[#DAA520]/50 rounded-sm flex flex-col md:flex-row overflow-hidden bg-[#2C241B]">
 
-              {/* ZONE 1: HERO PORTRAIT (FORCED IMAGE) */}
+              {/* ZONE 1: HERO PORTRAIT (REAL IMAGE) */}
               <div className="w-full md:w-1/2 h-full relative group cursor-default border-b md:border-b-0 md:border-r border-[#DAA520]/30 overflow-hidden bg-[#A0522D]">
                 <img 
                   src={HERO_IMAGE} 
                   alt="Hero Portrait" 
                   className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay"
-                  onError={(e) => {console.error("HERO IMAGE FAILED TO LOAD", e)}}
                 />
                 <div className="absolute top-4 left-4 z-10 bg-[#5D4037] text-[#DAA520] text-[10px] font-bold px-2 py-1 rounded shadow-md border border-[#DAA520]/20">VISUAL</div>
                 <div className="absolute bottom-6 left-0 right-0 text-center z-10 pointer-events-none">
                    <h3 className="text-2xl font-black uppercase text-[#FFFDF5] tracking-widest font-serif drop-shadow-md">Hero<br/>Portrait</h3>
+                   <p className="text-xs font-serif italic mt-2 text-[#DAA520]">The Artist</p>
                 </div>
               </div>
 
@@ -54,7 +56,9 @@ export default function Home() {
                   <Music size={32} className="animate-pulse text-[#5D4037]" />
                 </div>
                 <h3 className="text-xl font-bold uppercase text-[#5D4037] tracking-widest font-serif">Featured<br/>Content</h3>
+                <p className="text-xs font-serif italic mt-2 text-[#5D4037]/80">Tap to Play</p>
               </div>
+
             </div>
           </div>
         </div>
