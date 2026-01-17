@@ -1,55 +1,40 @@
-'use client';
 import Header from '@/components/Header';
-import AudioPlayer from '@/components/AudioPlayer';
+import Footer from '@/components/Footer';
+import GlobalPlayer from '@/components/GlobalPlayer';
+import { BookOpen, User } from 'lucide-react';
 
-export default function Heroes() {
+export default function HeroesPage() {
   return (
-    <main className="min-h-screen bg-[#FDF6E3] text-[#2C241B] font-serif">
+    <main className="min-h-screen bg-[#FFFDF5] text-[#2C241B]">
       <Header />
-      <div className="max-w-4xl mx-auto p-8 md:p-12">
-        
-        {/* HERO HEADER */}
-        <div className="text-center mb-12 border-b border-[#8B4513]/20 pb-8">
-          <span className="text-xs font-black tracking-[0.2em] text-[#8B4513] uppercase mb-4 block">GPM Heroes Series</span>
-          <h1 className="text-5xl md:text-6xl font-black text-[#2C241B] mb-6">
-            The Okinawa Story
-          </h1>
-          <p className="text-xl italic opacity-70">
-            "A legacy of duty: From the Navy to the Marines."
-          </p>
+      
+      {/* HEADER HERO */}
+      <section className="relative pt-20 pb-20 bg-gradient-to-br from-[#DAA520] to-[#B8860B] text-[#FFFDF5]">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#FFFDF5]/10 backdrop-blur-md mb-6 border border-[#FFFDF5]/20">
+            <User size={40} />
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Heroes</h1>
+          <p className="text-xl font-serif italic opacity-80">The Okinawa Legacy</p>
         </div>
+      </section>
 
-        {/* STORY CONTENT */}
-        <div className="prose prose-lg text-[#3E2723] leading-relaxed mx-auto">
-          <p className="first-letter:text-5xl first-letter:font-black first-letter:text-[#8B4513] first-letter:mr-2 float-left">
-            T
-          </p>
-          <p>
-            his is the personal account of a journey that defied standard military protocol. 
-            It begins in the <strong>United States Navy</strong>, where a commitment to service 
-            first took root. But duty called for a different kind of strength.
-          </p>
-          <p>
-            Transitioning from the Navy to the <strong>Marines</strong>, he found himself 
-            deployed to the Pacific Theater. The destination was <strong>Okinawa</strong>—the 
-            site of the last and biggest of the Pacific island battles of World War II.
-          </p>
-          <p>
-            [This space is reserved for the full personal account of your grandfather's 
-            experience, honors, and memory. The "Grandpa's Story" feature ensures his 
-            legacy remains a permanent pillar of the G Putnam Music platform.]
-          </p>
+      {/* STORY CONTENT */}
+      <section className="py-16 max-w-3xl mx-auto px-6 font-serif leading-loose text-lg text-[#5D4037]">
+        <p className="mb-6 first-letter:text-5xl first-letter:font-bold first-letter:text-[#DAA520] first-letter:mr-2 float-left">
+          It started with a single note in Okinawa. 
+        </p>
+        <p className="mb-6">
+          The history of G Putnam Music isn't just about sound waves; it's about the people who carried the tune before us.
+          This section is dedicated to the legends, the teachers, and the family members who built the foundation.
+        </p>
+        <div className="p-8 bg-[#FFF8E7] border-l-4 border-[#DAA520] italic text-[#8B4513]">
+          "Music is the only thing that makes sense when the world doesn't."
         </div>
+      </section>
 
-        {/* BACK BUTTON */}
-        <div className="mt-16 text-center">
-          <a href="/" className="inline-block bg-[#8B4513] text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest hover:bg-[#5E2C0B] transition shadow-lg">
-            Return Home
-          </a>
-        </div>
-
-      </div>
-      <AudioPlayer />
+      <Footer />
+      <GlobalPlayer />
     </main>
   );
 }
