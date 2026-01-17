@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 
 const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
 
-// --- STRICT COLOR CODES ---
-const BRAND_GPM = "#FFC107";     // Amber (Default/Links)
-const BRAND_KLEIGH = "#A0522D";  // Sienna (Slot 2)
-const BRAND_SCHERER = "#DAA520"; // Gold (Slot 4)
+// --- CONFIG ---
+const BRAND_GPM = "#FFC107"; // Amber (Links)
+const BRAND_KLEIGH = "#A0522D"; // Sienna (Audio)
+const BRAND_SCHERER = "#DAA520"; // Gold (Audio)
 
-// --- INVENTORY ---
 const SCHERER_FILENAMES = [
   "Breakfast!.mp3", "Dance Party.mp3", "Going Outside.mp3", "Imaginary Zoo.mp3", 
   "Jump.mp3", "Like a Bunny.mp3", "Nighttime.mp3", "Perfect Day.mp3", 
@@ -19,9 +18,7 @@ const SCHERER_FILENAMES = [
 
 const KLEIGH_POOL = [{ 
   filename: "038 - kleigh - bought into your game.mp3", 
-  title: "Bought Into Your Game", 
-  artist: "Kleigh", 
-  type: "GPMC LEGACY",
+  title: "Bought Into Your Game", artist: "Kleigh", type: "GPMC LEGACY",
   moodTheme: { primary: BRAND_KLEIGH, secondary: "#FFBF00" } 
 }];
 
@@ -44,14 +41,13 @@ export default function FeaturedPlaylists() {
   }, []);
 
   const handleInteract = (item: any) => {
-    // 1. VISUAL: SNAP COLOR IMMEDIATELY
     if (item.moodTheme?.primary) setActiveTheme(item.moodTheme);
-    
-    // 2. LOGIC: LINK VS AUDIO
+
     if (item.isLink) {
-      router.push(item.url); // Navigation
+      router.push(item.url);
     } else {
-      // Freeplay Dispatch
+      // --- THE SIGNAL ---
+      console.log("Dispatching Audio:", item.title);
       const event = new CustomEvent('play-track', { 
         detail: { 
           url: `${BUCKET_URL}/${item.filename}`, 
@@ -76,112 +72,11 @@ export default function FeaturedPlaylists() {
   const currentSlot2 = slot2 || KLEIGH_POOL[0];
   const currentSlot4 = slot4 || { title: "Loading...", artist: "GPM" };
 
-  // --- THE 5 PILLARS (Fixed Slots) ---
-  const gridItems = [
-    // Slot 1: Hero Link
-    { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", action: "READ STORY", icon: "BookOpen", isLink: true, url: "/heroes", moodTheme: { primary: BRAND_GPM } },
-    
-    // Slot 2: Kleigh Audio (Sienna)
-    { ...currentSlot2, id: 2, action: "PLAY NOW", icon: "Music", isLink: false },
-    
-    // Slot 3: Origin Link
-    { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: "Users", isLink: true, url: "/who", moodTheme: { primary: BRAND_GPM } },
-    
-    // Slot 4: Scherer Audio (Gold)
-    { ...currentSlot4, id: 4, action: "PLAY NOW", icon: "Play", isLink: false },
-    
-    // Slot 5: Biz Link
-    { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", action: "LEARN MORE", icon: "Anchor
-# 1. ENSURE MOTHERSHIP
-cd ~/gputnam-music-final-site || cd ../gputnam-music-final-site
-
-# 2. FP ENGINE: STRICT FREEPLAY ENFORCEMENT
-# This guarantees Slots 2 & 4 ONLY play audio, and Slots 1,3,5 ONLY link.
-cat > components/FeaturedPlaylists.tsx << 'EOF'
-'use client';
-import { useState, useEffect } from 'react';
-import { Play, BookOpen, Music, Users, Anchor, RefreshCw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-
-const BUCKET_URL = "https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks";
-
-// --- STRICT BRANDING ---
-const BRAND_GPM = "#FFC107";     // Amber (Links)
-const BRAND_KLEIGH = "#A0522D";  // Sienna (Slot 2)
-const BRAND_SCHERER = "#DAA520"; // Gold (Slot 4)
-
-const SCHERER_FILENAMES = [
-  "Breakfast!.mp3", "Dance Party.mp3", "Going Outside.mp3", "Imaginary Zoo.mp3", 
-  "Jump.mp3", "Like a Bunny.mp3", "Nighttime.mp3", "Perfect Day.mp3", 
-  "Rhythm Play.mp3", "Silly Song.mp3", "Stomp and Clap.mp3", "When I Grow Up.mp3"
-];
-
-const KLEIGH_POOL = [{ 
-  filename: "038 - kleigh - bought into your game.mp3", 
-  title: "Bought Into Your Game", 
-  artist: "Kleigh", 
-  type: "GPMC LEGACY",
-  moodTheme: { primary: BRAND_KLEIGH, secondary: "#FFBF00" } 
-}];
-
-export default function FeaturedPlaylists() {
-  const router = useRouter();
-  const [slot2, setSlot2] = useState<any>(null);
-  const [slot4, setSlot4] = useState<any>(null);
-  const [activeTheme, setActiveTheme] = useState({ primary: BRAND_GPM, secondary: "#F5DEB3" });
-
-  useEffect(() => {
-    setSlot2(KLEIGH_POOL[0]);
-    const randomScherer = SCHERER_FILENAMES[Math.floor(Math.random() * SCHERER_FILENAMES.length)];
-    setSlot4({
-      filename: randomScherer, 
-      title: "Scherer Magic", 
-      artist: "GPM & Michael Scherer", 
-      type: "CO-COPYRIGHT", 
-      moodTheme: { primary: BRAND_SCHERER, secondary: "#F5DEB3" }
-    });
-  }, []);
-
-  const handleInteract = (item: any) => {
-    // VISUAL: Snap Color
-    if (item.moodTheme?.primary) setActiveTheme(item.moodTheme);
-    
-    // LOGIC SEPARATION
-    if (item.isLink) {
-      router.push(item.url); // Navigation
-    } else {
-      // Freeplay Audio Dispatch
-      console.log("Dispatching Freeplay:", item.title);
-      const event = new CustomEvent('play-track', { 
-        detail: { 
-          url: `${BUCKET_URL}/${item.filename}`, 
-          title: item.title, 
-          artist: item.artist, 
-          type: item.type,
-          moodTheme: item.moodTheme 
-        } 
-      });
-      window.dispatchEvent(event);
-    }
-  };
-
-  const getIcon = (name: string) => {
-    if (name === 'BookOpen') return <BookOpen size={24} />;
-    if (name === 'Users') return <Users size={24} />;
-    if (name === 'Anchor') return <Anchor size={24} />;
-    if (name === 'Music') return <Music size={24} />;
-    return <Play size={24} />;
-  };
-
-  const currentSlot2 = slot2 || KLEIGH_POOL[0];
-  const currentSlot4 = slot4 || { title: "Loading...", artist: "GPM" };
-
-  // --- THE 5 PILLARS (LOCKED) ---
   const gridItems = [
     { id: 1, title: "Grandpa's Story", subtitle: "The Okinawa Legacy", type: "HERO LEGACY", action: "READ STORY", icon: "BookOpen", isLink: true, url: "/heroes", moodTheme: { primary: BRAND_GPM } },
-    { ...currentSlot2, id: 2, action: "PLAY NOW", icon: "Music", isLink: false }, // FREEPLAY
+    { ...currentSlot2, id: 2, action: "PLAY NOW", icon: "Music", isLink: false }, // FP AUDIO
     { id: 3, title: "Who is G Putnam Music", subtitle: "The Origin Story", type: "ARTIST BIO", action: "DISCOVER", icon: "Users", isLink: true, url: "/who", moodTheme: { primary: BRAND_GPM } },
-    { ...currentSlot4, id: 4, action: "PLAY NOW", icon: "Play", isLink: false }, // FREEPLAY
+    { ...currentSlot4, id: 4, action: "PLAY NOW", icon: "Play", isLink: false }, // FP AUDIO
     { id: 5, title: "The SHIPS Engine", subtitle: "Sponsorship Model", type: "BUSINESS", action: "LEARN MORE", icon: "Anchor", isLink: true, url: "/ships", moodTheme: { primary: BRAND_GPM } }
   ];
 
