@@ -5,10 +5,10 @@ import { Pause, Play } from 'lucide-react';
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   
-  // NEW VERSION IDENTIFIER: "v3.0"
+  // NEW IDENTIFIER: Forces browser to recognize change
   const [track, setTrack] = useState({
-    title: "GPM ENGINE v3.0", 
-    artist: "System Ready. Select Track.",
+    title: "GPM SYSTEM LIVE", 
+    artist: "Select Track to Begin",
     url: "", 
     moodColor: "#8B4513"
   });
@@ -16,6 +16,7 @@ export default function GlobalPlayer() {
 
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
+      console.log("Player Received:", e.detail);
       const incoming = e.detail;
       setTrack({
         title: incoming.title,
