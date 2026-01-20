@@ -32,7 +32,7 @@ export default function FeaturedPlaylists() {
       // 2. FETCH DATA
       const { data, error } = await supabase
         .from('featured_playlists_config')
-      .select('*')        .not('playlist_name', 'is', null)
+      .select('*')        .not('display_name', 'is', null)
       .order('sort_order');
       // 3. HANDLE RESULTS
       if (error) {
@@ -42,8 +42,8 @@ export default function FeaturedPlaylists() {
         setStatus('SUCCESS');
         // Group tracks
         const grouped = data.reduce((acc: any, track: any) => {
-          if (!acc[track.playlist_name]) {
-            acc[track.playlist_name] = track;
+          if (!acc[track.display_name]) {
+            acc[track.display_name] = track;
           }
           return acc;
         }, {});
@@ -59,7 +59,7 @@ export default function FeaturedPlaylists() {
   const playTrack = (track: any) => {
     if (!track?.filename) return;
     const fullUrl = `${BUCKET_URL}/${track.filename}`;
-    console.log(`[PLAYER] Loading BP: ${track.playlist_name} -> ${fullUrl}`);
+    console.log(`[PLAYER] Loading BP: ${track.display_name} -> ${fullUrl}`);
     window.dispatchEvent(new CustomEvent('play-track', { 
         detail: { 
           url: fullUrl, 
@@ -104,10 +104,9 @@ export default function FeaturedPlaylists() {
                   <Play size={20} fill="currentColor" className="ml-1" />
                 </div>
                 <h3 className="text-lg font-bold text-[#5D4037] group-hover:text-[#A0522D] transition-colors leading-tight mb-1">
-                  {bp.playlist_name}
+                  {bp.display_name}
                 </h3>
                 <p className="text-xs font-serif italic text-[#D2B48C] group-hover:text-[#8B4513]">
-                  {bp.artist}
                 </p>
               </div>
             ))}
