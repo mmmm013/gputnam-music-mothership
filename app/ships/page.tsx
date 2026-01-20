@@ -1,6 +1,7 @@
 'use client';
 import Header from '@/components/Header';
 import AudioPlayer from '@/components/AudioPlayer';
+import Footer from '@/components/Footer';
 
 export default function Ships() {
   return (
@@ -11,6 +12,7 @@ export default function Ships() {
         <p className="opacity-60 mt-4">Sponsorship & Mood Matching Platform</p>
       </div>
       <AudioPlayer />
+      <Footer />
     </main>
   );
 }
