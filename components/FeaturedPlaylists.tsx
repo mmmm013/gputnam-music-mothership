@@ -31,11 +31,9 @@ export default function FeaturedPlaylists() {
       
       // 2. FETCH DATA
       const { data, error } = await supabase
-        .from('tracks')
-        .select('playlist_name, artist, title, filename')
-        .not('playlist_name', 'is', null)
-        .order('playlist_name');
-
+        .from('featured_playlists_config')
+      .select('*')        .not('playlist_name', 'is', null)
+      .order('sort_order');
       // 3. HANDLE RESULTS
       if (error) {
         setStatus('DB ERROR');
