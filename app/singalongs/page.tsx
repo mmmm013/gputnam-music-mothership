@@ -28,22 +28,48 @@ export default function Singalongs() {
     setLoading(true);
     setActiveMood(moodTag);
     
-    // FETCH FROM MASTER GPM VAULT
-    const { data, error } = await supabase
-      .from('tracks')
-      .select('*')
-      .ilike('tags', `%${moodTag}%`) // Filter by the mood
-      .limit(1); // Grab one to start (Radio Mode)
+      // FETCH FROM MASTER GPM VAULT
+      const { data: supaData, error } = await supabase
+         .from('tracks')
+         .select('*')
+         .ilike('tags', `%${moodTag}%`) // Filter by the mood
+         .limit(1); // Grab one to start (Radio Mode)
 
-    if (data && data.length > 0) {
-      const track = data[0];
-      setCurrentTrack(track);
-      setIsPlaying(true);
-      setLoading(false);
-    } else {
-      console.log('No tracks found for this mood in GPM Catalog');
-      setLoading(false);
-    }
+      // ALSO MERGE IN LOCAL AWESOME SQUAD TRACKS (public/handoff/awesome-squad.json)
+      let localData: any[] = []
+      try {
+         const res = await fetch('/handoff/awesome-squad.json')
+         if (res.ok) localData = await res.json()
+      } catch (e) {
+         console.warn('No local Awesome Squad data', e)
+      }
+
+      const merged = [] as any[]
+      if (supaData && supaData.length > 0) merged.push(...supaData)
+      // append all local items (dedupe by public_url/name)
+      for (const it of localData) {
+         // normalize to match supabase track shape used elsewhere
+         const t = {
+            id: it.id,
+            name: it.title,
+            artist: it.artist,
+            public_url: it.public_url,
+            tags: (it.tags || []).join(','),
+            _local: true
+         }
+         // avoid duplicates by public_url
+         if (!merged.find(m => m.public_url === t.public_url)) merged.push(t)
+      }
+
+      if (merged.length > 0) {
+         const track = merged[0]
+         setCurrentTrack(track)
+         setIsPlaying(true)
+         setLoading(false)
+      } else {
+         console.log('No tracks found for this mood in GPM Catalog or local Awesome Squad list');
+         setLoading(false);
+      }
   }
 
   // CLEANER FOR DISPLAY

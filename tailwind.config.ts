@@ -8,10 +8,24 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        // MOTHERSHIP BRANDING (The Golden Lock)
+        background: '#000000',      // Corporate Black
+        foreground: '#F5F5F5',      // Off-White Text
+        primary: {
+          DEFAULT: '#FFD700',       // GOLD (The "SHIPs" Color)
+          glow: '#FFD700',
+        },
+        secondary: '#F5DEB3',       // WHEAT (The Accent)
+        muted: '#A1887F',           // Muted Text
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      fontFamily: {
+        sans: ['"Space Grotesk"', 'sans-serif'],
       },
     },
   },

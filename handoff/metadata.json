@@ -1,0 +1,59 @@
+[
+  {
+    "id": "fly-again",
+    "filename": "Fly Again.mp3",
+    "title": "Fly Again",
+    "artist": "Unknown (check ID3)",
+    "source_path": "public/assets/Fly Again.mp3",
+    "processed_master": "handoff/processed/Fly-Again-master.wav",
+    "moods": ["Uplifting", "Ambient"],
+    "instruments": ["Guitar", "Synth"],
+    "description": "An upbeat instrumental with prominent guitars and ambient synth pads.",
+    "recommended_processing": [
+      "conservative noise reduction",
+      "hum removal if present",
+      "surgical EQ to tame low-end",
+      "gentle multiband compression",
+      "loudness normalization: transparent -14 LUFS (deliver), enhanced -9 LUFS (mastered)",
+      "true-peak target: -1.5 dBTP"
+    ],
+    "notes": "Preview clip: handoff/processed/Fly-Again-preview.mp3"
+  },
+  {
+    "id": "kleigh-down-baby",
+    "filename": "103 - KLEIGH - DOWN BABY.mp3",
+    "title": "Down Baby",
+    "artist": "Kleigh",
+    "source_path": "public/assets/103 - KLEIGH - DOWN BABY.mp3",
+    "processed_master": "handoff/processed/103-KLEIGH-DOWN-BABY-master.wav",
+    "moods": ["Energetic", "Soulful"],
+    "instruments": ["Vocals", "Guitar", "Drums"],
+    "description": "Vocal-forward track with driving rhythm and warm guitar.",
+    "recommended_processing": [
+      "de-click/pop repair as needed",
+      "vocal de-essing",
+      "surgical EQ (reduce boxiness around 200-400Hz)",
+      "gentle compression on vocal bus",
+      "master loudness targets as above"
+    ],
+    "notes": "Preview clip: handoff/processed/103-KLEIGH-DOWN-BABY-preview.mp3"
+  },
+  {
+    "id": "lilli-here-in-the-night",
+    "filename": "Lilli O'Dowd - Here in the Night.mp3",
+    "title": "Here in the Night",
+    "artist": "Lilli O'Dowd",
+    "source_path": "public/assets/Lilli O'Dowd - Here in the Night.mp3",
+    "processed_master": "handoff/processed/Lilli-ODowd-Here-in-the-Night-master.wav",
+    "moods": ["Melancholic", "Intimate"],
+    "instruments": ["Vocals", "Acoustic Guitar", "Piano"],
+    "description": "Quiet, intimate singer-songwriter piece with sparse accompaniment.",
+    "recommended_processing": [
+      "conservative noise reduction to preserve ambience",
+      "gentle EQ for vocal presence",
+      "transparent compression to retain dynamics",
+      "final loudness normalization as above"
+    ],
+    "notes": "Preview clip: handoff/processed/Lilli-ODowd-Here-in-the-Night-preview.mp3"
+  }
+]

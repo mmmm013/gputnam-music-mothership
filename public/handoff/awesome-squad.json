@@ -1,0 +1,16 @@
+[
+  { "id": "as-1", "title": "Breakfast!", "artist": "Awesome Squad", "public_url": "/assets/Breakfast!.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-2", "title": "Dance Party", "artist": "Awesome Squad", "public_url": "/assets/Dance Party.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-3", "title": "Going Outside", "artist": "Awesome Squad", "public_url": "/assets/Going Outside.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-4", "title": "I Was Made to be Awesome", "artist": "Awesome Squad", "public_url": "/assets/I Was Made to be Awesome.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-5", "title": "Imaginary Zoo", "artist": "Awesome Squad", "public_url": "/assets/Imaginary Zoo.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-6", "title": "Jump", "artist": "Awesome Squad", "public_url": "/assets/Jump.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-7", "title": "Like a Bunny", "artist": "Awesome Squad", "public_url": "/assets/Like a Bunny.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-8", "title": "Nighttime", "artist": "Awesome Squad", "public_url": "/assets/Nighttime.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-9", "title": "Perfect Day Reprise", "artist": "Awesome Squad", "public_url": "/assets/Perfect Day Reprise.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-10", "title": "Perfect Day", "artist": "Awesome Squad", "public_url": "/assets/Perfect Day.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-11", "title": "Rhythm Play", "artist": "Awesome Squad", "public_url": "/assets/Rhythm Play.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-12", "title": "Silly Song", "artist": "Awesome Squad", "public_url": "/assets/Silly Song.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-13", "title": "Stomp and Clap", "artist": "Awesome Squad", "public_url": "/assets/Stomp and Clap.mp3", "tags": ["SINGALONG","KIDS"] },
+  { "id": "as-14", "title": "When I Grow Up", "artist": "Awesome Squad", "public_url": "/assets/When I Grow Up.mp3", "tags": ["SINGALONG","KIDS"] }
+]
