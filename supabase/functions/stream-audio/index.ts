@@ -21,7 +21,7 @@ serve(async (req) => {
     // Fetch track metadata
     const { data: track, error: trackError } = await supabase
       .from('tracks')
-      .select('id, title, source_path, is_public')
+      .select('id, title, filename, is_public')
       .eq('id', trackId)
       .single()
 
@@ -35,7 +35,7 @@ serve(async (req) => {
     // Generate signed URL (60-second expiry)
     const { data: urlData, error: urlError } = await supabase.storage
       .from('tracks')
-      .createSignedUrl(track.source_path, 60)
+      .createSignedUrl(track.filename, 60)
 
     if (urlError || !urlData) {
       return new Response(JSON.stringify({ error: 'Failed to generate stream URL' }), {
