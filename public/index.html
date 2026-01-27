@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="G Putnam Music" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>G Putnam Music</title>
+<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+<link rel="stylesheet" href="/assets/index-5f3e2af4.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.6/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --color-primary: #FFBF00;
+  --color-amber: #FFBF00;
+  --color-accent: #23B257;
+  --color-bg: #1a1a1a;
+  --color-card: #2a2a2a;
+  --color-text: #ffffff;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: linear-gradient(135deg, var(--color-card) 0%, rgba(255, 191, 0, 0.05) 100%);
+  padding: 2rem;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+header img {
+  height: 60px;
+  margin-bottom: 1rem;
+}
+
+nav {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.5rem;
+}
+
+nav a:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, rgba(255,191,0,0.1) 0%, transparent 100%);
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: var(--color-primary);
+  text-shadow: 0 0 20px rgba(255, 191, 0, 0.3);
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  color: #999;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section {
+  background: var(--color-card);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 191, 0, 0.2);
+}
+
+.section h2 {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 1rem;
+  margin-top: 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.gallery-item {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.gallery-item img,
+.gallery-item iframe {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.qr-code {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.qr-code img {
+  max-width: 200px;
+  border: 3px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+}
+
+footer {
+  background: var(--color-card);
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+  border-top: 2px solid var(--color-primary);
+  color: #999;
+}
+
+.disco-embed {
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+</style>
+</head>
+<body>
+<div id="root">
+<header id="header-section">
+  <div class="container">
+    <img id="logo" src="/assets/gpm-logo.png" alt="G Putnam Music" />
+    <h1 id="brand-title">G Putnam Music</h1>
+    <nav id="nav-menu"></nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="container">
+    <h1 id="hero-title">Next Generation Music Platform</h1>
+    <p id="hero-tagline">Experience music like never before</p>
+  </div>
+</div>
+
+<main class="container">
+  <!-- QR Code Section -->
+  <section class="section qr-code" id="qr-section" style="display: none;">
+    <h2>Scan to Connect</h2>
+    <img id="qr-code" src="" alt="QR Code" />
+  </section>
+
+  <!-- Disco Links -->
+  <section class="section" id="disco-section" style="display: none;">
+    <h2>Listen Now</h2>
+    <div id="disco-container"></div>
+  </section>
+
+  <!-- Images Gallery -->
+  <section class="section" id="images-section" style="display: none;">
+    <h2>Gallery</h2>
+    <div class="gallery" id="images-gallery"></div>
+  </section>
+
+  <!-- Videos Section -->
+  <section class="section" id="videos-section" style="display: none;">
+    <h2>Videos</h2>
+    <div class="gallery" id="videos-gallery"></div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 G Putnam Music. All rights reserved.</p>
+  <small>Powered by G Putnam Music Platform</small>
+</footer>
+</div>
+
+<script type="module">
+const SUPABASE_URL = 'https://tlbqzzhhypixfbejoucr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc2MiOiJmYWxzZSIsImp0aSI6IjU2NDYwMGUyLWQzNTItNDQ0Yi04YzA1LTFkYzY0OTdjNzAzZSIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsImF1ZCI6ImF1dGhlbnRpY2F0ZWQdInJvbGUiOiJhbm9uIiwiaWF0IjoxNzMyMzA4NjczLCJleHAiOjE4OTk5NzQ2NzN9.3nxAYXzzJPbczJqT1i4a6IwJHZxJHXxJHZxJHZxJHZx';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Get current domain
+const currentDomain = window.location.hostname;
+
+// Fetch branding data from Supabase
+async function loadBranding() {
+  try {
+    const { data, error } = await supabase
+      .from('branding_settings')
+      .select('*')
+      .eq('domain', currentDomain)
+      .single();
+
+    if (error) throw error;
+    
+    if (data) {
+      applyBranding(data);
+    }
+  } catch (error) {
+    console.error('Error loading branding:', error);
+  }
+}
+
+function applyBranding(brandingData) {
+  const theme = brandingData.theme || {};
+  const labels = brandingData.labels || {};
+  const links = brandingData.links || {};
+
+  // Apply theme colors
+  if (theme.colors) {
+    document.documentElement.style.setProperty('--color-primary', theme.colors.primary || '#FFBF00');
+    document.documentElement.style.setProperty('--color-amber', theme.colors.amber || '#FFBF00');
+    document.documentElement.style.setProperty('--color-bg', theme.colors.bg || '#1a1a1a');
+    document.documentElement.style.setProperty('--color-card', theme.colors.card || '#2a2a2a');
+    document.documentElement.style.setProperty('--color-text', theme.colors.text || '#ffffff');
+  }
+
+  // Apply branding texts
+  if (labels.title) {
+    document.getElementById('brand-title').textContent = labels.title;
+    document.title = labels.title;
+  }
+  if (labels.tagline) {
+    document.getElementById('hero-tagline').textContent = labels.tagline;
+  }
+
+  // Apply logo
+  if (theme.logo) {
+    document.getElementById('logo').src = theme.logo;
+  }
+
+  // Apply QR Code
+  if (theme.qr_code) {
+    const qrSection = document.getElementById('qr-section');
+    qrSection.style.display = 'block';
+    document.getElementById('qr-code').src = theme.qr_code;
+  }
+
+  // Apply Menu
+  if (theme.menu && Array.isArray(theme.menu)) {
+    const navMenu = document.getElementById('nav-menu');
+    navMenu.innerHTML = theme.menu
+      .map(item => `<a href="${item.url}">${item.label}</a>`)
+      .join('');
+  }
+
+  // Apply Disco Links
+  if (labels.disco_links && Array.isArray(labels.disco_links)) {
+    const discoSection = document.getElementById('disco-section');
+    discoSection.style.display = 'block';
+    const discoContainer = document.getElementById('disco-container');
+    
+    labels.disco_links.forEach(disco => {
+      const iframe = document.createElement('iframe');
+      iframe.className = 'disco-embed';
+      iframe.src = `${disco.url}?download=true&color=%2323B257&theme=white`;
+      iframe.width = '480';
+      iframe.height = '395';
+      iframe.allowFullscreen = true;
+      iframe.frameBorder = '0';
+      discoContainer.appendChild(iframe);
+    });
+  }
+
+  // Apply Images
+  if (labels.images && Array.isArray(labels.images)) {
+    const imagesSection = document.getElementById('images-section');
+    imagesSection.style.display = 'block';
+    const gallery = document.getElementById('images-gallery');
+    
+    labels.images.forEach(image => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      const img = document.createElement('img');
+      img.src = image.url;
+      img.alt = image.type;
+      div.appendChild(img);
+      gallery.appendChild(div);
+    });
+  }
+
+  // Apply Videos
+  if (labels.videos && Array.isArray(labels.videos)) {
+    const videosSection = document.getElementById('videos-section');
+    videosSection.style.display = 'block';
+    const gallery = document.getElementById('videos-gallery');
+    
+    labels.videos.forEach(video => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      const iframe = document.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '315';
+      iframe.src = video.url;
+      iframe.frameBorder = '0';
+      iframe.allowFullscreen = true;
+      div.appendChild(iframe);
+      gallery.appendChild(div);
+    });
+  }
+}
+
+// Load branding on page load
+loadBranding();
+</script>
+<script type="module" crossorigin src="/assets/index-4a569784.js"></script>
+</body>
+</html>
