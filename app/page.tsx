@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import Header from '@/components/Header';
+
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import MoodGrid from '@/components/MoodGrid';
@@ -54,7 +54,7 @@ export default function Hero() {
         />
       </div>
 
-      <Header />
+
 
       {/* Hero Content Section */}
       <section className="relative flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
