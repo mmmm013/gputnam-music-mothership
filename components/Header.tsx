@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -11,6 +12,19 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
         
         {/* BRAND IDENTITY */}
+        <Link href="/" className="flex items-center gap-3">
+          <Image 
+            src="/gpm_logo.jpg" 
+            alt="G Putnam Music Logo" 
+            width={60} 
+            height={60} 
+            className="rounded-full border-2 border-[#D2B48C]"
+            priority
+          />
+          <span className="hidden md:block text-lg font-bold text-[#D2B48C] tracking-wide">
+            G Putnam Music
+          </span>
+        </Link>
 
         {/* DESKTOP NAV */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-[0.2em] uppercase text-[#D2B48C]">

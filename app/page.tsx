@@ -32,8 +32,8 @@ export default function Hero() {
   const [audioReady, setAudioReady] = useState(false);
   const [audioError, setAudioError] = useState(false);
 
-  // 1. MUSIC: Points to public/assets/fly-again.mp3
-  const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
+  // 1. MUSIC: Points to public/assets/Fly Again.mp3
+  const normalizedAudioUrl = normalizeAudioUrl('/assets/Fly Again.mp3');
   const audioSrc = normalizedAudioUrl ?? '';
 
   const scrollToMusic = () => {
