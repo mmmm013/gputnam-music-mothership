@@ -4,10 +4,13 @@ import { useState, useRef } from 'react';
 import { Play, Pause, Heart, Star, BookOpen, Sun, Moon, Music } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
-// --- SHARED AUDIO SOURCE (The "Dependence") ---
-const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// SAFETY CHECK: Are the keys even here?
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 export default function Singalongs() {
   const [activeMood, setActiveMood] = useState<string | null>(null);
@@ -29,11 +32,17 @@ export default function Singalongs() {
     setActiveMood(moodTag);
     
       // FETCH FROM MASTER GPM VAULT
-      const { data: supaData, error } = await supabase
-         .from('tracks')
-         .select('*')
-         .ilike('tags', `%${moodTag}%`) // Filter by the mood
-         .limit(1); // Grab one to start (Radio Mode)
+      let supaData = null;
+      if (supabase) {
+        const { data, error } = await supabase
+           .from('tracks')
+           .select('*')
+           .ilike('tags', `%${moodTag}%`) // Filter by the mood
+           .limit(1); // Grab one to start (Radio Mode)
+        supaData = data;
+      } else {
+        console.error('Supabase not initialized - missing environment variables');
+      }
 
       // ALSO MERGE IN LOCAL AWESOME SQUAD TRACKS (public/handoff/awesome-squad.json)
       let localData: any[] = []

@@ -1,0 +1,9 @@
+-- This migration was created to drop a redundant user index
+-- However, no specific index was identified in the codebase
+-- If you're seeing database errors related to a duplicate user index,
+-- uncomment and modify the following template:
+--
+-- DROP INDEX IF EXISTS <index_name_here>;
+--
+-- To find redundant indices in your Supabase database:
+-- SELECT indexname FROM pg_indexes WHERE tablename = 'users';

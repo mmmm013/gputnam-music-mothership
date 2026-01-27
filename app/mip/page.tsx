@@ -4,7 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Shield, Zap, Mic, Lock, Download, Play, Pause, FileText, ToggleLeft, ToggleRight, CheckCircle, Copy } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient('https://eajxgrbxvkhfmmfiotpm.supabase.co', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
+// SAFETY CHECK: Are the keys even here?
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 export default function MipPage() {
   const [accessGranted, setAccessGranted] = useState(false);
@@ -28,6 +34,10 @@ export default function MipPage() {
   // FETCH
   const enterVault = async (targetMode: 'rckls' | 'clover') => {
     setMode(targetMode);
+    if (!supabase) {
+      console.error('Supabase not initialized - missing environment variables');
+      return;
+    }
     const tagFilter = targetMode === 'rckls' ? 'energy,rock,sync' : 'acoustic,vocal,folk';
     const { data } = await supabase.from('tracks').select('*').or(`tags.ilike.%${tagFilter.split(',').join('%,tags.ilike.%')}%`).limit(20);
     if (data) setPlaylist(data);

@@ -4,16 +4,23 @@ import { useState, useEffect } from 'react';
 import { Fingerprint, Lock, Music, ArrowRight, ShieldCheck, DollarSign, Play } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
-// GPM CONFIG
-const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// SAFETY CHECK: Are the keys even here?
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = (SUPABASE_URL && SUPABASE_KEY) 
+  ? createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
 
 export default function UruPage() {
   const [snippets, setSnippets] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchSnippets() {
+      if (!supabase) {
+        console.error('Supabase not initialized - missing environment variables');
+        return;
+      }
       // THE MAGIC QUERY: Find assets shorter than 11 seconds
       const { data } = await supabase
         .from('tracks')
