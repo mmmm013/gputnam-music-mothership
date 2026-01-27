@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-import FeaturedPlaylists from '@/components/FeaturedPlaylists';import { ArrowRight, Music } from 'lucide-react';
+import MoodGrid from '@/components/FeaturedPlaimport MoodGrid from '@/components/MoodGrid';
 
 /**
  * Helper to normalize audio URL.
@@ -77,7 +77,7 @@ export default function Hero() {
 
       {/* Featured Playlists Section */}
       <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <FeaturedPlaylists />
+        <MoodGrid />
       </div>
 
       <GlobalPlayer />
