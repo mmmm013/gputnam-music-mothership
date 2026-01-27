@@ -1,4 +1,5 @@
-'use client';
+142
+  'use client';
 import { useState, useEffect } from 'react';
 import { Play, AlertTriangle, CheckCircle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
@@ -139,8 +140,7 @@ export default function FeaturedPlaylists() {
                   {bp.tracks?.length || 0} tracks
                 </p>
               </div>
-            ))}
-          </div>
+            })}          </div>
           </div>
     </section>
   );
