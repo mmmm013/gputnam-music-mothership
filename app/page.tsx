@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-import MoodGrid from '@/components/FeaturedPlaimport MoodGrid from '@/components/MoodGrid';
-
+import MoodGrid from '@/components/MoodGrid';
 /**
  * Helper to normalize audio URL.
  */
