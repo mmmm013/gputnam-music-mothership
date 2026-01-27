@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 
 import Footer from '@/components/Footer';
-import GlobalPlayer from '@/components/GlobalPlayer';
+import dynamic from 'next/dynamic'; const GlobalPlayer = dynamic(() => import('@/components/GlobalPlayer'), { ssr: false });
 import MoodGrid from '@/components/MoodGrid';
 import { Music, ArrowRight } from 'lucide-react';
 /**
