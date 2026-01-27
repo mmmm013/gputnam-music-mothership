@@ -141,7 +141,7 @@ export default function FeaturedPlaylists() {
               </div>
             ))}
           </div>
-        )}
-      </section>
-    );;
+          </div>
+    </section>
+  );
 }
