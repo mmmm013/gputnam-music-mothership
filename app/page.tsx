@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-import MoodGrid from '@/components/80
+import MoodGrid  from '@/components/MoodGrid';
   ';
 import { ArrowRight, Music } from 'lucide-react';
 
