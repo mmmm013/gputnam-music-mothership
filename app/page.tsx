@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-import FeaturedPlaylists from '@/components/FeaturedPlaylists';
+import MoodGrid from '@/components/80
+  ';
 import { ArrowRight, Music } from 'lucide-react';
 
 /**
@@ -78,7 +79,7 @@ export default function Hero() {
 
       {/* Featured Playlists Section */}
       <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <FeaturedPlaylists />
+        <MoodGrid />
       </div>
 
       <GlobalPlayer />
