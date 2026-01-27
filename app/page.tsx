@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import MoodGrid from '@/components/MoodGrid';
+import { Music, ArrowRight } from 'lucide-react';
 /**
  * Helper to normalize audio URL.
  */
