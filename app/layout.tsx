@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { PlayerProvider } from './PlayerContext';
-export const metadata: Metadata = {
+import { Providers } from './Providers';export const metadata: Metadata = {
   title: 'G Putnam Music',
   description: 'IT\'S KLEIGH',
 };
@@ -13,6 +12,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-        <body className="antialiased bg-[#3E2723]"><PlayerProvider>{children}</PlayerProvider></body>    </html>
+        <body className="antialiased bg-[#3E2723]"><Providers>{children}</Providers></body>    </html>
   );
 }
