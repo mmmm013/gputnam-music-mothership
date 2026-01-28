@@ -34,10 +34,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const fetchMusic = async () => {
       console.log("🎵 Connecting to G Putnam Archives (tracks)...");
       
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      // Check if environment variables are defined
+      if (!supabaseUrl || !supabaseKey) {
+        console.warn('⚠️ Supabase environment variables not configured. Music features will be limited.');
+        return;
+      }
+
+      const supabase = createBrowserClient(supabaseUrl, supabaseKey);
 
       // We switched from 'songs' to 'tracks' based on your screenshot
       const { data, error } = await supabase
