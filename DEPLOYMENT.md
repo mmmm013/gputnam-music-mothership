@@ -50,12 +50,16 @@ NEXT_PUBLIC_VERCEL_URL=your-app.vercel.app
 The application is designed to gracefully handle missing environment variables:
 
 - **Missing Supabase credentials**: 
-  - Client-side pages will show no database data but won't crash
+  - The application will render without crashing
+  - Client-side pages will show no database data
+  - Console will log: "⚠️ Supabase environment variables not configured. Music features will be limited."
   - API routes will return error messages indicating missing configuration
-  - The FeaturedPlaylists component will display: "SYSTEM: CRITICAL FAILURE - MISSING API KEYS"
+  - Music player and mood grid features will be limited but won't prevent page load
 
 - **Missing Stripe credentials**: 
   - Payment features will not work but the rest of the app will function
+
+**Note**: As of the latest update, the application gracefully handles missing Supabase environment variables and will NOT show the "Application error: a client-side exception has occurred" error that was previously blocking deployment.
 
 ## Database Setup
 
