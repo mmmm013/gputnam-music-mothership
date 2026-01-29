@@ -47,7 +47,64 @@ AS $$
 $$;
 
 -- =====================================================
--- 4. AGREEMENT LINKS TABLE
+-- 4. BASE TABLES (must be created before foreign keys)
+-- =====================================================
+
+-- Create agreements table if it doesn't exist
+CREATE TABLE IF NOT EXISTS lb.agreements (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid NOT NULL,
+  title text NOT NULL,
+  agreement_type text,
+  status text DEFAULT 'draft',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE lb.agreements ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "org_agreements" ON lb.agreements
+  FOR ALL
+  USING (org_id = lb.get_org_id())
+  WITH CHECK (org_id = lb.get_org_id());
+
+-- Create documents table if it doesn't exist
+CREATE TABLE IF NOT EXISTS lb.documents (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid NOT NULL,
+  title text NOT NULL,
+  storage_path text,
+  file_hash text,
+  mime_type text,
+  created_at timestamptz DEFAULT now(),
+  created_by uuid DEFAULT auth.uid()
+);
+
+ALTER TABLE lb.documents ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "org_documents" ON lb.documents
+  FOR ALL
+  USING (org_id = lb.get_org_id())
+  WITH CHECK (org_id = lb.get_org_id());
+
+-- Create works table if it doesn't exist
+CREATE TABLE IF NOT EXISTS lb.works (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid NOT NULL,
+  title text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE lb.works ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "org_works" ON lb.works
+  FOR ALL
+  USING (org_id = lb.get_org_id())
+  WITH CHECK (org_id = lb.get_org_id());
+
+-- =====================================================
+-- 5. AGREEMENT LINKS TABLE (depends on agreements and documents)
 -- =====================================================
 
 -- Document linking model for agreements
@@ -91,47 +148,6 @@ CREATE POLICY "auth_insert_agreement_links" ON lb.agreement_links
 -- Create index for performance
 CREATE INDEX IF NOT EXISTS idx_agreement_links_agreement_id ON lb.agreement_links(agreement_id);
 CREATE INDEX IF NOT EXISTS idx_agreement_links_document_id ON lb.agreement_links(document_id);
-
--- =====================================================
--- 5. PLACEHOLDER TABLES (if they don't exist)
--- =====================================================
-
--- Create agreements table if it doesn't exist
-CREATE TABLE IF NOT EXISTS lb.agreements (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  org_id uuid NOT NULL,
-  title text NOT NULL,
-  agreement_type text,
-  status text DEFAULT 'draft',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-ALTER TABLE lb.agreements ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "org_agreements" ON lb.agreements
-  FOR ALL
-  USING (org_id = lb.get_org_id())
-  WITH CHECK (org_id = lb.get_org_id());
-
--- Create documents table if it doesn't exist
-CREATE TABLE IF NOT EXISTS lb.documents (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  org_id uuid NOT NULL,
-  title text NOT NULL,
-  storage_path text,
-  file_hash text,
-  mime_type text,
-  created_at timestamptz DEFAULT now(),
-  created_by uuid DEFAULT auth.uid()
-);
-
-ALTER TABLE lb.documents ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "org_documents" ON lb.documents
-  FOR ALL
-  USING (org_id = lb.get_org_id())
-  WITH CHECK (org_id = lb.get_org_id());
 
 -- =====================================================
 -- 6. REGISTER VAULT DOCUMENT RPC
@@ -231,26 +247,7 @@ CREATE INDEX IF NOT EXISTS idx_compliance_findings_work_id ON lb.compliance_find
 CREATE INDEX IF NOT EXISTS idx_compliance_findings_type ON lb.compliance_findings(finding_type);
 
 -- =====================================================
--- 8. WORKS TABLE (if it doesn't exist)
--- =====================================================
-
-CREATE TABLE IF NOT EXISTS lb.works (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  org_id uuid NOT NULL,
-  title text NOT NULL,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-ALTER TABLE lb.works ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "org_works" ON lb.works
-  FOR ALL
-  USING (org_id = lb.get_org_id())
-  WITH CHECK (org_id = lb.get_org_id());
-
--- =====================================================
--- 9. SPLITS TABLE (for compliance checking)
+-- 8. SPLITS TABLE (for compliance checking)
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS lb.splits (
@@ -275,7 +272,7 @@ CREATE POLICY "org_splits" ON lb.splits
   );
 
 -- =====================================================
--- 10. COMPLIANCE SWEEP FUNCTION
+-- 9. COMPLIANCE SWEEP FUNCTION
 -- =====================================================
 
 -- Function to perform compliance sweep
@@ -349,7 +346,7 @@ $$;
 GRANT EXECUTE ON FUNCTION lb.compliance_sweep TO authenticated;
 
 -- =====================================================
--- 11. COMPLIANCE SUMMARY RPC
+-- 10. COMPLIANCE SUMMARY RPC
 -- =====================================================
 
 -- Function to get compliance summary per work
@@ -384,7 +381,7 @@ $$;
 GRANT EXECUTE ON FUNCTION lb.compliance_summary_per_work TO authenticated;
 
 -- =====================================================
--- 12. REALTIME BROADCAST TRIGGER
+-- 11. REALTIME BROADCAST TRIGGER
 -- =====================================================
 
 -- Function to broadcast compliance findings
@@ -415,7 +412,7 @@ CREATE TRIGGER trg_compliance_findings_broadcast
   EXECUTE FUNCTION lb.trg_compliance_findings_broadcast();
 
 -- =====================================================
--- 13. TRACKS TABLE (GPMC Audio)
+-- 12. TRACKS TABLE (GPMC Audio)
 -- =====================================================
 
 -- Create lb.tracks table for GPMC audio management
@@ -477,7 +474,7 @@ CREATE POLICY "owner_delete_tracks" ON lb.tracks
   USING (owner_id = auth.uid() AND status != 'approved');
 
 -- =====================================================
--- 14. STORAGE BUCKETS
+-- 13. STORAGE BUCKETS
 -- =====================================================
 
 -- Create storage buckets
@@ -492,7 +489,7 @@ ON CONFLICT (id) DO UPDATE SET
   allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 -- =====================================================
--- 15. STORAGE BUCKET RLS POLICIES
+-- 14. STORAGE BUCKET RLS POLICIES
 -- =====================================================
 
 -- Helper function to extract org_id from storage path
@@ -580,7 +577,7 @@ CREATE POLICY "docs_delete_own" ON storage.objects
   );
 
 -- =====================================================
--- 16. REVIEW REQUESTS TABLE
+-- 15. REVIEW REQUESTS TABLE
 -- =====================================================
 
 -- Table for collaboration and approval flow
@@ -648,20 +645,41 @@ CREATE INDEX IF NOT EXISTS idx_review_requests_status ON lb.review_requests(stat
 CREATE INDEX IF NOT EXISTS idx_review_requests_content ON lb.review_requests(content_type, content_id);
 
 -- =====================================================
--- 17. REALTIME CONFIGURATION
+-- 16. REALTIME CONFIGURATION
 -- =====================================================
 
--- Enable realtime for compliance_findings
-ALTER PUBLICATION supabase_realtime ADD TABLE lb.compliance_findings;
+-- Enable realtime for compliance_findings (if publication exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE lb.compliance_findings;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
--- Enable realtime for review_requests  
-ALTER PUBLICATION supabase_realtime ADD TABLE lb.review_requests;
+-- Enable realtime for review_requests
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE lb.review_requests;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Enable realtime for tracks
-ALTER PUBLICATION supabase_realtime ADD TABLE lb.tracks;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE lb.tracks;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- =====================================================
--- 18. GRANT PERMISSIONS
+-- 17. GRANT PERMISSIONS
 -- =====================================================
 
 -- Grant usage on lb schema to authenticated users
