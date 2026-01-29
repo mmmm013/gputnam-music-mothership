@@ -3,9 +3,13 @@
  * 
  * This file demonstrates how to use the new lb schema features
  * in a Next.js application with Supabase.
+ * 
+ * IMPORTANT: When using tables from the lb schema, use table names directly
+ * (e.g., 'tracks', not 'lb.tracks'). The schema is configured in config.toml.
+ * See utils/supabase/lb-client.ts for client configuration details.
  */
 
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/lb-client';
 import type { 
   NewTrack, 
   NewDocument, 
@@ -14,7 +18,7 @@ import type {
   ReviewStatus,
 } from '@/types/database';
 
-// Initialize Supabase client
+// Initialize Supabase client configured for lb schema
 const supabase = createClient();
 
 /**
@@ -57,7 +61,7 @@ export async function uploadTrack(file: File, metadata: {
   };
   
   const { data: track, error: dbError } = await supabase
-    .from('lb.tracks')
+    .from('tracks')
     .insert(trackData)
     .select()
     .single();
@@ -103,7 +107,7 @@ export async function submitTrackForReview(
   
   // Update track status
   const { error: updateError } = await supabase
-    .from('lb.tracks')
+    .from('tracks')
     .update({ status: 'pending_review' })
     .eq('id', trackId)
     .eq('owner_id', user.id);
@@ -121,7 +125,7 @@ export async function submitTrackForReview(
   };
   
   const { data, error } = await supabase
-    .from('lb.review_requests')
+    .from('review_requests')
     .insert(reviewRequest)
     .select()
     .single();
@@ -144,7 +148,7 @@ export async function reviewContent(
   const status: ReviewStatus = approved ? 'approved' : 'rejected';
   
   const { data, error } = await supabase
-    .from('lb.review_requests')
+    .from('review_requests')
     .update({
       status,
       review_note: note,
@@ -161,7 +165,7 @@ export async function reviewContent(
   if (approved && data) {
     if (data.content_type === 'track') {
       await supabase
-        .from('lb.tracks')
+        .from('tracks')
         .update({ status: 'approved' })
         .eq('id', data.content_id);
     }
@@ -241,7 +245,7 @@ export function subscribeToReviewRequests(
  */
 export async function getTracksByStatus(status: TrackStatus) {
   const { data, error } = await supabase
-    .from('lb.tracks')
+    .from('tracks')
     .select('*')
     .eq('status', status)
     .order('created_at', { ascending: false });
@@ -259,7 +263,7 @@ export async function linkDocumentToAgreement(
   linkType: string = 'supporting_doc'
 ) {
   const { data, error } = await supabase
-    .from('lb.agreement_links')
+    .from('agreement_links')
     .insert({
       agreement_id: agreementId,
       document_id: documentId,
@@ -286,7 +290,7 @@ export async function createWorkWithSplits(
   
   // Create work
   const { data: work, error: workError } = await supabase
-    .from('lb.works')
+    .from('works')
     .insert({
       org_id: orgId,
       title: workTitle,
@@ -303,7 +307,7 @@ export async function createWorkWithSplits(
   }));
   
   const { data: splitsResult, error: splitsError } = await supabase
-    .from('lb.splits')
+    .from('splits')
     .insert(splitsData)
     .select();
     

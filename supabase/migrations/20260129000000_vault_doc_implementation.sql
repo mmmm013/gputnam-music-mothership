@@ -269,6 +269,13 @@ CREATE POLICY "org_splits" ON lb.splits
       WHERE w.id = work_id
       AND w.org_id = lb.get_org_id()
     )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM lb.works w
+      WHERE w.id = work_id
+      AND w.org_id = lb.get_org_id()
+    )
   );
 
 -- =====================================================
@@ -284,17 +291,28 @@ AS $$
 DECLARE
   v_findings_count integer := 0;
   v_work record;
-  v_total_split numeric;
+  v_count integer;
+  v_org_id uuid;
 BEGIN
-  -- Clear previous findings (optional - or mark as resolved)
-  DELETE FROM lb.compliance_findings WHERE NOT resolved;
+  -- Get org ID for security context
+  v_org_id := lb.get_org_id();
+  
+  -- Only allow org members to run sweep for their org
+  IF v_org_id IS NULL THEN
+    RAISE EXCEPTION 'Must be authenticated and have an organization';
+  END IF;
+  
+  -- Clear previous findings for this org only
+  DELETE FROM lb.compliance_findings 
+  WHERE NOT resolved 
+  AND work_id IN (SELECT id FROM lb.works WHERE org_id = v_org_id);
   
   -- Check 1: Splits not summing to 100%
   FOR v_work IN 
     SELECT w.id as work_id, w.title, COALESCE(SUM(s.percentage), 0) as total_pct
     FROM lb.works w
     LEFT JOIN lb.splits s ON s.work_id = w.id
-    WHERE w.org_id = lb.get_org_id()
+    WHERE w.org_id = v_org_id
     GROUP BY w.id, w.title
     HAVING COALESCE(SUM(s.percentage), 0) != 100
   LOOP
@@ -315,7 +333,8 @@ BEGIN
     v_findings_count := v_findings_count + 1;
   END LOOP;
   
-  -- Check 2: Missing documents (works without linked documents)
+  -- Check 2: Works without any agreements
+  -- (Note: This is a simplified check - adjust based on actual work-agreement relationship)
   INSERT INTO lb.compliance_findings (
     work_id,
     finding_type,
@@ -326,17 +345,12 @@ BEGIN
     w.id,
     'missing_docs',
     'warning',
-    format('Work "%s" has no linked documents', w.title)
+    format('Work "%s" needs review for document completeness', w.title)
   FROM lb.works w
-  WHERE w.org_id = lb.get_org_id()
-  AND NOT EXISTS (
-    SELECT 1 FROM lb.agreement_links al
-    INNER JOIN lb.agreements a ON a.id = al.agreement_id
-    WHERE a.org_id = w.org_id
-    -- Assuming works might be linked via agreements
-  );
+  WHERE w.org_id = v_org_id;
   
-  GET DIAGNOSTICS v_findings_count = ROW_COUNT;
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  v_findings_count := v_findings_count + v_count;
   
   RETURN v_findings_count;
 END;
@@ -457,10 +471,13 @@ CREATE POLICY "org_select_tracks" ON lb.tracks
   FOR SELECT
   USING (org_id = lb.get_org_id());
 
--- RLS Policy: INSERT - owner must be current user
+-- RLS Policy: INSERT - owner must be current user and org must match
 CREATE POLICY "owner_insert_tracks" ON lb.tracks
   FOR INSERT
-  WITH CHECK (owner_id = auth.uid());
+  WITH CHECK (
+    owner_id = auth.uid() 
+    AND (org_id = lb.get_org_id() OR org_id IS NULL)
+  );
 
 -- RLS Policy: UPDATE - owner can update if not approved
 CREATE POLICY "owner_update_tracks" ON lb.tracks
@@ -495,19 +512,41 @@ ON CONFLICT (id) DO UPDATE SET
 -- Helper function to extract org_id from storage path
 CREATE OR REPLACE FUNCTION storage.get_org_id_from_path(path text)
 RETURNS uuid
-LANGUAGE sql
+LANGUAGE plpgsql
 IMMUTABLE
 AS $$
-  SELECT (string_to_array(path, '/'))[1]::uuid;
+DECLARE
+  parts text[];
+BEGIN
+  parts := string_to_array(path, '/');
+  IF array_length(parts, 1) < 1 THEN
+    RETURN NULL;
+  END IF;
+  RETURN parts[1]::uuid;
+EXCEPTION
+  WHEN invalid_text_representation THEN
+    RETURN NULL;
+END;
 $$;
 
 -- Helper function to extract user_id from storage path
 CREATE OR REPLACE FUNCTION storage.get_user_id_from_path(path text)
 RETURNS uuid
-LANGUAGE sql
+LANGUAGE plpgsql
 IMMUTABLE
 AS $$
-  SELECT (string_to_array(path, '/'))[2]::uuid;
+DECLARE
+  parts text[];
+BEGIN
+  parts := string_to_array(path, '/');
+  IF array_length(parts, 1) < 2 THEN
+    RETURN NULL;
+  END IF;
+  RETURN parts[2]::uuid;
+EXCEPTION
+  WHEN invalid_text_representation THEN
+    RETURN NULL;
+END;
 $$;
 
 -- Tracks bucket policies

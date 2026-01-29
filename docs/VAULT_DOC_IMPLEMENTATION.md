@@ -190,14 +190,33 @@ All tables use:
 ## Usage Examples
 
 ### Register a Document
-```sql
-SELECT lb.register_vault_doc(
-  'Contract Agreement 2024',
-  'docs/org-uuid/user-uuid/contract.pdf',
-  lb.sha256_hex(pg_read_binary_file('contract.pdf')),
-  'application/pdf',
-  '{"signed_date": "2024-01-15", "parties": ["GPMC", "Artist"]}'::jsonb
-);
+```javascript
+// Client-side example with hashing
+async function registerDocumentWithHash(file: File, title: string) {
+  // Generate file hash on client side
+  const arrayBuffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  const orgId = await getOrgId();
+  const userId = user.id;
+  const filePath = `docs/${orgId}/${userId}/${file.name}`;
+  
+  // Upload file first
+  await supabase.storage.from('docs').upload(filePath, file);
+  
+  // Register document
+  const { data: docId } = await supabase.rpc('register_vault_doc', {
+    p_title: title,
+    p_storage_path: filePath,
+    p_file_hash: hashHex,
+    p_mime_type: file.type,
+    p_metadata: { signed_date: "2024-01-15", parties: ["GPMC", "Artist"] }
+  });
+  
+  return docId;
+}
 ```
 
 ### Run Compliance Sweep
