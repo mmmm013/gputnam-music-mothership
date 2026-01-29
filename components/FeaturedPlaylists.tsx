@@ -2,6 +2,7 @@
   'use client';
 import { useState, useEffect } from 'react';
 import { Play, AlertTriangle, CheckCircle } from 'lucide-react';
+<<<<<<< HEAD
 import { createClient } from '@supabase/supabase-js';
 
 // SAFETY CHECK: Are the keys even here?
@@ -11,6 +12,9 @@ const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = (SUPABASE_URL && SUPABASE_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
+=======
+import { createClient as createLocalClient } from '@/utils/supabase/client';
+>>>>>>> 08d812d (Deploy mip page)
 
 const BUCKET_URL = "https://eajwgr0vvkhfmwfiotpm.supabase.co/storage/v1/object/public/tracks";
 
@@ -20,6 +24,7 @@ export default function FeaturedPlaylists() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+<<<<<<< HEAD
     fetchPlaylists();
   }, []);
 
@@ -48,6 +53,39 @@ export default function FeaturedPlaylists() {
       }
 
       if (!configs || configs.length === 0) {
+=======
+    async function fetchPlaylists() {
+      const supabase = createLocalClient();
+      if (!supabase) {
+        setStatus('CRITICAL FAILURE');
+        setErrorMsg('MISSING API KEYS. Check Vercel Environment Variables.');
+        return;
+      }
+
+      setStatus('CONNECTING TO DB...');
+
+      // 2. FETCH DATA
+      const { data, error } = await supabase
+        .from('featured_playlists_config')
+        .select('*')
+        .not('display_name', 'is', null)
+        .order('sort_order');
+      // 3. HANDLE RESULTS
+      if (error) {
+        setStatus('DB ERROR');
+        setErrorMsg(error.message);
+      } else if (data && data.length > 0) {
+        setStatus('SUCCESS');
+        // Group tracks
+        const grouped = data.reduce((acc: any, track: any) => {
+          if (!acc[track.display_name]) {
+            acc[track.display_name] = track;
+          }
+          return acc;
+        }, {});
+        setPlaylists(Object.values(grouped));
+      } else {
+>>>>>>> 08d812d (Deploy mip page)
         setStatus('EMPTY');
         setErrorMsg('No mood playlists configured.');
         return;

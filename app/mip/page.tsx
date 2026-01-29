@@ -1,5 +1,6 @@
-'use client';
+import dynamic from 'next/dynamic';
 
+<<<<<<< HEAD
 import { useState, useRef, useEffect } from 'react';
 import { Shield, Zap, Mic, Lock, Download, Play, Pause, FileText, ToggleLeft, ToggleRight, CheckCircle, Copy } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
@@ -220,4 +221,13 @@ export default function MipPage() {
       )}
     </main>
   );
+=======
+const MipInner = dynamic(
+  () => import('../components/MipInner'),
+  { ssr: false }
+);
+
+export default function MipPage() {
+  return <MipInner />;
+>>>>>>> 08d812d (Deploy mip page)
 }

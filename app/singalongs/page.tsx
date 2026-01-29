@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { Play, Pause, Heart, Star, BookOpen, Sun, Moon, Music } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
+<<<<<<< HEAD
 // SAFETY CHECK: Are the keys even here?
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -11,6 +12,10 @@ const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = (SUPABASE_URL && SUPABASE_KEY) 
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
+=======
+// --- SHARED AUDIO SOURCE (The "Dependence") ---
+const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
+>>>>>>> 08d812d (Deploy mip page)
 
 export default function Singalongs() {
   const [activeMood, setActiveMood] = useState<string | null>(null);
@@ -20,7 +25,7 @@ export default function Singalongs() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // THE LOGIC: Fetch from SHARED CATALOG, but Filter for THIS BRAND
-  async function playMood(moodTag: string) {
+   async function playMood(moodTag: string) {
     if (activeMood === moodTag && isPlaying) {
       // Pause if clicking same mood
       audioRef.current?.pause();
@@ -28,6 +33,7 @@ export default function Singalongs() {
       return;
     }
 
+<<<<<<< HEAD
     setLoading(true);
     setActiveMood(moodTag);
     
@@ -43,6 +49,18 @@ export default function Singalongs() {
       } else {
         console.error('Supabase not initialized - missing environment variables');
       }
+=======
+      setLoading(true);
+      setActiveMood(moodTag);
+
+         // FETCH FROM MASTER GPM VAULT
+         const supabase = createClient(SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
+         const { data: supaData, error } = await supabase
+             .from('tracks')
+             .select('*')
+             .ilike('tags', `%${moodTag}%`) // Filter by the mood
+             .limit(1); // Grab one to start (Radio Mode)
+>>>>>>> 08d812d (Deploy mip page)
 
       // ALSO MERGE IN LOCAL AWESOME SQUAD TRACKS (public/handoff/awesome-squad.json)
       let localData: any[] = []

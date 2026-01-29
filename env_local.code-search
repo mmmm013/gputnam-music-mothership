@@ -1,0 +1,31 @@
+# Query: env.local
+# ContextLines: 1
+
+# ================================
+# Core Supabase configuration
+# ================================
+
+# Public Supabase URL (used by client and server)
+NEXT_PUBLIC_SUPABASE_URL=https://lbzpfqarraegkghxwbah.supabase.co
+
+# Public Supabase anon key (used by client and server)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxienBmcWFycmFlZ2tnaHh3YmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MTczMjEsImV4cCI6MjA4Mzk5MzMyMX0.Sltnnkij-iIps8IqsYTMoWoHc5bL0gVo9y2_M5DlWTM
+
+# Service‑role key (server only, NEVER exposed to browser)
+SUPABASE_SERVICE_ROLE_KEY=REPLACE_WITH_YOUR_SERVICE_ROLE_KEY
+
+# ================================
+# Stripe configuration
+# ================================
+
+# Secret API key (server only)
+STRIPE_SECRET_KEY=REPLACE_WITH_YOUR_STRIPE_SECRET_KEY
+
+# Webhook signing secret (server only)
+STRIPE_WEBHOOK_SECRET=REPLACE_WITH_YOUR_STRIPE_WEBHOOK_SECRET
+
+# ================================
+# Other legacy / migration notes
+# ================================
+# - Any old DISCO API keys must be removed from this file.
+# - This file is listed in .gitignore and must NEVER be committed.

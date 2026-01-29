@@ -1,0 +1,9 @@
+export const dynamic = 'force-dynamic';
+
+import nextDynamic from 'next/dynamic';
+
+const MipInner = nextDynamic(() => import('../components/MipInner'), { ssr: false });
+
+export default function MipPage() {
+  return <MipInner />;
+}

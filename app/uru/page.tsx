@@ -1,5 +1,6 @@
-'use client';
+import dynamic from 'next/dynamic';
 
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { Fingerprint, Lock, Music, ArrowRight, ShieldCheck, DollarSign, Play } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
@@ -103,4 +104,13 @@ export default function UruPage() {
       </div>
     </main>
   );
+=======
+const MipInner = dynamic(
+  () => import('../components/MipInner'),
+  { ssr: false }
+);
+
+export default function UruPage() {
+  return <MipInner />;
+>>>>>>> 08d812d (Deploy mip page)
 }
