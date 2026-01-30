@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePlayer } from "./PlayerContext";
-import GpmFooter from "@/components/GpmFooter";
+import GpmFooter from "@/components/Footer";
 
 export default function ClientPage() {
   const { isPlaying, togglePlay } = usePlayer();

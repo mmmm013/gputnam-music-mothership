@@ -2,12 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import gpmQr from "@/public/gpm_qr_code.jpg"; // put gpm_qr_code.jpg in /public
 
 export default function GpmFooter() {
   return (
     <footer className="mt-16 border-t border-neutral-800 px-6 py-8 text-sm text-neutral-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-      {/* 985 help section */}
       <div>
         <p className="font-semibold uppercase tracking-[0.22em] text-amber-300">
           985 · Help & Support
@@ -21,7 +19,6 @@ export default function GpmFooter() {
         </p>
       </div>
 
-      {/* WHO link with GPM bio */}
       <div>
         <Link href="/who" className="underline">
           WHO · G Putnam Music, LLC
@@ -31,11 +28,12 @@ export default function GpmFooter() {
         </p>
       </div>
 
-      {/* QR code block */}
       <div className="flex flex-col items-center">
         <Image
-          src={gpmQr}
+          src="/assets/qrcode.jpeg"
           alt="G Putnam Music QR"
+          width={96}
+          height={96}
           className="h-24 w-24 rounded-md border border-neutral-700 bg-neutral-900"
         />
         <p className="mt-1 text-[11px] tracking-[0.2em] uppercase text-neutral-500">
