@@ -1,93 +1,56 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import Image from 'next/image';
-import dynamic from 'next/dynamic';
-import MoodGrid from '@/components/MoodGrid';
-import { Music, ArrowRight } from 'lucide-react';
+"use client";
 
-const GlobalPlayer = dynamic(() => import('@/components/GlobalPlayer'), { ssr: false });
-
-/**
- * Helper to normalize audio URL.
- */
-function normalizeAudioUrl(input?: string | null): string {
-  if (!input) return '';
-  const trimmed = input.trim();
-  if (!trimmed) return '';
-  
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('/')
-  ) {
-    return trimmed;
-  }
-  
-  return `/${trimmed}`;
-}
+import React from "react";
+import { usePlayer } from "./PlayerContext";
+import GpmFooter from "@/components/GpmFooter";
 
 export default function ClientPage() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioReady, setAudioReady] = useState(false);
-  const [audioError, setAudioError] = useState(false);
-
-  // 1. MUSIC: Points to public/assets/Fly Again.mp3
-  const normalizedAudioUrl = normalizeAudioUrl('/assets/Fly Again.mp3');
-  const audioSrc = normalizedAudioUrl ?? '';
-
-  const scrollToMusic = () => {
-    const section = document.getElementById('featured');
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-  };
+  const { isPlaying, togglePlay } = usePlayer();
 
   return (
-    <main className="min-h-screen flex flex-col text-white relative">
-      
-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg */}
-      <div className="fixed inset-0 z-[-1]">
-        <Image
-          src="/assets/hero.jpg"
-          alt="Background"
-          fill
-          className="object-cover brightness-50"
-          priority
-        />
-      </div>
-
-      {/* Hero Content Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter drop-shadow-2xl">
+    <main className="relative min-h-screen w-full overflow-hidden bg-black text-white flex flex-col">
+      {/* HERO */}
+      <section className="flex-1 relative z-10 flex flex-col items-center justify-center pt-24 pb-16 px-6">
+        <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-center">
           G Putnam Music
         </h1>
-        <p className="text-xl text-neutral-200 max-w-2xl mb-8 drop-shadow-md">
-          The One Stop Song Shop.
+        <p className="mt-3 text-xs md:text-sm tracking-[0.35em] text-amber-400 uppercase text-center">
+          Official Stream · Live Rotation · Focus
         </p>
-        
-        <button 
-          onClick={scrollToMusic}
-          className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-neutral-200 transition-colors shadow-lg"
+
+        <button
+          onClick={togglePlay}
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2 text-sm font-medium text-white shadow-lg shadow-black/40"
         >
-          <Music size={20} />
-          <span>Listen Now</span>
-          <ArrowRight size={20} />
+          <span>🎵</span>
+          <span>{isPlaying ? "Pause" : "Listen Now"}</span>
         </button>
+
+        {/* Mood buttons row */}
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.25em]">
+          <button className="rounded-full border border-neutral-600 px-4 py-1">
+            Melancholy
+          </button>
+          <button className="rounded-full border border-neutral-600 px-4 py-1">
+            Dreamy
+          </button>
+          <button className="rounded-full border border-amber-400 bg-amber-400/10 px-4 py-1 text-amber-300">
+            Focus
+          </button>
+          <button className="rounded-full border border-neutral-600 px-4 py-1">
+            Uplifting
+          </button>
+          <button className="rounded-full border border-neutral-600 px-4 py-1">
+            High Energy
+          </button>
+          <button className="rounded-full border border-neutral-600 px-4 py-1">
+            Late Night
+          </button>
+        </div>
       </section>
 
-      {/* Featured Playlists Section */}
-      <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <MoodGrid />
-      </div>
-
-      <GlobalPlayer />
-
-      {/* Invisible Audio Logic */}
-      <audio 
-        ref={audioRef}
-        src={audioSrc}
-        onCanPlay={() => setAudioReady(true)}
-        onError={() => setAudioError(true)}
-        className="hidden"
-      />
+      {/* STANDARD GPM FOOTER */}
+      <GpmFooter />
     </main>
   );
 }

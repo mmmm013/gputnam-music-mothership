@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePlayer } from './PlayerContext';
+import { usePlayer } from '@/app/PlayerContext';
 
 // 1. Define strict type to enforce the Primary Key
 interface Track {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { usePlayer } from '@/components/PlayerContext';
+import { usePlayer } from '@/app/PlayerContext';
 
 declare global {
   interface Window {

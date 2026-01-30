@@ -1,25 +1,32 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
+import { createBrowserClient } from "@supabase/ssr";
 
-// --- TYPES ---
 export interface Track {
-  id: number;
+  id: string;
   title: string;
   artist: string;
-  url: string;      // ⚠️ Verify this matches your Supabase column name in 'tracks'
-  duration?: string;
+  url: string;
 }
 
 interface PlayerContextType {
   currentTrack: Track | null;
   isPlaying: boolean;
-  queue: Track[]; 
+  queue: Track[];
   playTrack: (track: Track, newQueue?: Track[]) => void;
   togglePlay: () => void;
   nextTrack: () => void;
   prevTrack: () => void;
+  setPlaylist: (tracks: Track[]) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -28,37 +35,53 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [queue, setQueue] = useState<Track[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- FETCH SONGS FROM 'tracks' TABLE ---
   useEffect(() => {
     const fetchMusic = async () => {
-      console.log("🎵 Connecting to G Putnam Archives (tracks)...");
-      
+      console.log("🎵 Connecting to G Putnam Archives (gpmc_tracks)...");
+
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
 
-      // We switched from 'songs' to 'tracks' based on your screenshot
       const { data, error } = await supabase
-        .from('tracks') 
-        .select('*');
+        .from("gpmc_tracks")
+        .select("id, title, artist, url")
+        .order("title", { ascending: true });
 
       if (error) {
-        console.error('❌ Error loading music:', error.message);
-      } else if (data && data.length > 0) {
-        console.log(`✅ Loaded ${data.length} tracks`);
-        setQueue(data);
-        setCurrentTrack(data[0]); // Load the first song
+        console.error("❌ Error loading music:", error.message);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        console.log(`✅ Loaded ${data.length} tracks from gpmc_tracks`);
+        const tracks = data as Track[];
+        setQueue(tracks);
+        setCurrentTrack(tracks[0]);
       } else {
-        console.warn('⚠️ Connected to tracks table, but found 0 rows.');
+        console.warn("⚠️ Connected to gpmc_tracks, but found 0 rows.");
       }
     };
 
     fetchMusic();
   }, []);
 
-  // 1. Play a specific track 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentTrack) return;
+
+    audio.src = currentTrack.url;
+
+    if (isPlaying) {
+      audio.play().catch((err) => console.error("Audio play error:", err));
+    } else {
+      audio.pause();
+    }
+  }, [currentTrack, isPlaying]);
+
   const playTrack = (track: Track, newQueue?: Track[]) => {
     setCurrentTrack(track);
     setIsPlaying(true);
@@ -69,51 +92,54 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 2. Toggle Play/Pause
   const togglePlay = () => {
-    if (!currentTrack) return; 
+    if (!currentTrack) return;
     setIsPlaying((prev) => !prev);
   };
 
-  // 3. Next Track Logic
   const nextTrack = () => {
     if (!currentTrack || queue.length === 0) return;
     const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
-    
-    if (currentIndex === -1 || currentIndex === queue.length - 1) {
-      setCurrentTrack(queue[0]); 
-    } else {
-      setCurrentTrack(queue[currentIndex + 1]);
-    }
-    setIsPlaying(true); 
-  };
-
-  // 4. Previous Track Logic
-  const prevTrack = () => {
-    if (!currentTrack || queue.length === 0) return;
-    const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
-
-    if (currentIndex <= 0) {
-      setCurrentTrack(queue[queue.length - 1]); 
-    } else {
-      setCurrentTrack(queue[currentIndex - 1]);
-    }
+    const nextIndex =
+      currentIndex === -1 || currentIndex === queue.length - 1
+        ? 0
+        : currentIndex + 1;
+    setCurrentTrack(queue[nextIndex]);
     setIsPlaying(true);
   };
 
-  const value = useMemo(() => ({
-    currentTrack,
-    isPlaying,
-    queue,
-    playTrack,
-    togglePlay,
-    nextTrack,
-    prevTrack
-  }), [currentTrack, isPlaying, queue]);
+  const prevTrack = () => {
+    if (!currentTrack || queue.length === 0) return;
+    const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
+    const prevIndex = currentIndex <= 0 ? queue.length - 1 : currentIndex - 1;
+    setCurrentTrack(queue[prevIndex]);
+    setIsPlaying(true);
+  };
+
+  const setPlaylist = (tracks: Track[]) => {
+    setQueue(tracks);
+    setCurrentTrack(tracks.length > 0 ? tracks[0] : null);
+    setIsPlaying(false);
+  };
+
+  const value = useMemo(
+    () => ({
+      currentTrack,
+      isPlaying,
+      queue,
+      playTrack,
+      togglePlay,
+      nextTrack,
+      prevTrack,
+      setPlaylist,
+    }),
+    [currentTrack, isPlaying, queue]
+  );
 
   return (
     <PlayerContext.Provider value={value}>
       {children}
+      <audio ref={audioRef} />
     </PlayerContext.Provider>
   );
 }
@@ -121,7 +147,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 export function usePlayer() {
   const context = useContext(PlayerContext);
   if (context === undefined) {
-    throw new Error('usePlayer must be used within a PlayerProvider');
+    throw new Error("usePlayer must be used within a PlayerProvider");
   }
   return context;
 }

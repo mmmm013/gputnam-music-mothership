@@ -1,6 +1,6 @@
 'use client';
 
-import { usePlayer } from '@/components/PlayerContext';
+import { usePlayer } from '@/app/PlayerContext';
 
 export default function BehavioralPlayer() {
   const { togglePlay, isPlaying } = usePlayer();
