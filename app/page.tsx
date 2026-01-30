@@ -15,7 +15,7 @@ const VIBES = [
 ];
 
 export default function Page() {
-  const { state, playTrack, togglePlay } = usePlayer();
+  const { isPlaying, playTrack, togglePlay } = usePlayer();
   const [activeVibeId, setActiveVibeId] = useState<string>('focus');
 
   const currentVibe = useMemo(
@@ -54,11 +54,11 @@ export default function Page() {
 
         <button
           onClick={() => togglePlay()}
-          aria-pressed={state.isPlaying}
+          aria-pressed={isPlaying}
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold hover:bg-white/20"
         >
           <Music size={20} />
-          <span>{state.isPlaying ? 'Pause' : 'Listen Now'}</span>
+          <span>{isPlaying ? 'Pause' : 'Listen Now'}</span>
           <ArrowRight size={20} />
         </button>
       </section>
