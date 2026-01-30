@@ -1,9 +1,13 @@
-// utils/supabase/client.ts
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 
-// TEMPORARY BUILD-SAFE STUB
-// This completely disables Supabase usage so Next.js can build,
-// avoiding "supabaseKey is required" errors.
-
-export const createClient = () => {
-  return null as any;
+export const createClient = (): SupabaseClient | null => {
+  if (typeof window === 'undefined') return null;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY; returning null supabase client.');
+    return null;
+  }
+  return createSupabaseClient(url, anonKey);
 };
+export default createClient;

@@ -1,0 +1,229 @@
+# Query: index.html
+# ContextLines: 1
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>G Putnam Music | The Mothership</title>
+<meta name="description" content="Official stream and live rotation for G Putnam Music. Featuring URU, Heroes, and Klips." />
+<meta property="og:title" content="G Putnam Music" />
+<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+<link rel="stylesheet" href="/assets/index-5f3e2af4.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.6/dist/umd/supabase.min.js"></script>
+
+<style>
+/* --- 1. GPM BRANDING FORCE-LOCK --- */
+/* Overrides any 'Brown' or 'Kleigh' settings from the build */
+:root {
+  --color-primary: #FFBF00 !important; /* GPM AMBER */
+  --color-amber: #FFBF00 !important;
+  --color-bg: #000000 !important;      /* Pure Black Background */
+  --color-card: #1a1a1a !important;
+  --color-text: #ffffff !important;
+}
+
+body { 
+    background-color: var(--color-bg); 
+    color: var(--color-text); 
+    margin: 0; 
+    font-family: -apple-system, sans-serif; 
+    overflow-x: hidden; 
+}
+
+/* --- 2. LIVING MENAGERIE (ANIMALS) --- */
+#animal-modal {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: #000;
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(255, 191, 0, 0.2);
+    overflow: hidden;
+    z-index: 9999;
+    display: none; 
+    animation: slideUp 1s ease-out;
+}
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+#animal-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: breathe 20s infinite alternate;
+}
+@keyframes breathe { from { transform: scale(1); } to { transform: scale(1.2); } }
+
+#animal-overlay {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 20px;
+    text-align: center;
+}
+#animal-thanks { font-size: 2rem; color: var(--color-primary); font-weight: 800; margin: 0; font-family: 'Impact', sans-serif; }
+#donate-text { color: #fff; font-size: 0.9rem; margin-top: 5px; opacity: 0.9; }
+#close-animal { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+
+/* --- 3. LAYOUT & COLLECTIONS --- */
+header { 
+    background: linear-gradient(180deg, rgba(255,191,0,0.1) 0%, transparent 100%);
+    padding: 2rem; 
+    text-align: center;
+    border-bottom: 1px solid rgba(255,191,0,0.2);
+}
+#logo { height: 80px; display: inline-block; margin-bottom: 1rem; }
+#brand-title { color: var(--color-primary); font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+.tagline { color: #999; text-transform: uppercase; letter-spacing: 4px; font-size: 0.9rem; margin-top: 0.5rem; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+.collection-group { margin-bottom: 4rem; }
+.collection-title { 
+    color: var(--color-primary); 
+    border-bottom: 1px solid var(--color-primary); 
+    padding-bottom: 0.5rem; 
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+}
+
+.disco-embed { width: 100%; height: 450px; border: none; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+
+<div id="root">
+  <div id="animal-modal">
+      <button id="close-animal" onclick="document.getElementById('animal-modal').style.display='none'">X</button>
+      <div id="animal-image"></div>
+      <div id="animal-overlay">
+          <h2 id="animal-thanks">THANKS!</h2>
+          <p id="donate-text">Support the Platform.</p>
+      </div>
+  </div>
+
+  <header>
+    <div class="container">
+      <img id="logo" src="/assets/gpm_logo.jpg" alt="GPM Logo" onerror="this.style.display='none';"/>
+      <h1 id="brand-title">G Putnam Music</h1>
+      <div class="tagline">Official Stream · Live Rotation · Heroes · URU</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="content-area">
+        <p style="text-align:center; color:#666;">Loading Collections...</p>
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding: 2rem; color: #555; border-top: 1px solid #333;">
+      &copy; 2026 G Putnam Music. All Rights Reserved.
+  </footer>
+</div>
+
+<script type="module">
+// --- CONFIGURATION ---
+const SUPABASE_URL = 'https://lbzpfqarraegkghxwbah.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxienBmcWFycmFlZ2tnaHh3YmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MTczMjEsImV4cCI6MjA4Mzk5MzMyMX0.Sltnnkij-iIps8IqsYTMoWoHc5bL0gVo9y2_M5DlWTM';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// --- 1. NATURE PROTOCOL (ANIMALS) ---
+function initNatureProtocol() {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const lang = navigator.language || navigator.userLanguage;
+    let animalData = {};
+
+    // Geography Match
+    if (timeZone.includes('Australia')) {
+        animalData = { img: 'https://images.unsplash.com/photo-1529447929663-1d57599600e2?w=600&q=80', msg: "G'DAY!" };
+    } else if (timeZone.includes('Asia')) {
+        animalData = { img: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600&q=80', msg: "THANK YOU!" };
+    } else {
+        // Default Americas/Global
+        const animals = [
+            'https://images.unsplash.com/photo-1504566734188-df3d65b6f48f?w=600&q=80', // Bison
+            'https://images.unsplash.com/photo-1557401616-53d9e4629c48?w=600&q=80', // Cougar
+            'https://images.unsplash.com/photo-1611003228941-98852ba62227?w=600&q=80'  // Eagle
+        ];
+        animalData = { img: animals[Math.floor(Math.random() * animals.length)], msg: "THANKS!" };
+    }
+
+    // Render
+    const modal = document.getElementById('animal-modal');
+    document.getElementById('animal-image').style.backgroundImage = `url('${animalData.img}')`;
+    document.getElementById('animal-thanks').textContent = animalData.msg;
+    setTimeout(() => { modal.style.display = 'block'; }, 2500);
+}
+
+// --- 2. DYNAMIC CONTENT LOADER (URU, HEROES, KLIPS) ---
+async function loadContent() {
+    initNatureProtocol(); 
+    const contentArea = document.getElementById('content-area');
+    
+    try {
+        const hostname = window.location.hostname;
+        const searchTerm = hostname.includes('gputnam') ? 'gputnammusic.com' : hostname;
+        
+        // Fetch Branding Settings
+        const { data } = await supabase.from('branding_settings').select('*').ilike('domain', `%${searchTerm}%`).single();
+        
+        if (data && data.labels) {
+            contentArea.innerHTML = ''; // Clear loading text
+
+            // RENDER DISCO LINKS (The "Template Pieces")
+            if (data.labels.disco_links && Array.isArray(data.labels.disco_links)) {
+                
+                // We create a generic container for now, but you can categorize if your DB has categories
+                const section = document.createElement('div');
+                section.className = 'collection-group';
+                section.innerHTML = `<h2 class="collection-title">Featured Collections</h2>`;
+                
+                data.labels.disco_links.forEach(disco => {
+                    const iframe = document.createElement('iframe');
+                    iframe.className = 'disco-embed';
+                    iframe.src = disco.url.split('?')[0]; 
+                    iframe.allow = "autoplay *; encrypted-media *; fullscreen *; clipboard-write";
+                    section.appendChild(iframe);
+                });
+                contentArea.appendChild(section);
+            }
+            
+            // RENDER IMAGES (Gallery/FPs)
+            if (data.labels.images && Array.isArray(data.labels.images)) {
+                 const section = document.createElement('div');
+                 section.className = 'collection-group';
+                 section.innerHTML = `<h2 class="collection-title">Gallery</h2>`;
+                 const grid = document.createElement('div');
+                 grid.style.display = 'grid';
+                 grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+                 grid.style.gap = '2rem';
+                 
+                 data.labels.images.forEach(img => {
+                     const el = document.createElement('img');
+                     el.src = img.url;
+                     el.style.width = '100%';
+                     el.style.borderRadius = '8px';
+                     grid.appendChild(el);
+                 });
+                 section.appendChild(grid);
+                 contentArea.appendChild(section);
+            }
+        } else {
+             contentArea.innerHTML = '<p>No content configured for this domain.</p>';
+        }
+    } catch (e) { 
+        console.error(e);
+        contentArea.innerHTML = '<p>System Error. Loading fallback...</p>';
+    }
+}
+
+loadContent();
+</script>
+</body>
+</html>

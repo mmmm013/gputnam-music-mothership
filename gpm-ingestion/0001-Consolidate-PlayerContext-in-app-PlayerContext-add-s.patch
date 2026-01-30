@@ -1,0 +1,643 @@
+From 27af81736f16e01f7e33d648df9b08dd8c0c9c36 Mon Sep 17 00:00:00 2001
+From: mmmm013 <mmmm013@users.noreply.github.com>
+Date: Fri, 30 Jan 2026 14:06:39 -0600
+Subject: [PATCH] Consolidate PlayerContext in app/PlayerContext (add
+ setPlaylist), update imports, remove duplicate
+
+---
+ app/ClientPage.tsx              | 119 +++++++++++-------------------
+ app/PlayerContext.tsx           | 126 +++++++++++++++++++-------------
+ app/layout.tsx                  |  22 +-----
+ app/page.tsx                    |  77 +++++++++----------
+ components/BehavioralPlayer.tsx |   2 +-
+ components/MoodGrid.tsx         |   2 +-
+ components/PersistentPlayer.tsx |   2 +-
+ components/PlayerContext.tsx    |  62 ----------------
+ 8 files changed, 158 insertions(+), 254 deletions(-)
+ delete mode 100644 components/PlayerContext.tsx
+
+diff --git a/app/ClientPage.tsx b/app/ClientPage.tsx
+index f27938d..2f8cf66 100644
+--- a/app/ClientPage.tsx
++++ b/app/ClientPage.tsx
+@@ -1,93 +1,56 @@
+-'use client';
+-import React, { useRef, useState } from 'react';
+-import Image from 'next/image';
+-import dynamic from 'next/dynamic';
+-import MoodGrid from '@/components/MoodGrid';
+-import { Music, ArrowRight } from 'lucide-react';
++"use client";
+ 
+-const GlobalPlayer = dynamic(() => import('@/components/GlobalPlayer'), { ssr: false });
+-
+-/**
+- * Helper to normalize audio URL.
+- */
+-function normalizeAudioUrl(input?: string | null): string {
+-  if (!input) return '';
+-  const trimmed = input.trim();
+-  if (!trimmed) return '';
+-  
+-  if (
+-    trimmed.startsWith('http://') ||
+-    trimmed.startsWith('https://') ||
+-    trimmed.startsWith('/')
+-  ) {
+-    return trimmed;
+-  }
+-  
+-  return `/${trimmed}`;
+-}
++import React from "react";
++import { usePlayer } from "./PlayerContext";
++import GpmFooter from "@/components/GpmFooter";
+ 
+ export default function ClientPage() {
+-  const audioRef = useRef<HTMLAudioElement | null>(null);
+-  const [audioReady, setAudioReady] = useState(false);
+-  const [audioError, setAudioError] = useState(false);
+-
+-  // 1. MUSIC: Points to public/assets/Fly Again.mp3
+-  const normalizedAudioUrl = normalizeAudioUrl('/assets/Fly Again.mp3');
+-  const audioSrc = normalizedAudioUrl ?? '';
+-
+-  const scrollToMusic = () => {
+-    const section = document.getElementById('featured');
+-    if (section) section.scrollIntoView({ behavior: 'smooth' });
+-  };
++  const { isPlaying, togglePlay } = usePlayer();
+ 
+   return (
+-    <main className="min-h-screen flex flex-col text-white relative">
+-      
+-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg */}
+-      <div className="fixed inset-0 z-[-1]">
+-        <Image
+-          src="/assets/hero.jpg"
+-          alt="Background"
+-          fill
+-          className="object-cover brightness-50"
+-          priority
+-        />
+-      </div>
+-
+-      {/* Hero Content Section */}
+-      <section className="relative flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
+-        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter drop-shadow-2xl">
++    <main className="relative min-h-screen w-full overflow-hidden bg-black text-white flex flex-col">
++      {/* HERO */}
++      <section className="flex-1 relative z-10 flex flex-col items-center justify-center pt-24 pb-16 px-6">
++        <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-center">
+           G Putnam Music
+         </h1>
+-        <p className="text-xl text-neutral-200 max-w-2xl mb-8 drop-shadow-md">
+-          The One Stop Song Shop.
++        <p className="mt-3 text-xs md:text-sm tracking-[0.35em] text-amber-400 uppercase text-center">
++          Official Stream · Live Rotation · Focus
+         </p>
+-        
+-        <button 
+-          onClick={scrollToMusic}
+-          className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-neutral-200 transition-colors shadow-lg"
++
++        <button
++          onClick={togglePlay}
++          className="mt-8 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2 text-sm font-medium text-white shadow-lg shadow-black/40"
+         >
+-          <Music size={20} />
+-          <span>Listen Now</span>
+-          <ArrowRight size={20} />
++          <span>🎵</span>
++          <span>{isPlaying ? "Pause" : "Listen Now"}</span>
+         </button>
+-      </section>
+ 
+-      {/* Featured Playlists Section */}
+-      <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
+-        <MoodGrid />
+-      </div>
+-
+-      <GlobalPlayer />
++        {/* Mood buttons row */}
++        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.25em]">
++          <button className="rounded-full border border-neutral-600 px-4 py-1">
++            Melancholy
++          </button>
++          <button className="rounded-full border border-neutral-600 px-4 py-1">
++            Dreamy
++          </button>
++          <button className="rounded-full border border-amber-400 bg-amber-400/10 px-4 py-1 text-amber-300">
++            Focus
++          </button>
++          <button className="rounded-full border border-neutral-600 px-4 py-1">
++            Uplifting
++          </button>
++          <button className="rounded-full border border-neutral-600 px-4 py-1">
++            High Energy
++          </button>
++          <button className="rounded-full border border-neutral-600 px-4 py-1">
++            Late Night
++          </button>
++        </div>
++      </section>
+ 
+-      {/* Invisible Audio Logic */}
+-      <audio 
+-        ref={audioRef}
+-        src={audioSrc}
+-        onCanPlay={() => setAudioReady(true)}
+-        onError={() => setAudioError(true)}
+-        className="hidden"
+-      />
++      {/* STANDARD GPM FOOTER */}
++      <GpmFooter />
+     </main>
+   );
+ }
+diff --git a/app/PlayerContext.tsx b/app/PlayerContext.tsx
+index ad94d70..5462fa5 100644
+--- a/app/PlayerContext.tsx
++++ b/app/PlayerContext.tsx
+@@ -1,25 +1,32 @@
+-'use client';
++"use client";
++
++import {
++  createContext,
++  useContext,
++  useState,
++  ReactNode,
++  useMemo,
++  useEffect,
++  useRef,
++} from "react";
++import { createBrowserClient } from "@supabase/ssr";
+ 
+-import { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
+-import { createBrowserClient } from '@supabase/ssr';
+-
+-// --- TYPES ---
+ export interface Track {
+-  id: number;
++  id: string;
+   title: string;
+   artist: string;
+-  url: string;      // ⚠️ Verify this matches your Supabase column name in 'tracks'
+-  duration?: string;
++  url: string;
+ }
+ 
+ interface PlayerContextType {
+   currentTrack: Track | null;
+   isPlaying: boolean;
+-  queue: Track[]; 
++  queue: Track[];
+   playTrack: (track: Track, newQueue?: Track[]) => void;
+   togglePlay: () => void;
+   nextTrack: () => void;
+   prevTrack: () => void;
++  setPlaylist: (tracks: Track[]) => void;
+ }
+ 
+ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
+@@ -28,37 +35,53 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
+   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+   const [isPlaying, setIsPlaying] = useState(false);
+   const [queue, setQueue] = useState<Track[]>([]);
++  const audioRef = useRef<HTMLAudioElement | null>(null);
+ 
+-  // --- FETCH SONGS FROM 'tracks' TABLE ---
+   useEffect(() => {
+     const fetchMusic = async () => {
+-      console.log("🎵 Connecting to G Putnam Archives (tracks)...");
+-      
++      console.log("🎵 Connecting to G Putnam Archives (gpmc_tracks)...");
++
+       const supabase = createBrowserClient(
+         process.env.NEXT_PUBLIC_SUPABASE_URL!,
+         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+       );
+ 
+-      // We switched from 'songs' to 'tracks' based on your screenshot
+       const { data, error } = await supabase
+-        .from('tracks') 
+-        .select('*');
++        .from("gpmc_tracks")
++        .select("id, title, artist, url")
++        .order("title", { ascending: true });
+ 
+       if (error) {
+-        console.error('❌ Error loading music:', error.message);
+-      } else if (data && data.length > 0) {
+-        console.log(`✅ Loaded ${data.length} tracks`);
+-        setQueue(data);
+-        setCurrentTrack(data[0]); // Load the first song
++        console.error("❌ Error loading music:", error.message);
++        return;
++      }
++
++      if (data && data.length > 0) {
++        console.log(`✅ Loaded ${data.length} tracks from gpmc_tracks`);
++        const tracks = data as Track[];
++        setQueue(tracks);
++        setCurrentTrack(tracks[0]);
+       } else {
+-        console.warn('⚠️ Connected to tracks table, but found 0 rows.');
++        console.warn("⚠️ Connected to gpmc_tracks, but found 0 rows.");
+       }
+     };
+ 
+     fetchMusic();
+   }, []);
+ 
+-  // 1. Play a specific track 
++  useEffect(() => {
++    const audio = audioRef.current;
++    if (!audio || !currentTrack) return;
++
++    audio.src = currentTrack.url;
++
++    if (isPlaying) {
++      audio.play().catch((err) => console.error("Audio play error:", err));
++    } else {
++      audio.pause();
++    }
++  }, [currentTrack, isPlaying]);
++
+   const playTrack = (track: Track, newQueue?: Track[]) => {
+     setCurrentTrack(track);
+     setIsPlaying(true);
+@@ -69,51 +92,54 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
+     }
+   };
+ 
+-  // 2. Toggle Play/Pause
+   const togglePlay = () => {
+-    if (!currentTrack) return; 
++    if (!currentTrack) return;
+     setIsPlaying((prev) => !prev);
+   };
+ 
+-  // 3. Next Track Logic
+   const nextTrack = () => {
+     if (!currentTrack || queue.length === 0) return;
+     const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
+-    
+-    if (currentIndex === -1 || currentIndex === queue.length - 1) {
+-      setCurrentTrack(queue[0]); 
+-    } else {
+-      setCurrentTrack(queue[currentIndex + 1]);
+-    }
+-    setIsPlaying(true); 
++    const nextIndex =
++      currentIndex === -1 || currentIndex === queue.length - 1
++        ? 0
++        : currentIndex + 1;
++    setCurrentTrack(queue[nextIndex]);
++    setIsPlaying(true);
+   };
+ 
+-  // 4. Previous Track Logic
+   const prevTrack = () => {
+     if (!currentTrack || queue.length === 0) return;
+     const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
+-
+-    if (currentIndex <= 0) {
+-      setCurrentTrack(queue[queue.length - 1]); 
+-    } else {
+-      setCurrentTrack(queue[currentIndex - 1]);
+-    }
++    const prevIndex = currentIndex <= 0 ? queue.length - 1 : currentIndex - 1;
++    setCurrentTrack(queue[prevIndex]);
+     setIsPlaying(true);
+   };
+ 
+-  const value = useMemo(() => ({
+-    currentTrack,
+-    isPlaying,
+-    queue,
+-    playTrack,
+-    togglePlay,
+-    nextTrack,
+-    prevTrack
+-  }), [currentTrack, isPlaying, queue]);
++  const setPlaylist = (tracks: Track[]) => {
++    setQueue(tracks);
++    setCurrentTrack(tracks.length > 0 ? tracks[0] : null);
++    setIsPlaying(false);
++  };
++
++  const value = useMemo(
++    () => ({
++      currentTrack,
++      isPlaying,
++      queue,
++      playTrack,
++      togglePlay,
++      nextTrack,
++      prevTrack,
++      setPlaylist,
++    }),
++    [currentTrack, isPlaying, queue]
++  );
+ 
+   return (
+     <PlayerContext.Provider value={value}>
+       {children}
++      <audio ref={audioRef} />
+     </PlayerContext.Provider>
+   );
+ }
+@@ -121,7 +147,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
+ export function usePlayer() {
+   const context = useContext(PlayerContext);
+   if (context === undefined) {
+-    throw new Error('usePlayer must be used within a PlayerProvider');
++    throw new Error("usePlayer must be used within a PlayerProvider");
+   }
+   return context;
+-}
+\ No newline at end of file
++}
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 125ebcb..9efc892 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,16 +1,10 @@
+-<<<<<<< HEAD
+-import type { Metadata } from 'next';
+-import './globals.css';
+-import { Providers } from './Providers';
+-import Header from '@/components/Header';
+-=======
++import type { Metadata } from "next";
+ import "./globals.css";
+-import { PlayerProvider } from "@/components/PlayerContext";
+->>>>>>> 08d812d (Deploy mip page)
++import { PlayerProvider } from "./PlayerContext";
+ 
+-export const metadata = {
++export const metadata: Metadata = {
+   title: "G Putnam Music",
+-  description: "Official site for G Putnam Music",
++  description: "Official stream and live rotation for G Putnam Music.",
+ };
+ 
+ export default function RootLayout({
+@@ -20,16 +14,8 @@ export default function RootLayout({
+ }) {
+   return (
+     <html lang="en">
+-<<<<<<< HEAD
+       <body className="antialiased bg-[#3E2723]">
+-        <Providers>
+-          <Header />
+-          {children}
+-        </Providers>
+-=======
+-      <body>
+         <PlayerProvider>{children}</PlayerProvider>
+->>>>>>> 08d812d (Deploy mip page)
+       </body>
+     </html>
+   );
+diff --git a/app/page.tsx b/app/page.tsx
+index cbe3ad8..bb18633 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,47 +1,42 @@
+-<<<<<<< HEAD
+ 'use client';
+-import dynamic from 'next/dynamic';
+ 
+-const ClientPage = dynamic(() => import('@/app/ClientPage'), {
+-  ssr: false,
+-});
+-=======
+-"use client";
++import React, { useState, useMemo, useCallback } from 'react';
++import Image from 'next/image';
++import { ArrowRight, Music } from 'lucide-react';
++import { usePlayer } from './PlayerContext';
+ 
+-import { useState } from "react";
+-import Image from "next/image";
+-import { ArrowRight, Music } from "lucide-react";
+-import { usePlayer } from "@/components/PlayerContext";
+-
+-const vibes = [
+-  { id: "melancholy", label: "Melancholy" },
+-  { id: "dreamy", label: "Dreamy" },
+-  { id: "focus", label: "Focus" },
+-  { id: "uplifting", label: "Uplifting" },
+-  { id: "high-energy", label: "High Energy" },
+-  { id: "late-night", label: "Late Night" },
++const VIBES = [
++  { id: 'melancholy', label: 'Melancholy' },
++  { id: 'dreamy', label: 'Dreamy' },
++  { id: 'focus', label: 'Focus' },
++  { id: 'uplifting', label: 'Uplifting' },
++  { id: 'high-energy', label: 'High Energy' },
++  { id: 'late-night', label: 'Late Night' },
+ ];
+ 
+-export default function Home() {
++export default function Page() {
+   const { state, playTrack, togglePlay } = usePlayer();
+-  const [activeVibeId, setActiveVibeId] = useState<string>("focus");
++  const [activeVibeId, setActiveVibeId] = useState<string>('focus');
++
++  const currentVibe = useMemo(
++    () => VIBES.find((v) => v.id === activeVibeId) ?? VIBES[0],
++    [activeVibeId]
++  );
+ 
+-  const currentVibe = vibes.find((v) => v.id === activeVibeId) ?? vibes[0];
+->>>>>>> 08d812d (Deploy mip page)
++  const handleVibeClick = useCallback(
++    (id: string) => {
++      setActiveVibeId(id);
++      playTrack(id);
++    },
++    [playTrack]
++  );
+ 
+-export default function Page() {
+   return (
+-<<<<<<< HEAD
+-    <>
+-      <ClientPage />
+-    </>
+-=======
+     <main className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+-      {/* Background */}
+       <div className="absolute inset-0 -z-10">
+         <Image
+           src="/hero.jpg"
+-          alt="Kleigh Background"
++          alt="G Putnam Music hero"
+           fill
+           className="object-cover opacity-50"
+           priority
+@@ -49,7 +44,6 @@ export default function Page() {
+         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
+       </div>
+ 
+-      {/* Hero */}
+       <section className="relative z-10 flex h-[75vh] flex-col items-center justify-center px-4">
+         <h1 className="font-black text-center text-4xl md:text-7xl tracking-tight drop-shadow-2xl">
+           G Putnam Music
+@@ -60,34 +54,31 @@ export default function Page() {
+ 
+         <button
+           onClick={() => togglePlay()}
++          aria-pressed={state.isPlaying}
+           className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold hover:bg-white/20"
+         >
+           <Music size={20} />
+-          <span>{state.isPlaying ? "Pause" : "Listen Now"}</span>
++          <span>{state.isPlaying ? 'Pause' : 'Listen Now'}</span>
+           <ArrowRight size={20} />
+         </button>
+       </section>
+ 
+-      {/* Vibes grid */}
+       <section className="relative z-10 mx-auto flex max-w-4xl flex-wrap justify-center gap-3 px-4 pb-16">
+-        {vibes.map((v) => (
++        {VIBES.map((v) => (
+           <button
+             key={v.id}
+-            onClick={() => {
+-              setActiveVibeId(v.id);
+-              playTrack(v.id);
+-            }}
++            onClick={() => handleVibeClick(v.id)}
+             className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.2em] ${
+               v.id === activeVibeId
+-                ? "bg-amber-400 text-black border-amber-400"
+-                : "border-white/30 text-white/80 hover:bg-white/10"
++                ? 'bg-amber-400 text-black border-amber-400'
++                : 'border-white/30 text-white/80 hover:bg-white/10'
+             }`}
++            aria-current={v.id === activeVibeId ? 'true' : 'false'}
+           >
+             {v.label}
+           </button>
+         ))}
+       </section>
+     </main>
+->>>>>>> 08d812d (Deploy mip page)
+   );
+-}
++}
+\ No newline at end of file
+diff --git a/components/BehavioralPlayer.tsx b/components/BehavioralPlayer.tsx
+index 7883048..06ae2c6 100644
+--- a/components/BehavioralPlayer.tsx
++++ b/components/BehavioralPlayer.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import { usePlayer } from '@/components/PlayerContext';
++import { usePlayer } from '@/app/PlayerContext';
+ 
+ export default function BehavioralPlayer() {
+   const { togglePlay, isPlaying } = usePlayer();
+diff --git a/components/MoodGrid.tsx b/components/MoodGrid.tsx
+index ae88154..bc06e51 100644
+--- a/components/MoodGrid.tsx
++++ b/components/MoodGrid.tsx
+@@ -1,7 +1,7 @@
+ 'use client';
+ 
+ import React, { useState } from 'react';
+-import { usePlayer } from './PlayerContext';
++import { usePlayer } from '@/app/PlayerContext';
+ 
+ // 1. Define strict type to enforce the Primary Key
+ interface Track {
+diff --git a/components/PersistentPlayer.tsx b/components/PersistentPlayer.tsx
+index 81df8d8..e94cd0d 100644
+--- a/components/PersistentPlayer.tsx
++++ b/components/PersistentPlayer.tsx
+@@ -1,7 +1,7 @@
+ 'use client';
+ 
+ import { useRef, useEffect, useState, useCallback } from 'react';
+-import { usePlayer } from '@/components/PlayerContext';
++import { usePlayer } from '@/app/PlayerContext';
+ 
+ declare global {
+   interface Window {
+diff --git a/components/PlayerContext.tsx b/components/PlayerContext.tsx
+deleted file mode 100644
+index cbd6bb8..0000000
+--- a/components/PlayerContext.tsx
++++ /dev/null
+@@ -1,62 +0,0 @@
+-"use client";
+-
+-import React, {
+-  createContext,
+-  useContext,
+-  useState,
+-  useCallback,
+-  ReactNode,
+-} from "react";
+-
+-type PlayerState = {
+-  currentTrackId: string | null;
+-  isPlaying: boolean;
+-};
+-
+-type PlayerContextValue = {
+-  state: PlayerState;
+-  playTrack: (id: string) => void;
+-  togglePlay: () => void;
+-  stop: () => void;
+-};
+-
+-const PlayerContext = createContext<PlayerContextValue | undefined>(undefined);
+-
+-export function PlayerProvider({ children }: { children: ReactNode }) {
+-  const [state, setState] = useState<PlayerState>({
+-    currentTrackId: null,
+-    isPlaying: false,
+-  });
+-
+-  const playTrack = useCallback((id: string) => {
+-    setState({ currentTrackId: id, isPlaying: true });
+-  }, []);
+-
+-  const togglePlay = useCallback(() => {
+-    setState((prev) => ({
+-      ...prev,
+-      isPlaying: !prev.isPlaying,
+-    }));
+-  }, []);
+-
+-  const stop = useCallback(() => {
+-    setState({ currentTrackId: null, isPlaying: false });
+-  }, []);
+-
+-  const value: PlayerContextValue = {
+-    state,
+-    playTrack,
+-    togglePlay,
+-    stop,
+-  };
+-
+-  return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;
+-}
+-
+-export function usePlayer() {
+-  const ctx = useContext(PlayerContext);
+-  if (!ctx) {
+-    throw new Error("usePlayer must be used within a PlayerProvider");
+-  }
+-  return ctx;
+-}
+-- 
+2.39.5 (Apple Git-154)
+

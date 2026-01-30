@@ -1,10 +1,11 @@
-import dynamic from 'next/dynamic';
+"use client";
 
-const MipInner = dynamic(
-  () => import('../components/MipInner'),
-  { ssr: false }
-);
+import dynamic from "next/dynamic";
 
-export default function UruPage() {
-  return <MipInner />;
+const ClientPage = dynamic(() => import("@/app/ClientPage"), {
+  ssr: false,
+});
+
+export default function Page() {
+  return <ClientPage />;
 }

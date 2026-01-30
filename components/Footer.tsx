@@ -1,33 +1,46 @@
-import { Instagram, Youtube, Mail } from 'lucide-react';
+"use client";
 
-export default function Footer() {
+import Image from "next/image";
+import Link from "next/link";
+import gpmQr from "@/public/gpm_qr_code.jpg"; // put gpm_qr_code.jpg in /public
+
+export default function GpmFooter() {
   return (
-    <footer className="bg-[#2C241B] text-[#D2B48C] py-16 border-t border-[#8B4513]">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
-        
-        {/* BRAND */}
-        <div className="text-center md:text-left">
-          <h4 className="text-2xl font-black uppercase text-[#FFE4B5] tracking-tight mb-2">G Putnam Music, LLC</h4>
-          <p className="text-xs font-serif italic opacity-60">Est. 2024 • Normal, IL</p>
-        </div>
-
-        {/* QR CODE DISPLAY */}
-        <div className="flex flex-col items-center gap-2">
-            <div className="bg-white p-2 rounded-lg shadow-xl transform hover:scale-105 transition">
-                <img src="/gpm_qr_code.png" alt="Scan to Connect" className="w-24 h-24 object-contain" />
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">Scan to Connect</span>
-        </div>
-
-        {/* SOCIALS */}
-        <div className="flex gap-6">
-          <a href="#" className="hover:text-[#DAA520] transition"><Instagram size={24} /></a>
-          <a href="#" className="hover:text-[#DAA520] transition"><Youtube size={24} /></a>
-          <a href="#" className="hover:text-[#DAA520] transition"><Mail size={24} /></a>
-        </div>
+    <footer className="mt-16 border-t border-neutral-800 px-6 py-8 text-sm text-neutral-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* 985 help section */}
+      <div>
+        <p className="font-semibold uppercase tracking-[0.22em] text-amber-300">
+          985 · Help & Support
+        </p>
+        <p className="mt-1 text-neutral-400">
+          Questions about releases, rights, or usage? Email{" "}
+          <a href="mailto:info@gputnammusic.com" className="underline">
+            info@gputnammusic.com
+          </a>
+          .
+        </p>
       </div>
-      <div className="text-center mt-12 text-[10px] uppercase tracking-widest opacity-30 border-t border-[#FFFDF5]/5 pt-8">
-        © 2024 G Putnam Music. All Rights Reserved.
+
+      {/* WHO link with GPM bio */}
+      <div>
+        <Link href="/who" className="underline">
+          WHO · G Putnam Music, LLC
+        </Link>
+        <p className="mt-1 text-neutral-500">
+          Brief catalog + bio, same content as the WHO menu item.
+        </p>
+      </div>
+
+      {/* QR code block */}
+      <div className="flex flex-col items-center">
+        <Image
+          src={gpmQr}
+          alt="G Putnam Music QR"
+          className="h-24 w-24 rounded-md border border-neutral-700 bg-neutral-900"
+        />
+        <p className="mt-1 text-[11px] tracking-[0.2em] uppercase text-neutral-500">
+          gputnammusic.com
+        </p>
       </div>
     </footer>
   );
