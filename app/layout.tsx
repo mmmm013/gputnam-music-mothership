@@ -7,16 +7,16 @@ export const metadata: Metadata = {
   description: "Official stream and live rotation for G Putnam Music.",
 };
 
-export default function RootLayout({{
+export default function RootLayout({
   children,
-}}: {{
+}: {
   children: React.ReactNode;
-}}) {{
+}) {
   return (
     <html lang="en">
       <body className="antialiased bg-[#3E2723]">
-        <PlayerProvider>{{children}}</PlayerProvider>
+        <PlayerProvider>{children}</PlayerProvider>
       </body>
     </html>
   );
-}}
+}
