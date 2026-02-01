@@ -2,7 +2,6 @@
   'use client';
 import { useState, useEffect } from 'react';
 import { Play, AlertTriangle, CheckCircle } from 'lucide-react';
-<<<<<<< HEAD
 import { createClient } from '@supabase/supabase-js';
 
 // SAFETY CHECK: Are the keys even here?
@@ -12,9 +11,6 @@ const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = (SUPABASE_URL && SUPABASE_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
-=======
-import { createClient as createLocalClient } from '@/utils/supabase/client';
->>>>>>> 08d812d (Deploy mip page)
 
 const BUCKET_URL = "https://eajwgr0vvkhfmwfiotpm.supabase.co/storage/v1/object/public/tracks";
 
@@ -24,7 +20,6 @@ export default function FeaturedPlaylists() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-<<<<<<< HEAD
     fetchPlaylists();
   }, []);
 
