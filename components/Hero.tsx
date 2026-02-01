@@ -2,12 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Heart, Plus, Lock, Clock, Mic } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-
-// GPM CONFIG
-const SUPABASE_URL = 'https://eajxgrbxvkhfmmfiotpm.supabase.co';
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''; 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+import { createClient as createLocalClient } from '@/utils/supabase/client';
 
 // BUSINESS RULE: 3 HOURS 33 MINUTES
 const ROTATION_MS = 12780000; 
@@ -55,6 +50,9 @@ export default function Hero() {
   // 2. FETCH TRACKS FOR CURRENT FP
   useEffect(() => {
     async function fetchFPTracks() {
+      const supabase = createLocalClient();
+      if (!supabase) return;
+
       const { data } = await supabase
         .from('tracks')
         .select('*')

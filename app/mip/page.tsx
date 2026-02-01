@@ -1,4 +1,4 @@
-'use client';
+import dynamic from 'next/dynamic';
 
 import { useState, useRef, useEffect } from 'react';
 import { Shield, Zap, Mic, Lock, Download, Play, Pause, FileText, ToggleLeft, ToggleRight, CheckCircle, Copy } from 'lucide-react';
@@ -220,4 +220,3 @@ export default function MipPage() {
       )}
     </main>
   );
-}

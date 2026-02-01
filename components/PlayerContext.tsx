@@ -1,127 +1,62 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, ReactNode, useMemo, useEffect } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
 
-// --- TYPES ---
-export interface Track {
-  id: number;
-  title: string;
-  artist: string;
-  url: string;      
-  duration?: string;
-}
-
-interface PlayerContextType {
-  currentTrack: Track | null;
+type PlayerState = {
+  currentTrackId: string | null;
   isPlaying: boolean;
-  queue: Track[]; 
-  playTrack: (track: Track, newQueue?: Track[]) => void;
-  togglePlay: () => void;
-  nextTrack: () => void;
-  prevTrack: () => void;
-}
+};
 
-const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
+type PlayerContextValue = {
+  state: PlayerState;
+  playTrack: (id: string) => void;
+  togglePlay: () => void;
+  stop: () => void;
+};
+
+const PlayerContext = createContext<PlayerContextValue | undefined>(undefined);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
-  const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [queue, setQueue] = useState<Track[]>([]);
+  const [state, setState] = useState<PlayerState>({
+    currentTrackId: null,
+    isPlaying: false,
+  });
 
-  // --- FETCH SONGS FROM 'tracks' TABLE ---
-  useEffect(() => {
-    const fetchMusic = async () => {
-      console.log("🎵 Connecting to G Putnam Archives (tracks)...");
-      
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
-      // We use 'tracks' because your Supabase screenshot confirmed this name
-      const { data, error } = await supabase
-        .from('tracks') 
-        .select('*');
-
-      if (error) {
-        console.error('❌ Error loading music:', error.message);
-      } else if (data && data.length > 0) {
-        console.log(`✅ Loaded ${data.length} tracks`);
-        setQueue(data);
-        setCurrentTrack(data[0]); // Load the first song
-      } else {
-        console.warn('⚠️ Connected to tracks table, but found 0 rows.');
-      }
-    };
-
-    fetchMusic();
+  const playTrack = useCallback((id: string) => {
+    setState({ currentTrackId: id, isPlaying: true });
   }, []);
 
-  // 1. Play a specific track 
-  const playTrack = (track: Track, newQueue?: Track[]) => {
-    setCurrentTrack(track);
-    setIsPlaying(true);
-    if (newQueue) {
-      setQueue(newQueue);
-    } else if (queue.length === 0) {
-      setQueue([track]);
-    }
-  };
+  const togglePlay = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isPlaying: !prev.isPlaying,
+    }));
+  }, []);
 
-  // 2. Toggle Play/Pause
-  const togglePlay = () => {
-    if (!currentTrack) return; 
-    setIsPlaying((prev) => !prev);
-  };
+  const stop = useCallback(() => {
+    setState({ currentTrackId: null, isPlaying: false });
+  }, []);
 
-  // 3. Next Track Logic
-  const nextTrack = () => {
-    if (!currentTrack || queue.length === 0) return;
-    const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
-    
-    if (currentIndex === -1 || currentIndex === queue.length - 1) {
-      setCurrentTrack(queue[0]); 
-    } else {
-      setCurrentTrack(queue[currentIndex + 1]);
-    }
-    setIsPlaying(true); 
-  };
-
-  // 4. Previous Track Logic
-  const prevTrack = () => {
-    if (!currentTrack || queue.length === 0) return;
-    const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
-
-    if (currentIndex <= 0) {
-      setCurrentTrack(queue[queue.length - 1]); 
-    } else {
-      setCurrentTrack(queue[currentIndex - 1]);
-    }
-    setIsPlaying(true);
-  };
-
-  const value = useMemo(() => ({
-    currentTrack,
-    isPlaying,
-    queue,
+  const value: PlayerContextValue = {
+    state,
     playTrack,
     togglePlay,
-    nextTrack,
-    prevTrack
-  }), [currentTrack, isPlaying, queue]);
+    stop,
+  };
 
-  return (
-    <PlayerContext.Provider value={value}>
-      {children}
-    </PlayerContext.Provider>
-  );
+  return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;
 }
 
 export function usePlayer() {
-  const context = useContext(PlayerContext);
-  if (context === undefined) {
-    throw new Error('usePlayer must be used within a PlayerProvider');
+  const ctx = useContext(PlayerContext);
+  if (!ctx) {
+    throw new Error("usePlayer must be used within a PlayerProvider");
   }
-  return context;
+  return ctx;
 }

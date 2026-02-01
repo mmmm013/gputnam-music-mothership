@@ -1,0 +1,7 @@
+# Query: mipInner
+# ContextLines: 1
+
+'use client';
+import { useState, useRef, FormEvent } from 'react';
+...
+export default function MipInner() { ... }

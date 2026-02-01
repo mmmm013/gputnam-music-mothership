@@ -1,0 +1,31 @@
+import React from "react";
+import "./Branding.css";
+
+export function GpmLogo() {
+  return (
+    <img
+      className="gpm-logo"
+      src="/assets/brand/gpm_logo.jpg"
+      alt="G Putnam Music"
+    />
+  );
+}
+
+export function GpmQr() {
+  return (
+    <img
+      className="gpm-qr"
+      src="/assets/brand/gpm_qr_code.jpg"
+      alt="Scan to visit gputnammusic.com"
+    />
+  );
+}
+
+export default function Branding() {
+  return (
+    <div className="gpm-branding">
+      <GpmLogo />
+      <GpmQr />
+    </div>
+  );
+}
