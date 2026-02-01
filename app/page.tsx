@@ -6,7 +6,7 @@ export default async function Index() {
   const supabase = createClient();
 
   // 1. FETCH INVENTORY (The 38 Videos)
-  const { data: videos } = await supabase
+  const { data: videos } = await supabase || []
     .from('videos')
     .select('*')
     .order('created_at', { ascending: false });
