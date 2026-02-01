@@ -1,194 +1,191 @@
-// FILE: src/app/page.tsx (The Home Page)
-// ────────────────────────────────────────────────────────────────────────────────────────
-// This is the root / route for the entire site.
-// It is a *server component* that:
-//  1) Fetches "The 38 Videos" from the Supabase `videos` table.
-//  2) Displays the Mothership hero (The featured video or placeholder).
-//  3) Showcases the TWO real Heroes stories (Champaign + Okinawa).
-//  4) Renders the video inventory in a flex grid below.
-//  5) Includes a footer with legal, FEIN, and LB archive acknowledgment.
-// ────────────────────────────────────────────────────────────────────────────────────────
+'use client';
 
-import { createClient } from '@/utils/supabase/server';
-import BraveTrigger from '@/components/BraveTrigger';
-import Link from 'next/link';
+import { useState } from 'react';
+import Image from 'next/image';
+import { usePlayer } from '@/components/PlayerContext';
+import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity } from 'lucide-react';
 
-export default async function Index() {
-  // 1) Create the server-side Supabase client
-  const supabase = await createClient();
+export default function Home() {
+  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
+  const [activeVibe, setActiveVibe] = useState('focus');
 
-  // 2) Fetch "The 38 Videos" from the `videos` table, most recent first
-  const { data: videos } = await supabase
-    .from('videos')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // THE FULL 8-VIBE GRID (Matches your "Right" Image)
+  const vibes = [
+    { id: 'melancholy', label: 'Melancholy', icon: CloudRain, color: 'from-blue-900/50' },
+    { id: 'dreamy', label: 'dreamy', icon: Wind, color: 'from-purple-900/50' },
+    { id: 'focus', label: 'Focus', icon: Music, color: 'from-emerald-900/50' },
+    { id: 'uplifting', label: 'Uplifting', icon: Activity, color: 'from-orange-900/50' },
+    { id: 'energy', label: 'High Energy', icon: Zap, color: 'from-yellow-900/50' },
+    { id: 'night', label: 'Late Night', icon: Moon, color: 'from-indigo-900/50' },
+    { id: 'sunrise', label: 'Sunrise', icon: Sun, color: 'from-rose-900/50' },
+    { id: 'bot', label: 'Ask the Bot', icon: MessageSquare, color: 'from-cyan-900/50' },
+  ];
 
-  // 3) Select the "featuredVideo" (later: 3h 33m rule). For now, the first.
-  const featuredVideo = videos?.[0];
+  const currentVibeLabel = vibes.find(v => v.id === activeVibe)?.label || 'FOCUS';
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-black text-white">
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SECTION: THE MOTHERSHIP                                                 */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="relative z-10 flex min-h-[75vh] flex-col items-center justify-center px-4"
-        style={{
-          background:
-            'linear-gradient(to-t, #000 0%, #1a0f00 40%, #2d1a00 70%, #3d2200 100%)',
-        }}
-      >
-        {/* Featured Video Background (if available) */}
-        {featuredVideo?.video_url && (
-          <div className="absolute inset-0 z-0 opacity-20">
-            <video
-              className="h-full w-full object-cover"
-              src={featuredVideo.video_url}
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          </div>
-        )}
+    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+      
+      {/* BACKGROUND IMAGE - Uses the file we know exists */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/hero.jpg" 
+          alt="Kleigh Background" 
+          fill
+          className="object-cover opacity-50"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
+      </div>
 
-        <div className="relative z-10 text-center">
-          <h1
-            className="mb-4 text-6xl font-black uppercase tracking-tight drop-shadow-2xl"
-            style={{
-              background:
-                'linear-gradient(to-r, #f59e0b, #fbbf24, #fcd34d)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            G PUTNAM MUSIC
-          </h1>
+      {/* HERO SECTION */}
+      <div className="relative z-10 flex h-[75vh] flex-col items-center justify-center text-center px-4">
+        
+        {/* Main Title */}
+        <h1 className="font-black uppercase tracking-tighter text-white drop-shadow-2xl text-[12vw] leading-none mb-4">
+          IT'S KLEIGH
+        </h1>
 
-          <p className="text-xl font-light uppercase tracking-widest text-amber-100/80">
-            The Mothership
-          </p>
-        </div>
-
-        {/* Featured Video Player (optional inline display) */}
-        {featuredVideo?.video_url && (
-          <div className="relative z-10 mt-8 w-full max-w-3xl overflow-hidden rounded-lg shadow-2xl">
-            <video
-              className="h-auto w-full"
-              src={featuredVideo.video_url}
-              controls
-              playsInline
-            />
-          </div>
-        )}
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* HEROES SECTION                                                               */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative z-10 bg-gradient-to-b from-black/90 to-black px-4 py-16">
-        <h2 className="mb-12 text-center text-5xl font-black uppercase tracking-tight text-amber-400">
-          Heroes
-        </h2>
-
-        {/* Story 1: Champaign I-57 */}
-        <div className="mx-auto mb-16 max-w-4xl">
-          <h3 className="mb-4 text-3xl font-bold text-amber-300">
-            / BECAUSE THEY COULD
-          </h3>
-          <blockquote className="mb-4 text-xl italic text-amber-100">
-            &ldquo;Heroism is a swarm.&rdquo;
-          </blockquote>
-          <p className="text-base leading-relaxed text-gray-300">
-            Years ago, on I-57 near Champaign, Illinois, I learned the weight of a
-            collective refusal to let a stranger die. Trapped in a Camaro that had
-            disintegrated against a bridge abutment at 72mph, I was saved not by one
-            person, but by an army…
-          </p>
-        </div>
-
-        {/* Story 2: Okinawa Medic + BraveTrigger */}
-        <div className="mx-auto max-w-4xl">
-          <h3 className="mb-4 text-3xl font-bold text-amber-300">
-            / THE MEDIC FROM OKINAWA
-          </h3>
-          <p className="mb-6 text-base leading-relaxed text-gray-300">
-            A medic who served in Okinawa, whose hands were steady under fire and
-            whose courage became a blueprint for others. This is the kind of bravery
-            that reshapes the definition of what is possible…
-          </p>
-          {/* BraveTrigger: "Summon Brave" */}
-          <div className="mt-6 flex justify-center">
-            <BraveTrigger
-              heroTrack="Believe It"
-              mood="Heroic"
-              label="Summon Brave"
-            />
+        {/* Subtitle / Status */}
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] text-amber-500 uppercase">
+            Official Stream • Live Rotation
+          </span>
+          <div className="flex items-center gap-4">
+            <span className="h-px w-12 bg-white/30"></span>
+            <span className="text-xl md:text-2xl font-light tracking-[0.2em] text-white uppercase">
+              • {currentVibeLabel} •
+            </span>
+            <span className="h-px w-12 bg-white/30"></span>
           </div>
         </div>
-      </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* LATEST TRANSMISSIONS (The 38 Videos Inventory)                               */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative z-10 bg-black px-4 py-16">
-        <h2 className="mb-12 text-center text-5xl font-black uppercase tracking-tight text-amber-400">
-          Latest Transmissions
-        </h2>
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {videos?.map((video) => (
-            <Link
-              key={video.id}
-              href={`/video/${video.id}`}
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-amber-900/20 to-black shadow-lg transition-transform hover:scale-105"
+      </div>
+
+      {/* VIBE SELECTOR (Bottom Grid) */}
+      <div className="relative z-20 mx-auto w-full max-w-5xl px-6 pb-20">
+        <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+           <span className="text-xs font-bold tracking-widest text-neutral-400 uppercase">Select Your Vibe</span>
+           <span className="text-[10px] text-neutral-600 uppercase tracking-widest">G Putnam Archives</span>
+        </div>
+
+        {/* 8-GRID LAYOUT */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {vibes.map((vibe) => (
+            <button
+              key={vibe.id}
+              onClick={() => setActiveVibe(vibe.id)}
+              className={`group relative h-24 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+                activeVibe === vibe.id 
+                  ? 'border-white ring-1 ring-white/50 bg-neutral-800/60' 
+                  : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
+              }`}
             >
-              {/* Hover-play or thumbnail */}
-              <div className="relative aspect-video w-full overflow-hidden bg-black">
-                {video.video_url ? (
-                  <video
-                    className="h-full w-full object-cover opacity-80 group-hover:opacity-100"
-                    src={video.video_url}
-                    muted
-                    loop
-                    playsInline
-                    onMouseEnter={(e) => e.currentTarget.play()}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.pause();
-                      e.currentTarget.currentTime = 0;
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-amber-500">
-                    No Preview
-                  </div>
-                )}
-              </div>
+              {/* Hover Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+              
+              {/* Icon & Label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+# 1. Update the file locally
+cat <<'EOF' > app/page.tsx
+'use client';
 
-              {/* Video Metadata */}
-              <div className="p-4">
-                <p className="mb-1 text-xs uppercase tracking-wider text-amber-400">
-                  {video.category || 'Uncategorized'}
-                </p>
-                <p className="text-sm text-gray-300">
-                  {video.id.substring(0, 16)}…
-                </p>
+import { useState } from 'react';
+import Image from 'next/image';
+import { usePlayer } from '@/components/PlayerContext';
+import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity } from 'lucide-react';
+
+export default function Home() {
+  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
+  const [activeVibe, setActiveVibe] = useState('focus');
+
+  // THE FULL 8-VIBE GRID (Matches your "Right" Image)
+  const vibes = [
+    { id: 'melancholy', label: 'Melancholy', icon: CloudRain, color: 'from-blue-900/50' },
+    { id: 'dreamy', label: 'dreamy', icon: Wind, color: 'from-purple-900/50' },
+    { id: 'focus', label: 'Focus', icon: Music, color: 'from-emerald-900/50' },
+    { id: 'uplifting', label: 'Uplifting', icon: Activity, color: 'from-orange-900/50' },
+    { id: 'energy', label: 'High Energy', icon: Zap, color: 'from-yellow-900/50' },
+    { id: 'night', label: 'Late Night', icon: Moon, color: 'from-indigo-900/50' },
+    { id: 'sunrise', label: 'Sunrise', icon: Sun, color: 'from-rose-900/50' },
+    { id: 'bot', label: 'Ask the Bot', icon: MessageSquare, color: 'from-cyan-900/50' },
+  ];
+
+  const currentVibeLabel = vibes.find(v => v.id === activeVibe)?.label || 'FOCUS';
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+      
+      {/* BACKGROUND IMAGE - Uses the file we know exists */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/hero.jpg" 
+          alt="Kleigh Background" 
+          fill
+          className="object-cover opacity-50"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
+      </div>
+
+      {/* HERO SECTION */}
+      <div className="relative z-10 flex h-[75vh] flex-col items-center justify-center text-center px-4">
+        
+        {/* Main Title */}
+        <h1 className="font-black uppercase tracking-tighter text-white drop-shadow-2xl text-[12vw] leading-none mb-4">
+          IT'S KLEIGH
+        </h1>
+
+        {/* Subtitle / Status */}
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] text-amber-500 uppercase">
+            Official Stream • Live Rotation
+          </span>
+          <div className="flex items-center gap-4">
+            <span className="h-px w-12 bg-white/30"></span>
+            <span className="text-xl md:text-2xl font-light tracking-[0.2em] text-white uppercase">
+              • {currentVibeLabel} •
+            </span>
+            <span className="h-px w-12 bg-white/30"></span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* VIBE SELECTOR (Bottom Grid) */}
+      <div className="relative z-20 mx-auto w-full max-w-5xl px-6 pb-20">
+        <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+           <span className="text-xs font-bold tracking-widest text-neutral-400 uppercase">Select Your Vibe</span>
+           <span className="text-[10px] text-neutral-600 uppercase tracking-widest">G Putnam Archives</span>
+        </div>
+
+        {/* 8-GRID LAYOUT */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {vibes.map((vibe) => (
+            <button
+              key={vibe.id}
+              onClick={() => setActiveVibe(vibe.id)}
+              className={`group relative h-24 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+                activeVibe === vibe.id 
+                  ? 'border-white ring-1 ring-white/50 bg-neutral-800/60' 
+                  : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
+              }`}
+            >
+              {/* Hover Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+              
+              {/* Icon & Label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                <vibe.icon size={20} className={`text-neutral-400 transition-colors group-hover:text-white ${activeVibe === vibe.id ? 'text-white' : ''}`} />
+                <span className={`text-[10px] font-bold tracking-widest uppercase transition-colors ${activeVibe === vibe.id ? 'text-white' : 'text-neutral-400 group-hover:text-white'}`}>
+                  {vibe.label}
+                </span>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* FOOTER                                                                       */}
-      {/* ═══════════════════════════════════════════════════════════════════════════ */}
-      <footer className="relative z-10 bg-black px-4 py-8 text-center text-xs text-gray-500">
-        <p className="mb-2">
-          &copy; {new Date().getFullYear()} G PUTNAM MUSIC, LLC. All Rights Reserved.
-        </p>
-        <p>
-          FEIN: 86-2542152 | <span className="text-amber-500">LB ARCHIVE ACTIVE</span>
-        </p>
-      </footer>
-    </main>
+    </div>
   );
 }
