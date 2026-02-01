@@ -3,12 +3,21 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePlayer } from '@/components/PlayerContext';
 import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity, Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 export default function Home() {
-  const { currentTrack, isPlaying, playTrack, togglePlay, audioRef } = usePlayer();
-  const [activeVibe, setActiveVibe] = useState<string>('all');
+  // const { currentTrack, isPlaying, playTrack, togglePlay, audioRef } = usePlayer();  
+  const [currentTrack, setCurrentTrack] = useState<any>(null);  
+  const [isPlaying, setIsPlaying] = useState(false);  const [activeVibe, setActiveVibe] = useState<string>('all');
+
+    const playTrack = (track: any) => {  
+    setCurrentTrack(track);  
+    setIsPlaying(true);  
+  };  
+    
+  const togglePlay = () => {  
+    setIsPlaying(!isPlaying);  
+  };
 
   const vibes = [
     { id: 'all', label: 'All Tracks', icon: Music, color: 'from-white/20' },
