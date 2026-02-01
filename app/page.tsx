@@ -1,136 +1,193 @@
-'use client';
-import React, { useState, useMemo, useCallback } from 'react';
-import Image from 'next/image';
-import { ArrowRight, Music } from 'lucide-react';
-import { usePlayer } from './PlayerContext';
+// FILE: src/app/page.tsx (The Home Page)
+// ────────────────────────────────────────────────────────────────────────────────────────
+// This is the root / route for the entire site.
+// It is a *server component* that:
+//  1) Fetches "The 38 Videos" from the Supabase `videos` table.
+//  2) Displays the Mothership hero (The featured video or placeholder).
+//  3) Showcases the TWO real Heroes stories (Champaign + Okinawa).
+//  4) Renders the video inventory in a flex grid below.
+//  5) Includes a footer with legal, FEIN, and LB archive acknowledgment.
+// ────────────────────────────────────────────────────────────────────────────────────────
+
+import { createClient } from '@/utils/supabase/server';
 import BraveTrigger from '@/components/BraveTrigger';
+import Link from 'next/link';
 
-const VIBES = [
-  { id: 'melancholy', label: 'MELANCHOLY' },
-  { id: 'dreamy', label: 'DREAMY' },
-  { id: 'focus', label: 'FOCUS' },
-  { id: 'uplifting', label: 'UPLIFTING' },
-  { id: 'high-energy', label: 'HIGH ENERGY' },
-  { id: 'late-night', label: 'LATE NIGHT' },
-];
+export default async function Index() {
+  // 1) Create the server-side Supabase client
+  const supabase = await createClient();
 
-export default function Page() {
-  const { isPlaying, playTrack, togglePlay } = usePlayer();
-  const [activeVibeId, setActiveVibeId] = useState<string>('focus');
+  // 2) Fetch "The 38 Videos" from the `videos` table, most recent first
+  const { data: videos } = await supabase
+    .from('videos')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-  const currentVibe = useMemo(
-    () => VIBES.find((v) => v.id === activeVibeId) ?? VIBES[0],
-    [activeVibeId]
-  );
-
-  const handleVibeClick = useCallback(
-    (id: string) => {
-      setActiveVibeId(id);
-      playTrack(id);
-    },
-    [playTrack]
-  );
+  // 3) Select the "featuredVideo" (later: 3h 33m rule). For now, the first.
+  const featuredVideo = videos?.[0];
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-black text-white">
-      {/* BACKGROUND IMAGE */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/hero.jpg"
-          alt="G Putnam Music hero"
-          fill
-          className="object-cover opacity-50"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
-      </div>
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      {/* HERO SECTION: THE MOTHERSHIP                                                 */}
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative z-10 flex min-h-[75vh] flex-col items-center justify-center px-4"
+        style={{
+          background:
+            'linear-gradient(to-t, #000 0%, #1a0f00 40%, #2d1a00 70%, #3d2200 100%)',
+        }}
+      >
+        {/* Featured Video Background (if available) */}
+        {featuredVideo?.video_url && (
+          <div className="absolute inset-0 z-0 opacity-20">
+            <video
+              className="h-full w-full object-cover"
+              src={featuredVideo.video_url}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+        )}
 
-      {/* HERO SECTION */}
-      <section className="relative z-10 flex h-[75vh] flex-col items-center justify-center px-4">
-        <h1 className="font-black text-center text-4xl md:text-7xl tracking-tight drop-shadow-2xl bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-4">
-          G PUTNAM MUSIC
-        </h1>
-        <p className="mt-4 text-center text-sm md:text-xl text-amber-400 uppercase tracking-[0.2em]">
-          The Mothership · Official Stream · Live Rotation · {currentVibe.label}
-        </p>
-
-        <button
-          onClick={() => togglePlay()}
-          aria-pressed={isPlaying}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold hover:bg-white/20 transition-all"
-        >
-          <Music size={20} />
-          <span>{isPlaying ? 'Pause' : 'Listen Now'}</span>
-          <ArrowRight size={20} />
-        </button>
-      </section>
-
-      {/* VIBE SELECTOR */}
-      <section className="relative z-10 mx-auto flex max-w-4xl flex-wrap justify-center gap-3 px-4 pb-16">
-        {VIBES.map((v) => (
-          <button
-            key={v.id}
-            onClick={() => handleVibeClick(v.id)}
-            className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all ${
-              v.id === activeVibeId
-                ? 'bg-amber-400 text-black border-amber-400'
-                : 'border-white/30 text-white/80 hover:bg-white/10'
-            }`}
-            aria-current={v.id === activeVibeId ? 'true' : 'false'}
+        <div className="relative z-10 text-center">
+          <h1
+            className="mb-4 text-6xl font-black uppercase tracking-tight drop-shadow-2xl"
+            style={{
+              background:
+                'linear-gradient(to-r, #f59e0b, #fbbf24, #fcd34d)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
           >
-            {v.label}
-          </button>
-        ))}
-      </section>
+            G PUTNAM MUSIC
+          </h1>
 
-      {/* HEROES SECTION */}
-      <section id="heroes" className="relative z-10 w-full max-w-4xl mx-auto p-8 my-12 bg-slate-900/50 rounded-lg border-l-4 border-amber-600">
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold text-white">HEROES</h2>
-          <span className="text-amber-500 text-sm tracking-widest uppercase">/ Because They Could</span>
+          <p className="text-xl font-light uppercase tracking-widest text-amber-100/80">
+            The Mothership
+          </p>
         </div>
 
-        {/* STORY 1: CHAMPAIGN (GREG) */}
-        <article className="mb-12">
-          <h3 className="text-xl text-amber-400 font-serif italic mb-4">&quot;Heroism is a swarm.&quot;</h3>
-          <p className="text-slate-300 leading-relaxed">
-            Years ago, on I-57 near Champaign, Illinois, I learned the weight of a collective refusal to let a stranger die. 
-            Trapped in a Camaro that had disintegrated against a bridge abutment at 72mph, I was saved not by one person, 
-            but by an army...
-            <span className="text-slate-500 text-sm ml-2">[Read Full Story]</span>
-          </p>
-        </article>
+        {/* Featured Video Player (optional inline display) */}
+        {featuredVideo?.video_url && (
+          <div className="relative z-10 mt-8 w-full max-w-3xl overflow-hidden rounded-lg shadow-2xl">
+            <video
+              className="h-auto w-full"
+              src={featuredVideo.video_url}
+              controls
+              playsInline
+            />
+          </div>
+        )}
+      </section>
 
-        {/* STORY 2: OKINAWA (LEE) */}
-        <article className="border-t border-slate-800 pt-8">
-          <h3 className="text-2xl font-bold text-white mb-2">OKINAWA: THE DISTANT GAZE</h3>
-          <h4 className="text-sm text-slate-400 uppercase tracking-widest mb-4">The Medic from Bushnell</h4>
-          
-          <p className="text-slate-300 leading-relaxed mb-4">
-            Great-Grandpa Lee was just 19—a kid from Bushnell, Illinois, hanging in the balance between high school and college. 
-            But history has a way of interrupting plans. He stood in a line at Camp Lejeune and became a Medic, destined for 
-            one of the fiercest engagements of the Pacific War: <strong>Okinawa</strong>.
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      {/* HEROES SECTION                                                               */}
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="relative z-10 bg-gradient-to-b from-black/90 to-black px-4 py-16">
+        <h2 className="mb-12 text-center text-5xl font-black uppercase tracking-tight text-amber-400">
+          Heroes
+        </h2>
+
+        {/* Story 1: Champaign I-57 */}
+        <div className="mx-auto mb-16 max-w-4xl">
+          <h3 className="mb-4 text-3xl font-bold text-amber-300">
+            / BECAUSE THEY COULD
+          </h3>
+          <blockquote className="mb-4 text-xl italic text-amber-100">
+            &ldquo;Heroism is a swarm.&rdquo;
+          </blockquote>
+          <p className="text-base leading-relaxed text-gray-300">
+            Years ago, on I-57 near Champaign, Illinois, I learned the weight of a
+            collective refusal to let a stranger die. Trapped in a Camaro that had
+            disintegrated against a bridge abutment at 72mph, I was saved not by one
+            person, but by an army…
           </p>
-          <p className="text-slate-300 leading-relaxed mb-6">
-            To us, he is remembered by three things: The Scar, The Look, and The Flag. 
-            He didn&apos;t ask to be a hero. He was a kid who stood in a line and did a job that saved lives while the world burned around him.
+        </div>
+
+        {/* Story 2: Okinawa Medic + BraveTrigger */}
+        <div className="mx-auto max-w-4xl">
+          <h3 className="mb-4 text-3xl font-bold text-amber-300">
+            / THE MEDIC FROM OKINAWA
+          </h3>
+          <p className="mb-6 text-base leading-relaxed text-gray-300">
+            A medic who served in Okinawa, whose hands were steady under fire and
+            whose courage became a blueprint for others. This is the kind of bravery
+            that reshapes the definition of what is possible…
           </p>
-          
-          {/* BRAVE TRIGGER */}
-          <div className="flex justify-center">
-            <BraveTrigger 
-              heroTrack="Believe It" 
+          {/* BraveTrigger: "Summon Brave" */}
+          <div className="mt-6 flex justify-center">
+            <BraveTrigger
+              heroTrack="Believe It"
               mood="Heroic"
               label="Summon Brave"
             />
           </div>
-        </article>
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 w-full p-8 text-center text-slate-600 text-sm border-t border-slate-900 mt-12">
-        <p>&copy; {new Date().getFullYear()} G PUTNAM MUSIC, LLC. All Rights Reserved.</p>
-        <p className="text-xs mt-2">FEIN: 86-2542152 | THE MOTHERSHIP IS OPERATIONAL</p>
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      {/* LATEST TRANSMISSIONS (The 38 Videos Inventory)                               */}
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      <section className="relative z-10 bg-black px-4 py-16">
+        <h2 className="mb-12 text-center text-5xl font-black uppercase tracking-tight text-amber-400">
+          Latest Transmissions
+        </h2>
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {videos?.map((video) => (
+            <Link
+              key={video.id}
+              href={`/video/${video.id}`}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-amber-900/20 to-black shadow-lg transition-transform hover:scale-105"
+            >
+              {/* Hover-play or thumbnail */}
+              <div className="relative aspect-video w-full overflow-hidden bg-black">
+                {video.video_url ? (
+                  <video
+                    className="h-full w-full object-cover opacity-80 group-hover:opacity-100"
+                    src={video.video_url}
+                    muted
+                    loop
+                    playsInline
+                    onMouseEnter={(e) => e.currentTarget.play()}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.pause();
+                      e.currentTarget.currentTime = 0;
+                    }}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-amber-500">
+                    No Preview
+                  </div>
+                )}
+              </div>
+
+              {/* Video Metadata */}
+              <div className="p-4">
+                <p className="mb-1 text-xs uppercase tracking-wider text-amber-400">
+                  {video.category || 'Uncategorized'}
+                </p>
+                <p className="text-sm text-gray-300">
+                  {video.id.substring(0, 16)}…
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      {/* FOOTER                                                                       */}
+      {/* ═══════════════════════════════════════════════════════════════════════════ */}
+      <footer className="relative z-10 bg-black px-4 py-8 text-center text-xs text-gray-500">
+        <p className="mb-2">
+          &copy; {new Date().getFullYear()} G PUTNAM MUSIC, LLC. All Rights Reserved.
+        </p>
+        <p>
+          FEIN: 86-2542152 | <span className="text-amber-500">LB ARCHIVE ACTIVE</span>
+        </p>
       </footer>
     </main>
   );
