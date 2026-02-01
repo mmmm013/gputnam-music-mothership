@@ -3,11 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePlayer } from '@/components/PlayerContext';
 import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity } from 'lucide-react';
 
 export default function Home() {
-  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const [activeVibe, setActiveVibe] = useState<string>('all');
 
   const vibes = [
@@ -107,7 +105,6 @@ export default function Home() {
             {filteredTracks.map((track) => (
               <div
                 key={track.id}
-                onClick={() => playTrack({ id: track.id.toString(), url: `/demo${track.id}.mp3`, title: track.title, artist: track.artist })}
                 className="flex items-center gap-4 p-4 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg cursor-pointer transition"
               >
                 <Image src={track.image} alt={track.title} width={48} height={48} className="rounded" />
