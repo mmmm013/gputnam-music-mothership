@@ -44,6 +44,7 @@ export default function Singalongs() {
       console.error('Supabase not initialized - missing environment variables');
     }
 
+    /*
     // ALSO MERGE IN LOCAL AWESOME SQUAD TRACKS (public/handoff/awesome-squad.json)
     let localData: any[] = []
     try {
@@ -69,6 +70,7 @@ export default function Singalongs() {
       // avoid duplicates by public_url
       if (!merged.find(m => m.public_url === t.public_url)) merged.push(t)
     }
+    */
 
     if (merged.length > 0) {
       const track = merged[0]
