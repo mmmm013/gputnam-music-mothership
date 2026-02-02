@@ -1,295 +1,191 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import GlobalPlayer from '@/components/GlobalPlayer';
-import FeaturedPlaylists from '@/components/FeaturedPlaylists';
-import { 
-  ArrowRight, 
-  Music, 
-  Zap, 
-  Moon, 
-  Sun, 
-  MessageSquare, 
-  CloudRain, 
-  Wind, 
-  Activity,
-  Volume2,
-  Radio,
-  Coffee,
-  PartyPopper,
-  Car,
-  Target,
-  Heart,
-  Dumbbell,
-  Users,
-  Flame,
-  Sparkles,
-  Bot
-} from 'lucide-react';
+import { usePlayer } from '@/components/PlayerContext';
+import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity } from 'lucide-react';
 
-/**
- * Helper to normalize audio URL.
- */
-function normalizeAudioUrl(input?: string | null): string {
-  if (!input) return '';
-  const trimmed = input.trim();
-  if (!trimmed) return '';
+export default function Home() {
+  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
+  const [activeVibe, setActiveVibe] = useState('focus');
 
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('/')
-  ) {
-    return trimmed;
-  }
-
-  return `/${trimmed}`;
-}
-
-export default function Hero() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioReady, setAudioReady] = useState(false);
-  const [audioError, setAudioError] = useState(false);
-  const [activeVibe, setActiveVibe] = useState('dnd');
-
-  // THE FULL 12-VIBE GRID - BIC Level Sophistication
+  // THE FULL 8-VIBE GRID (Matches your "Right" Image)
   const vibes = [
-    { 
-      id: 'dnd', 
-      label: 'DND', 
-      description: 'Do Not Disturb',
-      icon: Volume2, 
-      color: 'from-slate-900/50',
-      roles: ['Deep Worker', 'Meditator', 'Late-Night Coder', 'Zen Seeker'],
-      context: 'Focus sessions, meditation, creative flow states'
-    },
-    { 
-      id: 'run', 
-      label: 'RUN', 
-      description: '100-120 BPM',
-      icon: Activity, 
-      color: 'from-red-900/50',
-      roles: ['Marathoner', 'Gym Warrior', 'Morning Jogger', 'CrossFit Athlete'],
-      context: 'Cardio, HIIT, endurance training, outdoor runs'
-    },
-    { 
-      id: 'hang', 
-      label: 'HANG', 
-      description: 'Coffee Shop Vibes',
-      icon: Coffee, 
-      color: 'from-amber-900/50',
-      roles: ['Coffee Shop Regular', 'Friend Group Chiller', 'Patio Lounger'],
-      context: 'Casual gatherings, background ambiance, relaxed socializing'
-    },
-    { 
-      id: 'part', 
-      label: 'PAR-T', 
-      description: 'Party Mode',
-      icon: PartyPopper, 
-      color: 'from-pink-900/50',
-      roles: ['DJ', 'Dance Floor Enthusiast', 'Party Host', 'Club Goer'],
-      context: 'House parties, clubs, celebrations, high-energy social'
-    },
-    { 
-      id: 'kruze', 
-      label: 'KRUZE', 
-      description: 'Road Trip',
-      icon: Car, 
-      color: 'from-blue-900/50',
-      roles: ['Road Tripper', 'Sunday Driver', 'Commuter', 'Scenic Route Explorer'],
-      context: 'Driving, road trips, commutes, scenic journeys'
-    },
-    { 
-      id: 'paybk', 
-      label: 'PAYBK', 
-      description: 'Victory Anthems',
-      icon: Target, 
-      color: 'from-purple-900/50',
-      roles: ['Empowered Survivor', 'Growth Mindset Individual', 'Self-Love Advocate'],
-      context: 'Personal growth, moving on, winning through success'
-    },
-    { 
-      id: 'hrt', 
-      label: 'HRT', 
-      description: 'Heartfelt',
-      icon: Heart, 
-      color: 'from-rose-900/50',
-      roles: ['Romantic', 'Emotional Processor', 'Vulnerable Soul', 'Deep Feeler'],
-      context: 'Reflection, relationships, emotional processing'
-    },
-    { 
-      id: 'krshd', 
-      label: 'KRSH-D', 
-      description: 'Crushed It',
-      icon: Dumbbell, 
-      color: 'from-orange-900/50',
-      roles: ['Rock Enthusiast', 'Heavy Lifter', 'Intensity Seeker'],
-      context: 'Weightlifting, intense workouts, powerful moments'
-    },
-    { 
-      id: 'human', 
-      label: 'HUMAN', 
-      description: 'Authentic',
-      icon: Users, 
-      color: 'from-teal-900/50',
-      roles: ['Authentic Seeker', 'Organic Lover', 'Real Connection Advocate'],
-      context: 'Genuine moments, real connections, authentic experiences'
-    },
-    { 
-      id: 'sexy', 
-      label: 'SEXY', 
-      description: 'Sultry Grooves',
-      icon: Flame, 
-      color: 'from-red-900/50',
-      roles: ['Romantic Evening Curator', 'Intimate Moment Creator', 'Sultry Mood Setter'],
-      context: 'Romantic evenings, intimate settings, sophisticated allure'
-    },
-    { 
-      id: 'pstvt', 
-      label: 'PSTVT', 
-      description: 'Positive Vibes',
-      icon: Sparkles, 
-      color: 'from-yellow-900/50',
-      roles: ['Morning Person', 'Optimist', 'Motivational Seeker', 'Uplift Enthusiast'],
-      context: 'Morning routines, motivation sessions, positive mindset building'
-    },
-    { 
-      id: 'bot', 
-      label: 'BOT', 
-      description: 'MC BOT (Michael Clay)',
-      icon: Bot, 
-      color: 'from-cyan-900/50',
-      roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
-      context: 'Tech exploration, AI curiosity, future thinking'
-    },
+    { id: 'melancholy', label: 'Melancholy', icon: CloudRain, color: 'from-blue-900/50' },
+    { id: 'dreamy', label: 'dreamy', icon: Wind, color: 'from-purple-900/50' },
+    { id: 'focus', label: 'Focus', icon: Music, color: 'from-emerald-900/50' },
+    { id: 'uplifting', label: 'Uplifting', icon: Activity, color: 'from-orange-900/50' },
+    { id: 'energy', label: 'High Energy', icon: Zap, color: 'from-yellow-900/50' },
+    { id: 'night', label: 'Late Night', icon: Moon, color: 'from-indigo-900/50' },
+    { id: 'sunrise', label: 'Sunrise', icon: Sun, color: 'from-rose-900/50' },
+    { id: 'bot', label: 'Ask the Bot', icon: MessageSquare, color: 'from-cyan-900/50' },
   ];
 
-  // 1. MUSIC: Points to public/assets/fly-again.mp3
-  const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
-  const audioSrc = normalizedAudioUrl ?? '';
-
-  const scrollToMusic = () => {
-    const section = document.getElementById('featured');
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-  };
+  const currentVibeLabel = vibes.find(v => v.id === activeVibe)?.label || 'FOCUS';
 
   return (
-    <main className="min-h-screen flex flex-col text-white relative">
+    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
       
-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg */}
-      <div className="fixed inset-0 z-[-1]">
-        <Image
-          src="/assets/hero.jpg"
-          alt="Background"
+      {/* BACKGROUND IMAGE - Uses the file we know exists */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/hero.jpg" 
+          alt="Kleigh Background" 
           fill
-          className="object-cover brightness-50"
+          className="object-cover opacity-50"
           priority
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
       </div>
 
-      <Header />
-
-      {/* Hero Content Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter drop-shadow-2xl">
-          G Putnam Music
-        </h1>
-        <p className="text-xl text-neutral-200 max-w-2xl mb-4 drop-shadow-md">
-          The One Stop Song Shop.
-        </p>
-        <p className="text-sm text-neutral-300 max-w-3xl mb-8 drop-shadow-md">
-          Context-Aware, Role-Based, Sophisticated Music Intelligence<br />
-          500+ GPMC catalog tracks • 12 Feeling Boxes • 2+ hours streaming without repeats
-        </p>
+      {/* HERO SECTION */}
+      <div className="relative z-10 flex h-[75vh] flex-col items-center justify-center text-center px-4">
         
-        <button 
-          onClick={scrollToMusic}
-          className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-neutral-200 transition-colors shadow-lg"
-        >
-          <Music size={20} />
-          <span>Listen Now</span>
-          <ArrowRight size={20} />
-        </button>
-      </section>
+        {/* Main Title */}
+        <h1 className="font-black uppercase tracking-tighter text-white drop-shadow-2xl text-[12vw] leading-none mb-4">
+          IT'S KLEIGH
+        </h1>
 
-      {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
-      <section className="relative z-10 bg-black/40 backdrop-blur-sm py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 drop-shadow-lg">
-            Select Your Feeling
-          </h2>
-          <p className="text-center text-neutral-300 mb-8 text-sm">
-            Sophisticated Music Intelligence • Role-Based Contexts • Smart Randomization
-          </p>
-          
-          {/* 12-GRID LAYOUT */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {vibes.map((vibe) => {
-              const Icon = vibe.icon;
-              return (
-                <button
-                  key={vibe.id}
-                  onClick={() => setActiveVibe(vibe.id)}
-                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
-                    activeVibe === vibe.id
-                      ? 'border-white ring-2 ring-white/50 bg-neutral-800/60 scale-105'
-                      : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
-                  }`}
-                  title={`${vibe.description} - ${vibe.context}`}
-                >
-                  {/* Hover Gradient */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                  />
-
-                  {/* Icon & Label */}
-                  <div className="relative h-full flex flex-col items-center justify-center gap-2 p-4">
-                    <Icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                    <span className="text-xs md:text-sm font-bold text-white">{vibe.label}</span>
-                    <span className="text-[10px] text-neutral-300 text-center leading-tight">{vibe.description}</span>
-                  </div>
-                </button>
-              );
-            })}
+        {/* Subtitle / Status */}
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] text-amber-500 uppercase">
+            Official Stream • Live Rotation
+          </span>
+          <div className="flex items-center gap-4">
+            <span className="h-px w-12 bg-white/30"></span>
+            <span className="text-xl md:text-2xl font-light tracking-[0.2em] text-white uppercase">
+              • {currentVibeLabel} •
+            </span>
+            <span className="h-px w-12 bg-white/30"></span>
           </div>
-
-          {/* Active Vibe Info */}
-          {activeVibe && (
-            <div className="mt-8 p-6 bg-neutral-900/60 backdrop-blur-sm rounded-xl border border-white/10">
-              <h3 className="text-xl font-bold mb-2">
-                {vibes.find(v => v.id === activeVibe)?.label} - {vibes.find(v => v.id === activeVibe)?.description}
-              </h3>
-              <p className="text-sm text-neutral-300 mb-3">
-                <strong>Roles:</strong> {vibes.find(v => v.id === activeVibe)?.roles.join(', ')}
-              </p>
-              <p className="text-sm text-neutral-400">
-                <strong>Context:</strong> {vibes.find(v => v.id === activeVibe)?.context}
-              </p>
-            </div>
-          )}
         </div>
-      </section>
 
-      {/* Featured Playlists Section */}
-      <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <FeaturedPlaylists />
       </div>
 
-      <GlobalPlayer />
+      {/* VIBE SELECTOR (Bottom Grid) */}
+      <div className="relative z-20 mx-auto w-full max-w-5xl px-6 pb-20">
+        <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+           <span className="text-xs font-bold tracking-widest text-neutral-400 uppercase">Select Your Vibe</span>
+           <span className="text-[10px] text-neutral-600 uppercase tracking-widest">G Putnam Archives</span>
+        </div>
 
-      {/* Invisible Audio Logic */}
-      <audio 
-        ref={audioRef}
-        src={audioSrc}
-        onCanPlay={() => setAudioReady(true)}
-        onError={() => setAudioError(true)}
-        className="hidden"
-      />
+        {/* 8-GRID LAYOUT */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {vibes.map((vibe) => (
+            <button
+              key={vibe.id}
+              onClick={() => setActiveVibe(vibe.id)}
+              className={`group relative h-24 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+                activeVibe === vibe.id 
+                  ? 'border-white ring-1 ring-white/50 bg-neutral-800/60' 
+                  : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
+              }`}
+            >
+              {/* Hover Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+              
+              {/* Icon & Label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+# 1. Update the file locally
+cat <<'EOF' > app/page.tsx
+'use client';
 
-      <Footer />
-    </main>
+import { useState } from 'react';
+import Image from 'next/image';
+import { usePlayer } from '@/components/PlayerContext';
+import { Zap, Moon, Sun, MessageSquare, Music, CloudRain, Wind, Activity } from 'lucide-react';
+
+export default function Home() {
+  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
+  const [activeVibe, setActiveVibe] = useState('focus');
+
+  // THE FULL 8-VIBE GRID (Matches your "Right" Image)
+  const vibes = [
+    { id: 'melancholy', label: 'Melancholy', icon: CloudRain, color: 'from-blue-900/50' },
+    { id: 'dreamy', label: 'dreamy', icon: Wind, color: 'from-purple-900/50' },
+    { id: 'focus', label: 'Focus', icon: Music, color: 'from-emerald-900/50' },
+    { id: 'uplifting', label: 'Uplifting', icon: Activity, color: 'from-orange-900/50' },
+    { id: 'energy', label: 'High Energy', icon: Zap, color: 'from-yellow-900/50' },
+    { id: 'night', label: 'Late Night', icon: Moon, color: 'from-indigo-900/50' },
+    { id: 'sunrise', label: 'Sunrise', icon: Sun, color: 'from-rose-900/50' },
+    { id: 'bot', label: 'Ask the Bot', icon: MessageSquare, color: 'from-cyan-900/50' },
+  ];
+
+  const currentVibeLabel = vibes.find(v => v.id === activeVibe)?.label || 'FOCUS';
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+      
+      {/* BACKGROUND IMAGE - Uses the file we know exists */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/hero.jpg" 
+          alt="Kleigh Background" 
+          fill
+          className="object-cover opacity-50"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/60" />
+      </div>
+
+      {/* HERO SECTION */}
+      <div className="relative z-10 flex h-[75vh] flex-col items-center justify-center text-center px-4">
+        
+        {/* Main Title */}
+        <h1 className="font-black uppercase tracking-tighter text-white drop-shadow-2xl text-[12vw] leading-none mb-4">
+          IT'S KLEIGH
+        </h1>
+
+        {/* Subtitle / Status */}
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] text-amber-500 uppercase">
+            Official Stream • Live Rotation
+          </span>
+          <div className="flex items-center gap-4">
+            <span className="h-px w-12 bg-white/30"></span>
+            <span className="text-xl md:text-2xl font-light tracking-[0.2em] text-white uppercase">
+              • {currentVibeLabel} •
+            </span>
+            <span className="h-px w-12 bg-white/30"></span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* VIBE SELECTOR (Bottom Grid) */}
+      <div className="relative z-20 mx-auto w-full max-w-5xl px-6 pb-20">
+        <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-4">
+           <span className="text-xs font-bold tracking-widest text-neutral-400 uppercase">Select Your Vibe</span>
+           <span className="text-[10px] text-neutral-600 uppercase tracking-widest">G Putnam Archives</span>
+        </div>
+
+        {/* 8-GRID LAYOUT */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {vibes.map((vibe) => (
+            <button
+              key={vibe.id}
+              onClick={() => setActiveVibe(vibe.id)}
+              className={`group relative h-24 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+                activeVibe === vibe.id 
+                  ? 'border-white ring-1 ring-white/50 bg-neutral-800/60' 
+                  : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
+              }`}
+            >
+              {/* Hover Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+              
+              {/* Icon & Label */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                <vibe.icon size={20} className={`text-neutral-400 transition-colors group-hover:text-white ${activeVibe === vibe.id ? 'text-white' : ''}`} />
+                <span className={`text-[10px] font-bold tracking-widest uppercase transition-colors ${activeVibe === vibe.id ? 'text-white' : 'text-neutral-400 group-hover:text-white'}`}>
+                  {vibe.label}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+    </div>
   );
 }
