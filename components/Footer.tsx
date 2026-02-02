@@ -1,34 +1,80 @@
-import { Instagram, Youtube, Mail } from 'lucide-react';
+'use client';
 
-export default function Footer() {
+import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import Image from 'next/image';
+
+export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <footer className="bg-[#2C241B] text-[#D2B48C] py-16 border-t border-[#8B4513]">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
-        
-        {/* BRAND */}
-        <div className="text-center md:text-left">
-          <h4 className="text-2xl font-black uppercase text-[#FFE4B5] tracking-tight mb-2">G Putnam Music, LLC</h4>
-          <p className="text-xs font-serif italic opacity-60">Est. 2024 • Normal, IL</p>
-        </div>
+    <header className="sticky top-0 z-40 bg-[#8B4513] border-b border-[#D2B48C]/20 shadow-lg transition-colors duration-500">
+      <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+        {/* BRAND IDENTITY */}
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/assets/GPM Logo copy.png"
+            alt="G Putnam Music Logo"
+            width={80}
+            height={80}
+            className="object-contain"
+            priority
+          />
+          <span className="hidden sm:inline text-xs font-bold tracking-[0.25em] uppercase text-[#FFE4B5]">
+            G Putnam Music
+          </span>
+        </Link>
 
-        {/* QR CODE DISPLAY */}
-        <div className="flex flex-col items-center gap-2">
-            <div className="bg-white p-2 rounded-lg shadow-xl transform hover:scale-105 transition">
-                <img src="/gpm_qr_code.png" alt="Scan to Connect" className="w-24 h-24 object-contain" />
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">Scan to Connect</span>
-        </div>
+        {/* DESKTOP NAV */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-bold tracking-[0.2em] uppercase text-[#D2B48C]">
+          <Link href="/kleigh" className="hover:text-white hover:underline decoration-[#DAA520] underline-offset-4 transition-all">
+            Kleigh
+          </Link>
+          <Link href="/jazz" className="hover:text-white hover:underline decoration-[#DAA520] underline-offset-4 transition-all">
+            Jazz
+          </Link>
+          <Link href="/heroes" className="hover:text-white hover:underline decoration-[#DAA520] underline-offset-4 transition-all">
+            Heroes
+          </Link>
+          <Link href="/ships" className="hover:text-white hover:underline decoration-[#DAA520] underline-offset-4 transition-all">
+            Ships
+          </Link>
+          <Link href="/who" className="hover:text-white hover:underline decoration-[#DAA520] underline-offset-4 transition-all">
+            Who
+          </Link>
+        </nav>
 
-        {/* SOCIALS */}
-        <div className="flex gap-6">
-          <a href="#" className="hover:text-[#DAA520] transition"><Instagram size={24} /></a>
-          <a href="#" className="hover:text-[#DAA520] transition"><Youtube size={24} /></a>
-          <a href="#" className="hover:text-[#DAA520] transition"><Mail size={24} /></a>
+        {/* MOBILE TRIGGER */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden text-[#D2B48C] hover:text-white transition p-2"
+          aria-label="Toggle navigation"
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </div>
+
+      {/* MOBILE MENU */}
+      {isOpen && (
+        <div className="md:hidden bg-[#8B4513] border-b border-[#D2B48C]/20 absolute w-full left-0 top-24 shadow-2xl z-50 flex flex-col p-8 gap-6 text-center text-sm font-bold uppercase tracking-widest text-[#FFE4B5]">
+          <Link href="/kleigh" onClick={() => setIsOpen(false)}>
+            Kleigh
+          </Link>
+          <Link href="/jazz" onClick={() => setIsOpen(false)}>
+            Jazz
+          </Link>
+          <Link href="/heroes" onClick={() => setIsOpen(false)}>
+            Heroes
+          </Link>
+          <Link href="/ships" onClick={() => setIsOpen(false)}>
+            Ships
+          </Link>
+          <Link href="/who" onClick={() => setIsOpen(false)}>
+            Who Is GPM?
+          </Link>
         </div>
-      </div>
-      <div className="text-center mt-12 text-[10px] uppercase tracking-widest opacity-30 border-t border-[#FFFDF5]/5 pt-8">
-        © 2024 G Putnam Music. All Rights Reserved.
-      </div>
-    </footer>
+      )}
+    </header>
   );
 }
