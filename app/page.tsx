@@ -242,7 +242,7 @@ export default function Hero() {
                 >
                   {/* Hover Gradient */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-30 group-hover:opacity-100 transition-opacity duration-300`}
                   />
 
                   {/* Icon & Label */}
