@@ -1,0 +1,85 @@
+const { createClient } = require('@supabase/supabase-js');
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '../.env.local') });
+
+// CONFIGURATION
+// Use the Service Role Key (Server-side) to bypass RLS policies
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://lbzpfqarraegkghxwbah.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY; 
+
+if (!SUPABASE_KEY) {
+    console.error("❌ FATAL: No SUPABASE_SERVICE_ROLE_KEY found in .env.local");
+    console.error("   Please ensure you are running this from the correct folder.");
+    process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// TARGET BUCKETS (Where your music lives)
+const BUCKETS = ['gpm_source', 'audio_files', 'archive']; 
+
+// TARGET TABLE
+const TABLE = 'gpm_tracks';
+
+const syncBucket = async (bucketName) => {
+    console.log(`\n🔍 Scanning Bucket: [${bucketName}]...`);
+    
+    const { data: files, error } = await supabase.storage.from(bucketName).list();
+    
+    if (error) {
+        console.log(`   ⚠️ Could not access bucket '${bucketName}': ${error.message}`);
+        return;
+    }
+
+    if (!files || files.length === 0) {
+        console.log(`   ⚠️ Bucket is empty.`);
+        return;
+    }
+
+    console.log(`   Found ${files.length} files. Syncing to Database...`);
+
+    for (const file of files) {
+        if (file.name.startsWith('.')) continue; // Skip hidden files
+
+        // 1. Generate Public URL
+        const { data: publicData } = supabase.storage.from(bucketName).getPublicUrl(file.name);
+        const publicUrl = publicData.publicUrl;
+
+        // 2. Clean up Title (Remove .mp3 and underscores)
+        const cleanTitle = file.name
+            .replace(/\.[^/.]+$/, "") 
+            .replace(/_/g, " ");
+
+        // 3. Insert into Database
+        const { error: dbError } = await supabase
+            .from(TABLE)
+            .upsert({
+                title: cleanTitle,
+                artist: 'G Putnam Music', 
+                audio_url: publicUrl,
+                season: null,             
+                mood: 'ALL'               
+            }, { onConflict: 'audio_url' }) 
+            .select();
+
+        if (dbError) {
+            console.log(`   ❌ Failed: ${file.name}`);
+        } else {
+            process.stdout.write('.'); // Success dot
+        }
+    }
+    console.log(`\n   ✅ Bucket [${bucketName}] Complete.`);
+};
+
+const runSync = async () => {
+    console.log("🚀 STARTING AUDIO SYNC...");
+    for (const bucket of BUCKETS) {
+        await syncBucket(bucket);
+    }
+    console.log("\n🏁 SYNC COMPLETE.");
+};
+
+runSync();

@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'G Putnam Music',
-  description: 'IT\'S KLEIGH',
+  description: 'Dream The Stream',
 };
 
 export default function RootLayout({
@@ -13,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased bg-[#3E2723]">{children}</body>
+      <body className="bg-[#3E2723] text-slate-200 antialiased">
+        {children}
+      </body>
     </html>
   );
 }
