@@ -190,9 +190,8 @@ export default function Hero() {
       if (error) {
         console.error('[FEELING] Supabase error:', error);
         setLoadingFeeling(null);
-        175
-          ;
-      }
+         return;
+           }
 
       if (!tracks || tracks.length === 0) {
         console.warn('[FEELING] No tracks found for:', feelingId);
