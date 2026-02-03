@@ -86,18 +86,26 @@ export default function FeaturedPlaylists() {
             }
 
             // Get tracks for this playlist
-            const { data: playlistTracks } = await supabase
-    .from('gpm_tracks')
-            .select('track_id, title, artist, mp3_url')
-            .limit(10);
-              return {
+const { data: playlistTracks } = await supabase
+        .from('featured_playlist_tracks')
+        .select(`
+          track_id,
+          gpm_tracks (
+            track_id,
+            title,
+            artist,
+            mp3_url
+          )
+        `)
+        .eq('playlist_id', playlist.playlist_id)
+        .limit(20);              return {
           ...config,
-              tracks: playlistTracks?.map((t: any) => ({
-                track_id: t.tracks?.track_id || t.track_id,
-                title: t.tracks?.title || 'Unknown',
-                artist: t.tracks?.artist || 'G Putnam Music',
-                          mp3_url: t.mp3_url,
-              })) || []
+tracks: playlistTracks?.map((pt: any) => ({
+        track_id: pt.gpm_tracks?.track_id || pt.track_id,
+        title: pt.gpm_tracks?.title || 'Unknown',
+        artist: pt.gpm_tracks?.artist || 'G Putnam Music',
+        mp3_url: pt.gpm_tracks?.mp3_url,
+      })) || []              })) || []
             };
           })
         );
