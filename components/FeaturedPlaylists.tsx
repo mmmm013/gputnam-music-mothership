@@ -91,7 +91,8 @@ export default function FeaturedPlaylists() {
     .from('gpm_tracks')
             .select('track_id, title, artist, mp3_url')
             .limit(10);
-              ...config,
+              return {
+          ...config,
               tracks: playlistTracks?.map((t: any) => ({
                 track_id: t.tracks?.track_id || t.track_id,
                 title: t.tracks?.title || 'Unknown',
