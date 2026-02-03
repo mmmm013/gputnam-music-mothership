@@ -173,8 +173,7 @@ export default function Hero() {
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
-onClick={() => setActiveVibe(vibe.id)}  onClick={() => handleFeelingClick(vibe.id)}
-
+          onClick={() => { setActiveVibe(vibe.id); handleFeelingClick(vibe.id); }}
 
     // Handle FEELING selection - fetch tracks and play audio
   const handleFeelingClick = async (feelingId: string) => {
