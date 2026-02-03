@@ -57,26 +57,36 @@ export default function FeaturedPlaylists() {
 
         // Step 2: For each config, get the actual playlist and its tracks
         const playlistsWithTracks = await Promise.all(
-          configs.map(async (config) => {
-            // Get playlist by view_name (maps to playlist_id in featured_playlists)
-            const { data: playlist, error: playlistError } = await supabase
-              .from('featured_playlists_config')
-              .select('id, display_name')
-        .eq('view_name', config.view_name)              .single();
+      const playlistsWithTracks = await Promise.all(
+      configs.map(async (config) => {
+        // Directly get tracks using config.id (which matches playlist_id in featured_playlist_tracks)
+        const { data: playlistTracks, error: tracksError } = await supabase
+          .from('featured_playlist_tracks')
+          .select('uuid, storage_path, sort_order')
+          .eq('playlist_id', config.id)
+          .order('sort_order');
 
-            if (playlistError || !playlist) {
-              // Fallback: try to get playlist tracks directly using view_name
-              const { data: directTracks } = await supabase
-                .from('featured_playlist_tracks')
-                .select(`
-                  track_id,
-                  tracks:gpm_tracks(track_id, title, artist)
-                `)
-                .eq('playlist_id', config.id)
-                .limit(1);
+        if (tracksError) {
+          console.error(`[FeaturedPlaylists] Error fetching tracks for ${config.display_name}:`, tracksError);
+          return { ...config, tracks: [] };
+        }
 
-              return {
-                ...config,
+        // Map tracks to expected format with full audio URLs
+        const tracks = (playlistTracks || []).map((pt: any) => ({
+          track_id: pt.uuid,
+          title: config.display_name, // Use playlist name as track title for now
+          artist: 'G Putnam Music',
+          mp3_url: `https://enjqymuvxtisamlotpm.supabase.co/storage/v1/object/public/audio/${pt.storage_path}`
+        }));
+
+        console.log(`[FeaturedPlaylists] Loaded ${tracks.length} tracks for ${config.display_name}`);
+
+        return {
+          ...config,
+          tracks: tracks
+        };
+      })
+    );              ...config,
                 tracks: directTracks?.map((t: any) => ({
                   track_id: t.tracks?.track_id || t.track_id,
                   title: t.tracks?.title || 'Unknown',
