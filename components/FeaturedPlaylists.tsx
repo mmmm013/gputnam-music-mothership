@@ -70,7 +70,7 @@ export default function FeaturedPlaylists() {
                 .from('playlist_tracks')
                 .select(`
                   track_id,
-                  tracks:gpmc_tracks(track_id, title, artist)
+                  tracks:gpm_tracks(track_id, title, artist)
                 `)
                 .eq('playlist_id', config.view_name)
                 .limit(1);
@@ -87,15 +87,9 @@ export default function FeaturedPlaylists() {
 
             // Get tracks for this playlist
             const { data: playlistTracks } = await supabase
-              .from('playlist_tracks')
-              .select(`
-                track_id,
-                tracks:gpmc_tracks(track_id, title, artist)
-              `)
-              .eq('playlist_id', playlist.playlist_id)
-              .limit(1); // Get first track for each playlist
-
-            return {
+    .from('gpm_tracks')
+            .select('track_id, title, artist, mp3_url')
+            .limit(10);
               ...config,
               tracks: playlistTracks?.map((t: any) => ({
                 track_id: t.tracks?.track_id || t.track_id,
@@ -135,10 +129,8 @@ export default function FeaturedPlaylists() {
     const localUrl = `/assets/${track.title}.mp3`.replace(/\s+/g, ' ');
     
     // 2. Supabase storage
-    const storageUrl = `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks/${track.track_id}.mp3`;
-    // Use local first for now since files are in public/assets
-    const audioUrl = storageUrl;
-
+    const storageUrl = `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${track.track_id}.mp3`; 
+    const audioUrl = storageUrl
     console.log(`[PLAYER] Playing: ${track.title} by ${track.artist}`);
     console.log(`[PLAYER] Audio URL: ${audioUrl}`);
     
