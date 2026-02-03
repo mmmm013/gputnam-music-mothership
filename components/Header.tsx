@@ -14,7 +14,7 @@ export default function Header() {
         {/* BRAND IDENTITY */}
                 <Link href="/" className="flex items-center">
           <Image
-            src="/assets/GPM Logo copy.png"
+            src="/assets/GPM%20Logo%20copy.png"
             alt="G Putnam Music"
             width={80}
             height={80}
