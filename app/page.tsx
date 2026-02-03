@@ -14,7 +14,6 @@ import WeeklyRace from '@/components/WeeklyRace';
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
   );
 
-  const [loadingFeeling, setLoadingFeeling] = useState<string | null>(null);
 import { 
   ArrowRight, 
   Music, 
@@ -63,6 +62,7 @@ export default function Hero() {
   const [audioReady, setAudioReady] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [activeVibe, setActiveVibe] = useState('dnd');
+    const [loadingFeeling, setLoadingFeeling] = useState<string | null>(null);
 
   // THE FULL 12-VIBE GRID - BIC Level Sophistication
   const vibes = [
