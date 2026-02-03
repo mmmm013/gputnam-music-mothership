@@ -180,7 +180,7 @@ export default function FeaturedPlaylists() {
               <div 
                 key={playlist.id}
                 onClick={() => playTrack(playlist)}
-                className="group cursor-pointer bg-gradient-to-br from-amber-200 via-stone-300 to-amber-300 rounded-sm p-6 rounded-sm p-6 shadow-sm border border-[#D2B48C]/40 hover:border-[#A0522D] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group cursor-pointer bg-gradient-to-br from-amber-600 via-stone-700 to-amber-700 rounded-sm p-6 shadow-md border border-amber-600/40 hover:border-amber-500 hover:shadow-xl transition-all duration-300 text-amber-50"                rounded-sm p-6 rounded-sm p-6 shadow-sm border border-[#D2B48C]/40 hover:border-[#A0522D] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center transition-colors duration-300 bg-[#D2B48C] text-[#FFFDF5] group-hover:bg-[#A0522D]">
                   {playlist.icon ? (
