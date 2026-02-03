@@ -15,7 +15,7 @@ export default function Header() {
                 <Link href="/" className="flex items-center">
           <Image
             src="/assets/GPM Logo copy.png"
-            alt="G Putnam Music Logo"
+            alt="G Putnam Music"
             width={80}
             height={80}
             className="object-contain"
