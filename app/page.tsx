@@ -173,6 +173,7 @@ export default function Hero() {
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
+    ];
 
     // Handle FEELING selection - fetch tracks and play audio
   const handleFeelingClick = async (feelingId: string) => {
@@ -190,7 +191,8 @@ export default function Hero() {
       if (error) {
         console.error('[FEELING] Supabase error:', error);
         setLoadingFeeling(null);
-        return;
+        175
+          ;
       }
 
       if (!tracks || tracks.length === 0) {
