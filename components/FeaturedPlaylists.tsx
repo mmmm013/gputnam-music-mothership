@@ -57,7 +57,6 @@ export default function FeaturedPlaylists() {
 
         // Step 2: For each config, get the actual playlist and its tracks
         const playlistsWithTracks = await Promise.all(
-      const playlistsWithTracks = await Promise.all(
       configs.map(async (config) => {
         // Directly get tracks using config.id (which matches playlist_id in featured_playlist_tracks)
         const { data: playlistTracks, error: tracksError } = await supabase
