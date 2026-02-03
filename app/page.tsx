@@ -184,10 +184,8 @@ export default function Hero() {
 
       // Fetch tracks for this feeling from Supabase
       const { data: tracks, error } = await supabase
-        .from('tracks')
-        .select('*')
-        .ilike('tags', `%${feelingId}%`)
-        .limit(10);
+      .from('gpm_tracks')        .select('*')
+      .not('audio_url', 'is', null)        .limit(10);
 
       if (error) {
         console.error('[FEELING] Supabase error:', error);
@@ -210,8 +208,7 @@ export default function Hero() {
         detail: {
           title: firstTrack.title || 'Unknown Track',
           artist: firstTrack.artist || 'G Putnam Music',
-          url: firstTrack.stream_url || firstTrack.url || firstTrack.public_url,
-          moodTheme: { primary: '#8B4513' }
+          url: firstTrack.audio_url,          moodTheme: { primary: '#8B4513' }
         }
       });
 
