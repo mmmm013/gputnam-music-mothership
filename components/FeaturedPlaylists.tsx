@@ -21,6 +21,7 @@ interface PlaylistWithTracks {
     title: string;
     artist: string;
     filename?: string;
+        mp3_url?: string;
   }>;
 }
 
@@ -95,6 +96,7 @@ export default function FeaturedPlaylists() {
                 track_id: t.tracks?.track_id || t.track_id,
                 title: t.tracks?.title || 'Unknown',
                 artist: t.tracks?.artist || 'G Putnam Music',
+                          mp3_url: t.mp3_url,
               })) || []
             };
           })
@@ -130,7 +132,7 @@ export default function FeaturedPlaylists() {
     
     // 2. Supabase storage
     const storageUrl = `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${track.track_id}.mp3`; 
-    const audioUrl = storageUrl
+    const audioUrl = track.mp3_url || storageUrl
     console.log(`[PLAYER] Playing: ${track.title} by ${track.artist}`);
     console.log(`[PLAYER] Audio URL: ${audioUrl}`);
     
