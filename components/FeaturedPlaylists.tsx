@@ -136,9 +136,8 @@ export default function FeaturedPlaylists() {
     
     // 2. Supabase storage
     const storageUrl = `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/tracks/${track.track_id}.mp3`;
-
     // Use local first for now since files are in public/assets
-    const audioUrl = localUrl;
+    const audioUrl = storageUrl;
 
     console.log(`[PLAYER] Playing: ${track.title} by ${track.artist}`);
     console.log(`[PLAYER] Audio URL: ${audioUrl}`);
