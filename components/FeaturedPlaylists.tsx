@@ -97,8 +97,7 @@ const { data: playlistTracks } = await supabase
             mp3_url
           )
         `)
-        .eq('playlist_id', playlist.playlist_id)
-        .limit(20);              return {
+        .eq('playlist_id', playlist.id)        .limit(20);              return {
           ...config,
 tracks: playlistTracks?.map((pt: any) => ({
         track_id: pt.gpm_tracks?.track_id || pt.track_id,
