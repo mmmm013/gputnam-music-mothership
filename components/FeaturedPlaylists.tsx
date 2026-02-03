@@ -181,8 +181,7 @@ tracks: playlistTracks?.map((pt: any) => ({
 
         {/* Playlist Grid */}
         {status === 'SUCCESS' && playlists.length > 0 && (
-<div className="flex flex-wrap gap-4 justify-center items-center px-4 py-6">
-        {playlists.map((playlist) => (
+      <div className="flex flex-wrap gap-4 justify-center items-center pc-4 py-8">        {playlists.map((playlist) => (
           <button
             key={playlist.id}
             onClick={() => playTrack(playlist)}
