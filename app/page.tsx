@@ -236,7 +236,8 @@ export default function Hero() {
   return (
     <main className="min-h-screen flex flex-col text-white relative">
       
-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg */}
+      {/* 2. BACKGROUND: Points to public/assets/hero.jpg 337
+      
       <div className="fixed inset-0 z-[-1]">
         <Image
           src="/assets/hero.jpg"
@@ -329,13 +330,6 @@ export default function Hero() {
         </div>
       </section>
 
-{/* TEMPORARILY DISABLED - FeaturedPlaylists has syntax errors
-              {/* Featured Playlists Section */}
-      <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <FeaturedPlaylists />
-      </div>
-              */}
-              {/* Weekly Race Section */}
         <WeeklyRace />
 
       <GlobalPlayer />
