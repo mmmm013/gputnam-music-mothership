@@ -62,8 +62,7 @@ export default function FeaturedPlaylists() {
             const { data: playlist, error: playlistError } = await supabase
               .from('featured_playlists')
               .select('playlist_id, display_name')
-              .eq('playlist_id', config.view_name)
-              .single();
+        .eq('view_name', config.view_name)              .single();
 
             if (playlistError || !playlist) {
               // Fallback: try to get playlist tracks directly using view_name
