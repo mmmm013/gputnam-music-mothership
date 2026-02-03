@@ -173,7 +173,6 @@ export default function Hero() {
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
-          onClick={() => { setActiveVibe(vibe.id); handleFeelingClick(vibe.id); }}
 
     // Handle FEELING selection - fetch tracks and play audio
   const handleFeelingClick = async (feelingId: string) => {
@@ -287,8 +286,7 @@ export default function Hero() {
               return (
                 <button
                   key={vibe.id}
-                  onClick={() => setActiveVibe(vibe.id)}
-                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+            onClick={() => { setActiveVibe(vibe.id); handleFeelingClick(vibe.id); }}                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
                     activeVibe === vibe.id
                       ? 'border-white ring-2 ring-white/50 bg-neutral-800/60 scale-105'
                       : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
