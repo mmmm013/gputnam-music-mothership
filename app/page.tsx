@@ -1,4 +1,5 @@
 'use client';
+import { createClient } from '@supabase/supabase-js';
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
@@ -6,6 +7,13 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import FeaturedPlaylists from '@/components/FeaturedPlaylists';
+  // Supabase configuration
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  );
+
+  const [loadingFeeling, setLoadingFeeling] = useState<string | null>(null);
 import { 
   ArrowRight, 
   Music, 
@@ -165,7 +173,55 @@ export default function Hero() {
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
-  ];
+onClick={() => setActiveVibe(vibe.id)}  onClick={() => handleFeelingClick(vibe.id)}
+
+
+    // Handle FEELING selection - fetch tracks and play audio
+  const handleFeelingClick = async (feelingId: string) => {
+    try {
+      setLoadingFeeling(feelingId);
+      console.log(`[FEELING] Selected: ${feelingId}`);
+
+      // Fetch tracks for this feeling from Supabase
+      const { data: tracks, error } = await supabase
+        .from('tracks')
+        .select('*')
+        .ilike('tags', `%${feelingId}%`)
+        .limit(10);
+
+      if (error) {
+        console.error('[FEELING] Supabase error:', error);
+        setLoadingFeeling(null);
+        return;
+      }
+
+      if (!tracks || tracks.length === 0) {
+        console.warn('[FEELING] No tracks found for:', feelingId);
+        setLoadingFeeling(null);
+        return;
+      }
+
+      console.log(`[FEELING] Loaded ${tracks.length} tracks`);
+
+      // Get first track and dispatch to GlobalPlayer
+      const firstTrack = tracks[0];
+      const playEvent = new CustomEvent('play-track', {
+        detail: {
+          title: firstTrack.title || 'Unknown Track',
+          artist: firstTrack.artist || 'G Putnam Music',
+          url: firstTrack.stream_url || firstTrack.url || firstTrack.public_url,
+          moodTheme: { primary: '#8B4513' }
+        }
+      });
+
+      window.dispatchEvent(playEvent);
+      console.log('[FEELING] Dispatched play-track event');
+      setLoadingFeeling(null);
+    } catch (err) {
+      console.error('[FEELING] Error:', err);
+      setLoadingFeeling(null);
+    }
+  };
 
   // 1. MUSIC: Points to public/assets/fly-again.mp3
   const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
