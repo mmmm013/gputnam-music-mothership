@@ -60,19 +60,19 @@ export default function FeaturedPlaylists() {
           configs.map(async (config) => {
             // Get playlist by view_name (maps to playlist_id in featured_playlists)
             const { data: playlist, error: playlistError } = await supabase
-              .from('featured_playlists')
-              .select('playlist_id, display_name')
+              .from('featured_playlists_config')
+              .select('id, display_name')
         .eq('view_name', config.view_name)              .single();
 
             if (playlistError || !playlist) {
               // Fallback: try to get playlist tracks directly using view_name
               const { data: directTracks } = await supabase
-                .from('playlist_tracks')
+                .from('featured_playlist_tracks')
                 .select(`
                   track_id,
                   tracks:gpm_tracks(track_id, title, artist)
                 `)
-                .eq('playlist_id', config.view_name)
+                .eq('playlist_id', playlist.id)
                 .limit(1);
 
               return {
