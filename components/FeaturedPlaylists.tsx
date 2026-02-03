@@ -182,40 +182,18 @@ tracks: playlistTracks?.map((pt: any) => ({
 
         {/* Playlist Grid */}
         {status === 'SUCCESS' && playlists.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {playlists.map((playlist) => (
-              <div 
-                key={playlist.id}
-                onClick={() => playTrack(playlist)}
-              className="group cursor-pointer bg-gradient-to-br from-amber-600 via-stone-700 to-amber-700 rounded-sm p-6 shadow-md border border-amber-600/40 hover:border-amber-500 hover:shadow-xl transition-all duration-300 text-amber-50"                rounded-sm p-6 rounded-sm p-6 shadow-sm border border-[#D2B48C]/40 hover:border-[#A0522D] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center transition-colors duration-300 bg-[#D2B48C] text-[#FFFDF5] group-hover:bg-[#A0522D]">
-                  {playlist.icon ? (
-              // Helper function to get feeling-specific text color
-              const getFeeling Color = (name: string) => {
-                const colors: Record<string, string> = {
-                  'DND': 'text-blue-400', 'RUN': 'text-orange-400', 'HANG': 'text-amber-300',
-                  'PAR-T': 'text-pink-400', 'KRUZE': 'text-cyan-400', 'PAYBK': 'text-yellow-400',
-                  'HRT': 'text-red-400', 'KRSH-D': 'text-purple-400', 'HUMAN': 'text-green-400',
-                  'SEXY': 'text-rose-400', 'PSTVT': 'text-lime-400', 'BOT': 'text-gray-400',
-                  'KN🌲': 'text-emerald-400', 'RDEO': 'text-orange-300', 'CHILL': 'text-teal-300',
-                  'FOCUS': 'text-indigo-400'
-                };
-                return colors[name] || 'text-amber-300';
-              };
-              className="group cursor-pointer border border-stone-600/30 hover:border-amber-500 bg-transparent backdrop-blur-sm p-2 rounded transition-all duration-200 text-center min-h-[60px] flex items-center justify-center"                  ) : (
-                    <Play size={20} fill="currentColor" className="ml-1" />
-                  )}
-                </div>
-                <h3 className="text-lg font-bold text-[#5D4037] group-hover:text-[#A0522D] transition-colors leading-tight mb-1">
-                  {playlist.display_name}
-                </h3>
-                <p className="text-xs text-[#8B4513]/60">
-                  {playlist.tracks.length} track{playlist.tracks.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            ))}
-          </div>
+<div className="flex flex-wrap gap-4 justify-center items-center px-4 py-6">
+        {playlists.map((playlist) => (
+          <button
+            key={playlist.id}
+            onClick={() => playTrack(playlist)}
+            className="px-4 py-2 text-lg font-bold transition-all duration-300 hover:scale-110 hover:underline cursor-pointer rounded"
+            style={{ color: getFeelingColor(playlist.display_name) }}
+          >
+            {playlist.display_name}
+          </button>
+        ))}
+      </div>          </div>
         )}
 
         {/* Loading State */}
