@@ -72,7 +72,7 @@ export default function FeaturedPlaylists() {
                   track_id,
                   tracks:gpm_tracks(track_id, title, artist)
                 `)
-                .eq('playlist_id', playlist.id)
+                .eq('playlist_id', config.id)
                 .limit(1);
 
               return {
