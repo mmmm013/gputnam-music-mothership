@@ -184,8 +184,19 @@ export default function FeaturedPlaylists() {
               >
                 <div className="w-12 h-12 rounded-full mb-4 flex items-center justify-center transition-colors duration-300 bg-[#D2B48C] text-[#FFFDF5] group-hover:bg-[#A0522D]">
                   {playlist.icon ? (
-                    <Music size={20} />
-                  ) : (
+              // Helper function to get feeling-specific text color
+              const getFeeling Color = (name: string) => {
+                const colors: Record<string, string> = {
+                  'DND': 'text-blue-400', 'RUN': 'text-orange-400', 'HANG': 'text-amber-300',
+                  'PAR-T': 'text-pink-400', 'KRUZE': 'text-cyan-400', 'PAYBK': 'text-yellow-400',
+                  'HRT': 'text-red-400', 'KRSH-D': 'text-purple-400', 'HUMAN': 'text-green-400',
+                  'SEXY': 'text-rose-400', 'PSTVT': 'text-lime-400', 'BOT': 'text-gray-400',
+                  'KN🌲': 'text-emerald-400', 'RDEO': 'text-orange-300', 'CHILL': 'text-teal-300',
+                  'FOCUS': 'text-indigo-400'
+                };
+                return colors[name] || 'text-amber-300';
+              };
+              className="group cursor-pointer border border-stone-600/30 hover:border-amber-500 bg-transparent backdrop-blur-sm p-2 rounded transition-all duration-200 text-center min-h-[60px] flex items-center justify-center"                  ) : (
                     <Play size={20} fill="currentColor" className="ml-1" />
                   )}
                 </div>
