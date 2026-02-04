@@ -71,7 +71,7 @@ export default function Hero() {
       label: 'DND', 
       description: 'Do Not Disturb',
       icon: Volume2, 
-      color: 'from-slate-900/50',
+      color: 'from-amber-600/60',
       roles: ['Deep Worker', 'Meditator', 'Late-Night Coder', 'Zen Seeker'],
       context: 'Focus sessions, meditation, creative flow states'
     },
@@ -80,7 +80,7 @@ export default function Hero() {
       label: 'RUN', 
       description: '100-120 BPM',
       icon: Activity, 
-      color: 'from-red-900/50',
+      color: 'from-amber-600/60',
       roles: ['Marathoner', 'Gym Warrior', 'Morning Jogger', 'CrossFit Athlete'],
       context: 'Cardio, HIIT, endurance training, outdoor runs'
     },
@@ -89,7 +89,7 @@ export default function Hero() {
       label: 'HANG', 
       description: 'Coffee Shop Vibes',
       icon: Coffee, 
-      color: 'from-amber-900/50',
+      color: 'from-amber-600/60',
       roles: ['Coffee Shop Regular', 'Friend Group Chiller', 'Patio Lounger'],
       context: 'Casual gatherings, background ambiance, relaxed socializing'
     },
@@ -98,7 +98,7 @@ export default function Hero() {
       label: 'PAR-T', 
       description: 'Party Mode',
       icon: PartyPopper, 
-      color: 'from-pink-900/50',
+      color: 'from-amber-600/60',
       roles: ['DJ', 'Dance Floor Enthusiast', 'Party Host', 'Club Goer'],
       context: 'House parties, clubs, celebrations, high-energy social'
     },
@@ -107,7 +107,7 @@ export default function Hero() {
       label: 'KRUZE', 
       description: 'Road Trip',
       icon: Car, 
-      color: 'from-blue-900/50',
+      color: 'from-amber-600/60',
       roles: ['Road Tripper', 'Sunday Driver', 'Commuter', 'Scenic Route Explorer'],
       context: 'Driving, road trips, commutes, scenic journeys'
     },
@@ -116,7 +116,7 @@ export default function Hero() {
       label: 'PAYBK', 
       description: 'Victory Anthems',
       icon: Target, 
-      color: 'from-purple-900/50',
+      color: 'from-amber-600/60',
       roles: ['Empowered Survivor', 'Growth Mindset Individual', 'Self-Love Advocate'],
       context: 'Personal growth, moving on, winning through success'
     },
@@ -125,7 +125,7 @@ export default function Hero() {
       label: 'HRT', 
       description: 'Heartfelt',
       icon: Heart, 
-      color: 'from-rose-900/50',
+      color: 'from-amber-600/60',
       roles: ['Romantic', 'Emotional Processor', 'Vulnerable Soul', 'Deep Feeler'],
       context: 'Reflection, relationships, emotional processing'
     },
@@ -134,7 +134,7 @@ export default function Hero() {
       label: 'KRSH-D', 
       description: 'Crushed It',
       icon: Dumbbell, 
-      color: 'from-orange-900/50',
+      color: 'from-amber-600/60',
       roles: ['Rock Enthusiast', 'Heavy Lifter', 'Intensity Seeker'],
       context: 'Weightlifting, intense workouts, powerful moments'
     },
@@ -143,7 +143,7 @@ export default function Hero() {
       label: 'HUMAN', 
       description: 'Authentic',
       icon: Users, 
-      color: 'from-teal-900/50',
+      color: 'from-amber-600/60',
       roles: ['Authentic Seeker', 'Organic Lover', 'Real Connection Advocate'],
       context: 'Genuine moments, real connections, authentic experiences'
     },
@@ -152,7 +152,7 @@ export default function Hero() {
       label: 'SEXY', 
       description: 'Sultry Grooves',
       icon: Flame, 
-      color: 'from-red-900/50',
+      color: 'from-amber-600/60',
       roles: ['Romantic Evening Curator', 'Intimate Moment Creator', 'Sultry Mood Setter'],
       context: 'Romantic evenings, intimate settings, sophisticated allure'
     },
@@ -161,7 +161,7 @@ export default function Hero() {
       label: 'PSTVT', 
       description: 'Positive Vibes',
       icon: Sparkles, 
-      color: 'from-yellow-900/50',
+      color: 'from-amber-600/60',
       roles: ['Morning Person', 'Optimist', 'Motivational Seeker', 'Uplift Enthusiast'],
       context: 'Morning routines, motivation sessions, positive mindset building'
     },
@@ -170,7 +170,7 @@ export default function Hero() {
       label: 'BOT', 
       description: 'MC BOT (Michael Clay)',
       icon: Bot, 
-      color: 'from-cyan-900/50',
+      color: 'from-amber-600/60',
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
@@ -184,9 +184,10 @@ export default function Hero() {
 
       // Fetch tracks for this feeling from Supabase
       const { data: tracks, error } = await supabase
-      .from('gpm_tracks')        .select('*')
-      .not('audio_url', 'is', null)        .limit(10);
-
+      .from('gpm_tracks')
+      .select('*')
+      .not('audio_url', 'is', null)
+      .limit(10);
       if (error) {
         console.error('[FEELING] Supabase error:', error);
         setLoadingFeeling(null);
