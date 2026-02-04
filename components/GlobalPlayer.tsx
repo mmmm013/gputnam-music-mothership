@@ -12,12 +12,15 @@ export default function GlobalPlayer() {
     url: "", 
     moodColor: "#8B4513"
   });
+  const [pendingPlay, setPendingPlay] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
       setError(''); // Clear previous errors
       setIsLoading(true);
+      setIsPlaying(false); // Stop current playback
+      setPendingPlay(true); // Mark that we want to play when ready
       
       // Clean artist name
       let safeArtist = e.detail.artist || "G Putnam Music";
@@ -34,7 +37,6 @@ export default function GlobalPlayer() {
       
       console.log('[GlobalPlayer] Track selected:', newTrack);
       setTrack(newTrack);
-      setIsPlaying(true);
     };
 
     window.addEventListener('play-track', handleTrackSelect as EventListener);
@@ -49,6 +51,21 @@ export default function GlobalPlayer() {
     const handleCanPlay = () => {
       setIsLoading(false);
       console.log('[GlobalPlayer] Audio ready to play');
+      
+      // Only auto-play if we have a pending play request
+      if (pendingPlay) {
+        setPendingPlay(false);
+        audio.play()
+          .then(() => {
+            setIsPlaying(true);
+            console.log('[GlobalPlayer] Playback started successfully');
+          })
+          .catch(err => {
+            console.error('[GlobalPlayer] Playback failed:', err);
+            setError('Playback failed - click play to try again');
+            setIsPlaying(false);
+          });
+      }
     };
 
     const handleError = (e: Event) => {
@@ -56,6 +73,7 @@ export default function GlobalPlayer() {
       const target = e.target as HTMLAudioElement;
       setIsLoading(false);
       setIsPlaying(false);
+      setPendingPlay(false);
       
       if (target.error) {
         switch (target.error.code) {
@@ -91,16 +109,8 @@ export default function GlobalPlayer() {
     audio.addEventListener('loadstart', handleLoadStart);
     audio.addEventListener('ended', handleEnded);
 
-    if (isPlaying) {
-      audio.play().catch(err => {
-        console.error('[GlobalPlayer] Playback failed:', err);
-        setError('Playback failed - check browser permissions');
-        setIsPlaying(false);
-        setIsLoading(false);
-      });
-    } else {
-      audio.pause();
-    }
+    // Load the new source
+    audio.load();
 
     return () => {
       audio.removeEventListener('canplay', handleCanPlay);
@@ -108,7 +118,23 @@ export default function GlobalPlayer() {
       audio.removeEventListener('loadstart', handleLoadStart);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [isPlaying, track.url]);
+  }, [track.url, pendingPlay]);
+
+  // Handle play/pause toggle
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !track.url) return;
+    
+    if (isPlaying) {
+      audio.play().catch(err => {
+        console.error('[GlobalPlayer] Play failed:', err);
+        setError('Playback failed - click play to try again');
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying]);
 
   const togglePlay = () => {
     if (!track.url) {
@@ -170,7 +196,7 @@ export default function GlobalPlayer() {
         <audio 
           ref={audioRef} 
           src={track.url} 
-          preload="metadata"
+          preload="auto"
           crossOrigin="anonymous"
         />
       </div>
