@@ -197,7 +197,6 @@ export default function GlobalPlayer() {
           ref={audioRef} 
           src={track.url} 
           preload="auto"
-          crossOrigin="anonymous"
         />
       </div>
     </div>
