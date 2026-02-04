@@ -176,6 +176,22 @@ export default function Hero() {
     },
     ];
 
+  // Mapping from feeling IDs to database mood values
+  const feelingToMood: Record<string, string> = {
+    'dnd': 'Focus',      // Do Not Disturb -> Focus mood
+    'run': 'Energy',     // Running -> Energy mood
+    'hang': 'General',   // Hanging out -> General mood
+    'par-t': 'Energy',   // Party -> Energy mood
+    'kruze': 'General',  // Cruising -> General mood
+    'paybk': 'Energy',   // Payback/Victory -> Energy mood
+    'hrt': 'Dreamy',     // Heartfelt -> Dreamy mood
+    'krshd': 'Melancholy', // Crushed -> Melancholy mood
+    'human': 'General',  // Authentic/Human -> General mood
+    'sexy': 'Dreamy',    // Sultry/Romantic -> Dreamy mood
+    'pstvt': 'Energy',   // Positive Vibes -> Energy mood
+    'bot': 'General',    // AI/Tech -> General mood
+  };
+
     // Handle FEELING selection - fetch tracks and play audio
   const handleFeelingClick = async (feelingId: string) => {
     try {
@@ -187,6 +203,7 @@ export default function Hero() {
       .from('gpm_tracks')
       .select('*')
       .not('audio_url', 'is', null)
+      .eq('mood', feelingToMood[feelingId] || 'General')
       .limit(10);
       if (error) {
         console.error('[FEELING] Supabase error:', error);
