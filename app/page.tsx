@@ -198,6 +198,52 @@ export default function Hero() {
       setLoadingFeeling(feelingId);
       console.log(`[FEELING] Selected: ${feelingId}`);
 
+          // MSJ-BOT special case: route to Scherer TV Thoroughbreds
+    if (feelingId === 'bot') {
+      const { data: tracks, error } = await supabase
+        .from('msj_tv_thoroughbreds')
+        .select('*')
+        .not('audio_url', 'is', null)
+        .limit(10);
+
+      if (error) {
+        console.error('[MSJ-BOT] Supabase error:', error);
+        setLoadingFeeling(null);
+        return;
+      }
+      if (!tracks || tracks.length === 0) {
+        console.warn('[MSJ-BOT] No Scherer TV tracks found');
+        setLoadingFeeling(null);
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * tracks.length);
+      const track = tracks[randomIndex];
+
+      const playEvent = new CustomEvent('play-track', {
+        detail: {
+          title: track.title || 'Unknown Track',
+          artist: track.artist || 'Michael Scherer',
+          url: track.audio_url,
+          moodTheme: { primary: '#8B4513' },
+          meta: {
+            tv_network: track.tv_network,
+            tv_show: track.tv_show,
+            gpmcc_sfw: track.gpmcc_sfw,
+            lemon_squeezy_url: track.lemon_squeezy_url,
+            composition_story: track.composition_story,
+            sync_tier: track.sync_tier,
+          },
+        },
+      });
+
+      window.dispatchEvent(playEvent);
+      console.log('[MSJ-BOT] Dispatched Scherer TV play-track event');
+      setLoadingFeeling(null);
+      return;
+    }
+
+
       // Fetch tracks for this feeling from Supabase
       const { data: tracks, error } = await supabase
       .from('gpm_tracks')
