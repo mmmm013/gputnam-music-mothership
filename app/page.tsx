@@ -1,4 +1,4 @@
-rchr'use client';
+'use client';
 import { createClient } from '@supabase/supabase-js';
 
 import React, { useRef, useState } from 'react';
