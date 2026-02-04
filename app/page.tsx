@@ -277,18 +277,8 @@ export default function Hero() {
           Context-Aware, Role-Based, Sophisticated Music Intelligence<br />
           500+ GPMC catalog tracks • 12 Feeling Boxes • 2+ hours streaming without repeats
         </p>
-        
-        <button 
-          onClick={scrollToMusic}
-          className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-neutral-200 transition-colors shadow-lg"
-        >
-          <Music size={20} />
-          <span>Listen Now</span>
-          <ArrowRight size={20} />
-        </button>
-      </section>
-
-      {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
+                </section>
+          {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
       <section className="relative z-10 bg-black/40 backdrop-blur-sm py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 drop-shadow-lg">
