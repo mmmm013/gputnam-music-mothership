@@ -15,6 +15,46 @@ export default function AudioPlayer() {
     setTrack({ title: 'GPM Audio Test', artist: 'Diagnostic Stream' });
   }, []);
 
+    // Listen for play-track events from FeaturedPlaylists
+  useEffect(() => {
+    const handlePlayTrack = (event: any) => {
+      const trackData = event.detail;
+      console.log('[AUDIO PLAYER] Received play-track event:', trackData);
+      
+      // Update track state
+      setTrack({
+        title: trackData.title,
+        artist: trackData.artist
+      });
+      
+      // Update audio source
+      if (audioRef.current) {
+        audioRef.current.src = trackData.url;
+        audioRef.current.load();
+        
+        // Auto-play the new track
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              console.log('[AUDIO PLAYER] Now playing:', trackData.title);
+            })
+            .catch((err) => {
+              console.error('[AUDIO PLAYER] Playback failed:', err);
+              setError('Playback failed. Check permissions.');
+            });
+        }
+      }
+    };
+
+    window.addEventListener('play-track', handlePlayTrack);
+    
+    return () => {
+      window.removeEventListener('play-track', handlePlayTrack);
+    };
+  }, []);
+
   const togglePlay = () => {
     if (!audioRef.current) return;
     
@@ -58,8 +98,7 @@ export default function AudioPlayer() {
            </div>
         </div>
         {/* Using a generic test file to prove the PLAYER works. Once this plays, we swap back to your bucket. */}
-        <audio ref={audioRef} src={STREAM_URL} preload="none" />
-      </div>
+      <audio ref={audioRef} preload="none" />      </div>
     </div>
   );
 }

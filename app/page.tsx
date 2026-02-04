@@ -1,11 +1,19 @@
 'use client';
+import { createClient } from '@supabase/supabase-js';
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-import FeaturedPlaylists from '@/components/FeaturedPlaylists';
+// import FeaturedPlaylists from '@/components/FeaturedPlaylists';
+import WeeklyRace from '@/components/WeeklyRace';
+  // Supabase configuration
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  );
+
 import { 
   ArrowRight, 
   Music, 
@@ -54,6 +62,7 @@ export default function Hero() {
   const [audioReady, setAudioReady] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [activeVibe, setActiveVibe] = useState('dnd');
+    const [loadingFeeling, setLoadingFeeling] = useState<string | null>(null);
 
   // THE FULL 12-VIBE GRID - BIC Level Sophistication
   const vibes = [
@@ -62,7 +71,7 @@ export default function Hero() {
       label: 'DND', 
       description: 'Do Not Disturb',
       icon: Volume2, 
-      color: 'from-slate-900/50',
+      color: 'from-amber-600/60',
       roles: ['Deep Worker', 'Meditator', 'Late-Night Coder', 'Zen Seeker'],
       context: 'Focus sessions, meditation, creative flow states'
     },
@@ -71,7 +80,7 @@ export default function Hero() {
       label: 'RUN', 
       description: '100-120 BPM',
       icon: Activity, 
-      color: 'from-red-900/50',
+      color: 'from-amber-600/60',
       roles: ['Marathoner', 'Gym Warrior', 'Morning Jogger', 'CrossFit Athlete'],
       context: 'Cardio, HIIT, endurance training, outdoor runs'
     },
@@ -80,7 +89,7 @@ export default function Hero() {
       label: 'HANG', 
       description: 'Coffee Shop Vibes',
       icon: Coffee, 
-      color: 'from-amber-900/50',
+      color: 'from-amber-600/60',
       roles: ['Coffee Shop Regular', 'Friend Group Chiller', 'Patio Lounger'],
       context: 'Casual gatherings, background ambiance, relaxed socializing'
     },
@@ -89,7 +98,7 @@ export default function Hero() {
       label: 'PAR-T', 
       description: 'Party Mode',
       icon: PartyPopper, 
-      color: 'from-pink-900/50',
+      color: 'from-amber-600/60',
       roles: ['DJ', 'Dance Floor Enthusiast', 'Party Host', 'Club Goer'],
       context: 'House parties, clubs, celebrations, high-energy social'
     },
@@ -98,7 +107,7 @@ export default function Hero() {
       label: 'KRUZE', 
       description: 'Road Trip',
       icon: Car, 
-      color: 'from-blue-900/50',
+      color: 'from-amber-600/60',
       roles: ['Road Tripper', 'Sunday Driver', 'Commuter', 'Scenic Route Explorer'],
       context: 'Driving, road trips, commutes, scenic journeys'
     },
@@ -107,7 +116,7 @@ export default function Hero() {
       label: 'PAYBK', 
       description: 'Victory Anthems',
       icon: Target, 
-      color: 'from-purple-900/50',
+      color: 'from-amber-600/60',
       roles: ['Empowered Survivor', 'Growth Mindset Individual', 'Self-Love Advocate'],
       context: 'Personal growth, moving on, winning through success'
     },
@@ -116,7 +125,7 @@ export default function Hero() {
       label: 'HRT', 
       description: 'Heartfelt',
       icon: Heart, 
-      color: 'from-rose-900/50',
+      color: 'from-amber-600/60',
       roles: ['Romantic', 'Emotional Processor', 'Vulnerable Soul', 'Deep Feeler'],
       context: 'Reflection, relationships, emotional processing'
     },
@@ -125,7 +134,7 @@ export default function Hero() {
       label: 'KRSH-D', 
       description: 'Crushed It',
       icon: Dumbbell, 
-      color: 'from-orange-900/50',
+      color: 'from-amber-600/60',
       roles: ['Rock Enthusiast', 'Heavy Lifter', 'Intensity Seeker'],
       context: 'Weightlifting, intense workouts, powerful moments'
     },
@@ -134,7 +143,7 @@ export default function Hero() {
       label: 'HUMAN', 
       description: 'Authentic',
       icon: Users, 
-      color: 'from-teal-900/50',
+      color: 'from-amber-600/60',
       roles: ['Authentic Seeker', 'Organic Lover', 'Real Connection Advocate'],
       context: 'Genuine moments, real connections, authentic experiences'
     },
@@ -143,7 +152,7 @@ export default function Hero() {
       label: 'SEXY', 
       description: 'Sultry Grooves',
       icon: Flame, 
-      color: 'from-red-900/50',
+      color: 'from-amber-600/60',
       roles: ['Romantic Evening Curator', 'Intimate Moment Creator', 'Sultry Mood Setter'],
       context: 'Romantic evenings, intimate settings, sophisticated allure'
     },
@@ -152,7 +161,7 @@ export default function Hero() {
       label: 'PSTVT', 
       description: 'Positive Vibes',
       icon: Sparkles, 
-      color: 'from-yellow-900/50',
+      color: 'from-amber-600/60',
       roles: ['Morning Person', 'Optimist', 'Motivational Seeker', 'Uplift Enthusiast'],
       context: 'Morning routines, motivation sessions, positive mindset building'
     },
@@ -161,11 +170,74 @@ export default function Hero() {
       label: 'BOT', 
       description: 'MC BOT (Michael Clay)',
       icon: Bot, 
-      color: 'from-cyan-900/50',
+      color: 'from-amber-600/60',
       roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
       context: 'Tech exploration, AI curiosity, future thinking'
     },
-  ];
+    ];
+
+  // Mapping from feeling IDs to database mood values
+  const feelingToMood: Record<string, string> = {
+    'dnd': 'Focus',      // Do Not Disturb -> Focus mood
+    'run': 'Energy',     // Running -> Energy mood
+    'hang': 'General',   // Hanging out -> General mood
+    'par-t': 'Energy',   // Party -> Energy mood
+    'kruze': 'General',  // Cruising -> General mood
+    'paybk': 'Energy',   // Payback/Victory -> Energy mood
+    'hrt': 'Dreamy',     // Heartfelt -> Dreamy mood
+    'krshd': 'Melancholy', // Crushed -> Melancholy mood
+    'human': 'General',  // Authentic/Human -> General mood
+    'sexy': 'Dreamy',    // Sultry/Romantic -> Dreamy mood
+    'pstvt': 'Energy',   // Positive Vibes -> Energy mood
+    'bot': 'General',    // AI/Tech -> General mood
+  };
+
+    // Handle FEELING selection - fetch tracks and play audio
+  const handleFeelingClick = async (feelingId: string) => {
+    try {
+      setLoadingFeeling(feelingId);
+      console.log(`[FEELING] Selected: ${feelingId}`);
+
+      // Fetch tracks for this feeling from Supabase
+      const { data: tracks, error } = await supabase
+      .from('gpm_tracks')
+      .select('*')
+      .not('audio_url', 'is', null)
+      .eq('mood', feelingToMood[feelingId] || 'General')
+      .limit(10);
+      if (error) {
+        console.error('[FEELING] Supabase error:', error);
+        setLoadingFeeling(null);
+         return;
+           }
+
+      if (!tracks || tracks.length === 0) {
+        console.warn('[FEELING] No tracks found for:', feelingId);
+        setLoadingFeeling(null);
+        return;
+      }
+
+      console.log(`[FEELING] Loaded ${tracks.length} tracks`);
+
+      // Get first track and dispatch to GlobalPlayer
+    // Select a RANDOM track instead of always first
+    const randomIndex = Math.floor(Math.random() * tracks.length);
+    const firstTrack = tracks[randomIndex];      const playEvent = new CustomEvent('play-track', {
+        detail: {
+          title: firstTrack.title || 'Unknown Track',
+          artist: firstTrack.artist || 'G Putnam Music',
+          url: firstTrack.audio_url,          moodTheme: { primary: '#8B4513' }
+        }
+      });
+
+      window.dispatchEvent(playEvent);
+      console.log('[FEELING] Dispatched play-track event');
+      setLoadingFeeling(null);
+    } catch (err) {
+      console.error('[FEELING] Error:', err);
+      setLoadingFeeling(null);
+    }
+  };
 
   // 1. MUSIC: Points to public/assets/fly-again.mp3
   const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
@@ -179,7 +251,8 @@ export default function Hero() {
   return (
     <main className="min-h-screen flex flex-col text-white relative">
       
-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg */}
+      {/* 2. BACKGROUND: Points to public/assets/hero.jpg 337
+      
       <div className="fixed inset-0 z-[-1]">
         <Image
           src="/assets/hero.jpg"
@@ -204,18 +277,8 @@ export default function Hero() {
           Context-Aware, Role-Based, Sophisticated Music Intelligence<br />
           500+ GPMC catalog tracks • 12 Feeling Boxes • 2+ hours streaming without repeats
         </p>
-        
-        <button 
-          onClick={scrollToMusic}
-          className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-neutral-200 transition-colors shadow-lg"
-        >
-          <Music size={20} />
-          <span>Listen Now</span>
-          <ArrowRight size={20} />
-        </button>
-      </section>
-
-      {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
+                </section>
+          {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
       <section className="relative z-10 bg-black/40 backdrop-blur-sm py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 drop-shadow-lg">
@@ -232,8 +295,7 @@ export default function Hero() {
               return (
                 <button
                   key={vibe.id}
-                  onClick={() => setActiveVibe(vibe.id)}
-                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
+            onClick={() => { setActiveVibe(vibe.id); handleFeelingClick(vibe.id); }}                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
                     activeVibe === vibe.id
                       ? 'border-white ring-2 ring-white/50 bg-neutral-800/60 scale-105'
                       : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
@@ -242,7 +304,7 @@ export default function Hero() {
                 >
                   {/* Hover Gradient */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-30 group-hover:opacity-100 transition-opacity duration-300`}
                   />
 
                   {/* Icon & Label */}
@@ -273,10 +335,7 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* Featured Playlists Section */}
-      <div id="featured" className="py-12 relative z-10 bg-black/40 backdrop-blur-sm">
-        <FeaturedPlaylists />
-      </div>
+        <WeeklyRace />
 
       <GlobalPlayer />
 
