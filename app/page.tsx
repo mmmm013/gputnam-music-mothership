@@ -1,4 +1,4 @@
-'use client';
+rchr'use client';
 import { createClient } from '@supabase/supabase-js';
 
 import React, { useRef, useState } from 'react';
@@ -202,8 +202,9 @@ export default function Hero() {
       console.log(`[FEELING] Loaded ${tracks.length} tracks`);
 
       // Get first track and dispatch to GlobalPlayer
-      const firstTrack = tracks[0];
-      const playEvent = new CustomEvent('play-track', {
+    // Select a RANDOM track instead of always first
+    const randomIndex = Math.floor(Math.random() * tracks.length);
+    const firstTrack = tracks[randomIndex];      const playEvent = new CustomEvent('play-track', {
         detail: {
           title: firstTrack.title || 'Unknown Track',
           artist: firstTrack.artist || 'G Putnam Music',
