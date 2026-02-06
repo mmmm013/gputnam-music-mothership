@@ -199,7 +199,8 @@ export default function Hero() {
       console.log(`[FEELING] Selected: ${feelingId}`);
 
           // MSJ-BOT special case: route to Scherer TV Thoroughbreds
-    if (feelingId === 'bot') {
+        // MSJ-BOT disabled: msj_tv_thoroughbreds table is empty, using standard gpm_tracks query
+    if (false && feelingId === 'bot') {
       const { data: tracks, error } = await supabase
         .from('msj_tv_thoroughbreds')
         .select('*')
