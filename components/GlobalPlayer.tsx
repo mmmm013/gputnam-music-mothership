@@ -3,14 +3,14 @@ import { useState, useEffect, useRef } from 'react';
 import { Pause, Play, AlertCircle } from 'lucide-react';
 
 // GPM Master Vault - Standardized bucket URL for all audio
-const SITE_CATALOG_BASE = 'https://lbzpfqarraegkghxwbah.supabase.co/storage/v1/object/public/site-catalog/';
+const SITE_CATALOG_BASE = 'https://lbzpfqarraegkghxwbah.supabase.co/storage/v1/object/public/tracks/';
 
-// Resolve any audio URL to the standardized site-catalog bucket
+// Resolve any audio URL to the standardized tracks bucket
 const resolveAudioUrl = (url: string): string => {
   if (!url) return '';
   
-  // If already using site-catalog, return as-is
-  if (url.includes('site-catalog')) return url;
+  // If already using tracks, return as-is
+  if (url.includes('tracks')) return url;
   
   // Extract filename from various URL formats
   let filename = url;
