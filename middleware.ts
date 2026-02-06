@@ -3,21 +3,39 @@ import type { NextRequest } from 'next/server';
 
 // SOCIAL MEDIA SUBDOMAIN REDIRECTS
 // Maps subdomains to external social media profiles
+// VERIFIED profiles marked with ✓, NEED INFO marked with ?
 const SOCIAL_REDIRECTS: Record<string, string> = {
-  'ig': 'https://instagram.com/gputnammusic',
-  'fb': 'https://facebook.com/gputnammusic',
-  'x': 'https://x.com/gputnammusic',
-  'twitter': 'https://x.com/gputnammusic',
-  'yt': 'https://youtube.com/@gputnammusic',
-  'youtube': 'https://youtube.com/@gputnammusic',
-  'tiktok': 'https://tiktok.com/@gputnammusic',
-  'tt': 'https://tiktok.com/@gputnammusic',
-  'linkedin': 'https://linkedin.com/in/gputnam',
-  'li': 'https://linkedin.com/in/gputnam',
-  'spotify': 'https://open.spotify.com/artist/gputnammusic',
-  'apple': 'https://music.apple.com/artist/gputnammusic',
-  'soundcloud': 'https://soundcloud.com/gputnammusic',
-  'sc': 'https://soundcloud.com/gputnammusic',
+  // ✓ VERIFIED - Instagram @gregputnammusic
+  'ig': 'https://instagram.com/gregputnammusic',
+  
+  // ✓ VERIFIED - Facebook page
+  'fb': 'https://www.facebook.com/p/G-Putnam-Music-LLC-100083396467797/',
+  
+  // ? NEED INFO - X/Twitter profile URL needed
+  // 'x': 'https://x.com/NEED_PROFILE',
+  // 'twitter': 'https://x.com/NEED_PROFILE',
+  
+  // ✓ VERIFIED - YouTube channel
+  'yt': 'https://www.youtube.com/@Musicmakers-Normal',
+  'youtube': 'https://www.youtube.com/@Musicmakers-Normal',
+  
+  // ? NEED INFO - TikTok profile URL needed
+  // 'tiktok': 'https://tiktok.com/@NEED_PROFILE',
+  // 'tt': 'https://tiktok.com/@NEED_PROFILE',
+  
+  // ✓ VERIFIED - LinkedIn company page
+  'linkedin': 'https://www.linkedin.com/company/g-putnam-music-llc',
+  'li': 'https://www.linkedin.com/company/g-putnam-music-llc',
+  
+  // ✓ VERIFIED - Spotify artist
+  'spotify': 'https://open.spotify.com/artist/7KSeVeJFgVn116BUHlvlX4',
+  
+  // ✓ VERIFIED - Apple Music artist
+  'apple': 'https://music.apple.com/us/artist/g-putnam-music/1577755253',
+  
+  // ? NEED INFO - SoundCloud profile URL needed
+  // 'soundcloud': 'https://soundcloud.com/NEED_PROFILE',
+  // 'sc': 'https://soundcloud.com/NEED_PROFILE',
 };
 
 // OFAC COMPLIANCE: SANCTIONED COUNTRIES (ISO 3166-1 Alpha-2 Codes)
