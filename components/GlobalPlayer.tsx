@@ -2,6 +2,39 @@
 import { useState, useEffect, useRef } from 'react';
 import { Pause, Play, AlertCircle } from 'lucide-react';
 
+// GPM Master Vault - Standardized bucket URL for all audio
+const SITE_CATALOG_BASE = 'https://lbzpfqarraegkghxwbah.supabase.co/storage/v1/object/public/site-catalog/';
+
+// Resolve any audio URL to the standardized site-catalog bucket
+const resolveAudioUrl = (url: string): string => {
+  if (!url) return '';
+  
+  // If already using site-catalog, return as-is
+  if (url.includes('site-catalog')) return url;
+  
+  // Extract filename from various URL formats
+  let filename = url;
+  
+  // Handle full Supabase URLs
+  if (url.includes('supabase.co/storage')) {
+    const parts = url.split('/public/');
+    if (parts.length > 1) {
+      // Get everything after the bucket name
+      const pathParts = parts[1].split('/');
+      filename = pathParts[pathParts.length - 1];
+    }
+  } else if (url.includes('/')) {
+    // Handle relative paths
+    filename = url.split('/').pop() || url;
+  }
+  
+  // Clean up filename (remove query params)
+  filename = filename.split('?')[0];
+  
+  console.log('[GlobalPlayer] Resolved URL:', { original: url, resolved: SITE_CATALOG_BASE + filename });
+  return SITE_CATALOG_BASE + filename;
+};
+
 export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
