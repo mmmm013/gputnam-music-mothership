@@ -252,6 +252,7 @@ export default function Hero() {
       .not('audio_url', 'is', null)
                     .neq('audio_url', 'EMPTY')
       .neq('audio_url', '')
+              .not('audio_url', 'like', '%placeholder%')
       .eq('mood', feelingToMood[feelingId] || 'General')
       .limit(10);
       if (error) {
