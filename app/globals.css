@@ -4,13 +4,18 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 101, 67, 33; /* Deep Brown RGB (#654321) */
-  --background-end-rgb: 101, 67, 33; /* Deep Brown RGB (#654321) */
+  --background-start-rgb: 26, 18, 7;
+  --background-end-rgb: 10, 9, 8;
+  --gpm-amber: #D4A017;
+  --gpm-brown: #8B4513;
+  --gpm-slate: #708090;
+  --gpm-stone: #C4A882;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #654321; /* DEEP BROWN BACKGROUND */
+  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  min-height: 100vh;
 }
 
 @layer utilities {
