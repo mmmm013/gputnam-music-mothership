@@ -34,7 +34,7 @@ export default function Header() {
           <Link href="/heroes" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Heroes</Link>
           <Link href="/artists" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Artists</Link>
           <Link href="/jazz" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Jazz</Link>
-          <Link href="/singalongs" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Singalongs</Link>
+          <Link href="/uru" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">URU</Link>
           <Link href="/ships" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Ships</Link>
           <Link href="/gift" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Gift</Link>
           <Link href="/join" className="text-sm bg-[#D4A017] text-[#2A1506] px-4 py-1.5 rounded-full font-bold hover:bg-[#FFD54F] transition-colors tracking-wide">Join</Link>
@@ -58,7 +58,7 @@ export default function Header() {
           <Link href="/heroes" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Heroes</Link>
           <Link href="/artists" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Artists</Link>
           <Link href="/jazz" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Jazz</Link>
-          <Link href="/singalongs" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Singalongs</Link>
+          <Link href="/uru" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">URU</Link>
           <Link href="/ships" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Ships</Link>
           <Link href="/gift" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Gift</Link>
           <Link href="/join" onClick={() => setMenuOpen(false)} className="text-sm bg-[#D4A017] text-[#2A1506] px-4 py-2 rounded-full font-bold text-center hover:bg-[#FFD54F] transition-colors tracking-wide">Join</Link>
