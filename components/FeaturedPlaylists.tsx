@@ -53,40 +53,38 @@ export default function FeaturedPlaylists() {
           return;
         }
 
-        setDebugInfo(`Found ${configs.length} config(s): ${configs.map((c: any) => c.display_name || c.name || c.id).join(', ')}`);
+        // Log the columns available on first config for debugging
+        const colNames = Object.keys(configs[0]).join(', ');
+        setDebugInfo(`Found ${configs.length} config(s). Columns: [${colNames}]`);
 
-        // Hydrate with tracks
+        // Hydrate with tracks using track_ids array from config
         const hydratedPlaylists = await Promise.all(
           configs.map(async (config: any) => {
-            const { data: playlistTracks, error: tracksError } = await supabase
-              .from('featured_playlist_tracks')
-              .select(`
-                track_id,
-                gpm_tracks (
-                  title,
-                  artist,
-                  mp3_url
-                )
-              `)
-              .eq('playlist_id', config.id);
+            const trackIds = config.track_ids || [];
+            const displayName = config.display_name || config.name || `Playlist ${config.id}`;
 
-            if (tracksError) {
-              setDebugInfo(prev => prev + ` | Tracks error for ${config.id}: ${tracksError.message}`);
-              return { ...config, display_name: config.display_name || config.name || `Playlist ${config.id}`, tracks: [] };
+            if (!Array.isArray(trackIds) || trackIds.length === 0) {
+              return { ...config, display_name: displayName, tracks: [] };
             }
 
-            const tracks = (playlistTracks || []).map((pt: any) => ({
-              track_id: pt.track_id,
-              title: pt.gpm_tracks?.title || config.display_name || 'Unknown',
-              artist: pt.gpm_tracks?.artist || 'G Putnam Music',
-              mp3_url: pt.gpm_tracks?.mp3_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${pt.track_id}.mp3`
+            const { data: tracks, error: tracksError } = await supabase
+              .from('gpm_tracks')
+              .select('track_id, title, artist, mp3_url, audio_url')
+              .in('track_id', trackIds);
+
+            if (tracksError) {
+              setDebugInfo(prev => prev + ` | gpm_tracks error: ${tracksError.message}`);
+              return { ...config, display_name: displayName, tracks: [] };
+            }
+
+            const hydratedTracks = (tracks || []).map((t: any) => ({
+              track_id: t.track_id,
+              title: t.title || displayName,
+              artist: t.artist || 'G Putnam Music',
+              mp3_url: t.mp3_url || t.audio_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${t.track_id}.mp3`
             }));
 
-            return {
-              ...config,
-              display_name: config.display_name || config.name || `Playlist ${config.id}`,
-              tracks
-            };
+            return { ...config, display_name: displayName, tracks: hydratedTracks };
           })
         );
 
@@ -95,7 +93,7 @@ export default function FeaturedPlaylists() {
         setStatus(activeFleet.length > 0 ? 'SUCCESS' : 'EMPTY');
 
         if (activeFleet.length === 0) {
-          setDebugInfo(prev => prev + ` | All ${hydratedPlaylists.length} playlists had 0 tracks`);
+          setDebugInfo(prev => prev + ` | All ${hydratedPlaylists.length} playlists had 0 hydrated tracks`);
         }
       } catch (err: any) {
         setStatus('DB ERROR');
@@ -108,7 +106,8 @@ export default function FeaturedPlaylists() {
 
   const playTrack = (playlist: PlaylistWithTracks) => {
     if (playlist.tracks.length === 0) return;
-    const track = playlist.tracks[0];
+    const randomIdx = Math.floor(Math.random() * playlist.tracks.length);
+    const track = playlist.tracks[randomIdx];
     window.dispatchEvent(new CustomEvent('play-track', {
       detail: {
         url: track.mp3_url,
@@ -145,12 +144,12 @@ export default function FeaturedPlaylists() {
       )}
 
       {debugInfo && (
-        <p className="text-[#f5e6c8]/30 text-xs mb-4 font-mono">
+        <p className="text-[#f5e6c8]/30 text-xs mb-4 font-mono break-all">
           {debugInfo}
         </p>
       )}
 
-      {status === 'EMPTY' && (
+      {status === 'EMPTY' && !debugInfo.includes('Columns:') && (
         <p className="text-[#f5e6c8]/50 text-sm text-center py-4">
           Featured playlists loading soon...
         </p>
