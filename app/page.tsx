@@ -194,6 +194,9 @@ export default function Hero() {
       {/* WEEKLY RACE */}
       <WeeklyRace />
 
+
+            {/* FOOTER */}
+      <Footer />
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
     </div>
