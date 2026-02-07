@@ -42,6 +42,7 @@ export default function FeaturedPlaylists() {
   const [trackList, setTrackList] = useState<TrackItem[]>([]);
   const [nowPlaying, setNowPlaying] = useState<TrackItem | null>(null);
   const [loadingTracks, setLoadingTracks] = useState(false);
+  const [totalTrackCount, setTotalTrackCount] = useState(0);
 
   useEffect(() => {
     async function fetchGPMPix() {
@@ -80,9 +81,24 @@ export default function FeaturedPlaylists() {
     setLoadingTracks(true);
     setTrackList([]);
     setNowPlaying(null);
+    setTotalTrackCount(0);
 
     try {
       const moodTag = pick.mood_tag || pick.display_name;
+
+      // Get total count of playable tracks for this mood
+      const { count } = await supabase
+        .from('gpm_tracks')
+        .select('*', { count: 'exact', head: true })
+        .not('audio_url', 'is', null)
+        .neq('audio_url', 'EMPTY')
+        .neq('audio_url', '')
+        .not('audio_url', 'like', '%placeholder%')
+        .ilike('mood', `%${moodTag}%`);
+
+      setTotalTrackCount(count || 0);
+
+      // Fetch 20 tracks for display
       const { data: tracks } = await supabase
         .from('gpm_tracks')
         .select('*')
@@ -212,7 +228,7 @@ export default function FeaturedPlaylists() {
               </h3>
               <p className="text-sm text-[#f5e6c8]/50">
                 {activePick.mood_tag ? `${activePick.mood_tag} vibes` : 'Featured playlist'}
-                {trackList.length > 0 && ` · ${trackList.length} tracks`}
+                {totalTrackCount > 0 && ` \u00b7 ${totalTrackCount} tracks`}
               </p>
             </div>
           </div>
