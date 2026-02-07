@@ -2,18 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-04-10',
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-04-10',
+  });
+}
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function POST(req: NextRequest) {
+  const stripe = getStripe();
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
   const body = await req.text();
   const sig = req.headers.get('stripe-signature')!;
 
@@ -33,11 +37,13 @@ export async function POST(req: NextRequest) {
       await handleCheckoutCompleted(session);
       break;
     }
+
     case 'payment_intent.payment_failed': {
       const intent = event.data.object as Stripe.PaymentIntent;
       await handlePaymentFailed(intent);
       break;
     }
+
     default:
       console.log(`Unhandled event type: ${event.type}`);
   }
@@ -46,6 +52,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const supabase = getSupabase();
   const tier = session.metadata?.tier;
   if (!tier) return;
 
@@ -89,6 +96,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handlePaymentFailed(intent: Stripe.PaymentIntent) {
+  const supabase = getSupabase();
   // Mark donation as failed
   const { error } = await supabase
     .from('gpm_donations')
@@ -101,6 +109,7 @@ async function handlePaymentFailed(intent: Stripe.PaymentIntent) {
 }
 
 async function sendGiftSMS(phone: string, tier: string, sessionId: string) {
+  const supabase = getSupabase();
   // Fetch SMS template from tier config
   const { data: config } = await supabase
     .from('gpm_tier_config')
