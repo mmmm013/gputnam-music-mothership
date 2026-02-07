@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import WeeklyRace from '@/components/WeeklyRace';
+import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -103,13 +104,12 @@ export default function Hero() {
   };
 
   return (
-    <main className="min-h-screen bg-[#1a100e]">
-
+    <div className="min-h-screen bg-[#1a1206] text-[#f5e6c8]">
       {/* HEADER - DARK BROWN */}
       <Header />
 
       {/* HERO SECTION - TAN/WARM + ROTATING BRAND IMAGE */}
-      <section className="relative w-full h-[75vh] overflow-hidden">
+      <section className="relative w-full h-[50vh] overflow-hidden">
         {HERO_IMAGES.map((src, i) => (
           <Image
             key={src}
@@ -122,93 +122,80 @@ export default function Hero() {
             priority={i === 0}
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#C4A882]/40 via-[#C4A882]/20 to-[#2A1506]" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-6xl md:text-8xl font-black text-[#D4A017] drop-shadow-lg mb-2">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1206]/60 via-transparent to-[#1a1206]" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
+          <h1 className="text-5xl md:text-7xl font-black text-[#D4A017] drop-shadow-lg">
             G Putnam Music
           </h1>
-          <p className="text-xl md:text-2xl text-[#C4A882] font-medium tracking-wide mb-1">
+          <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium">
             The One Stop Song Shop
           </p>
-          <p className="text-sm text-[#C4A882]/70 tracking-wider mb-8">
+          <p className="text-sm text-[#f5e6c8]/70 mt-1">
             Activity-Based, Context-Aware Music Intelligence
-          </p>
-
-          {/* Featured Playlist - NO RECTANGLE */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src="/assets/hero.jpg"
-                alt="Featured Playlist"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-bold text-[#D4A017] uppercase tracking-widest">Featured Playlist</p>
-              <p className="text-lg font-bold text-[#FFD54F]">Love Renews</p>
-              <p className="text-sm text-[#C4A882]/70">G Putnam Music Collection</p>
-            </div>
-          </div>
-
-          {/* Stats - NO BORDERS, clean text */}
-          <p className="text-sm text-[#C4A882]/60 tracking-wide">
-            1,000+ GPMC Catalog Tracks &nbsp;&middot;&nbsp; T20 Activity Boxes &nbsp;&middot;&nbsp; 2+ Hours No Repeats
           </p>
         </div>
       </section>
 
+      {/* GPM PIX - FEATURED PLAYLISTS */}
+      <section className="py-8 px-4">
+        <FeaturedPlaylists />
+      </section>
+
+      {/* Stats - NO BORDERS, clean text */}
+      <div className="text-center py-4 text-[#f5e6c8]/60 text-sm">
+        1,000+ GPMC Catalog Tracks&nbsp; · &nbsp;T20 Activity Boxes&nbsp; · &nbsp;2+ Hours No Repeats
+      </div>
+
       {/* T20 ACTIVITY SELECTOR */}
-      <section className="relative z-10 bg-[#2A1506] py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-black text-center mb-2 text-[#D4A017]">
-            What Are You Doing?
-          </h2>
-          <p className="text-center text-[#C4A882] mb-10 text-base">
-            T20 — Top 20 Activities Listeners Stream To Most
-          </p>
+      <section className="py-8 px-4 max-w-6xl mx-auto">
+        <h2 className="text-2xl font-bold text-center text-[#D4A017] mb-2">
+          What Are You Doing?
+        </h2>
+        <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
+          T20 — Top 20 Activities Listeners Stream To Most
+        </p>
 
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-10 gap-y-8 gap-x-2">
-            {t20.map((act) => (
-              <button
-                key={act.id}
-                onClick={() => { setActiveActivity(act.id); handleActivityClick(act.id); }}
-                className={`flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 ${
-                  activeActivity === act.id ? 'scale-105' : ''
-                }`}
-                title={act.description}
-              >
-                <span className="text-2xl md:text-3xl">{act.emoji}</span>
-                <span className={`text-xs md:text-sm font-bold tracking-wide ${
-                  activeActivity === act.id ? 'text-[#D4A017]' : 'text-[#C4A882] hover:text-[#D4A017]'
-                }`}>{act.label}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Active activity - NO RECTANGLE */}
-          {activeActivity && (
-            <div className="mt-10 text-center">
-              <h3 className="text-xl font-bold text-[#D4A017] mb-1">
-                {t20.find(a => a.id === activeActivity)?.label} — {t20.find(a => a.id === activeActivity)?.description}
-              </h3>
-              <p className="text-base text-[#8a8078]">
-                Streaming tracks matched to: <span className="text-[#C4A882] font-semibold">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
-              </p>
-            </div>
-          )}
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
+          {t20.map((act) => (
+            <button
+              key={act.id}
+              onClick={() => {
+                setActiveActivity(act.id);
+                handleActivityClick(act.id);
+              }}
+              className={`flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 ${
+                activeActivity === act.id ? 'scale-105' : ''
+              }`}
+              title={act.description}
+            >
+              <span className="text-2xl">{act.emoji}</span>
+              <span className={`text-[10px] font-bold ${
+                activeActivity === act.id ? 'text-[#D4A017]' : 'text-[#f5e6c8]/70'
+              }`}>
+                {act.label}
+              </span>
+            </button>
+          ))}
         </div>
+
+        {/* Active activity - NO RECTANGLE */}
+        {activeActivity && (
+          <div className="text-center mt-6">
+            <h3 className="text-lg font-bold text-[#D4A017]">
+              {t20.find(a => a.id === activeActivity)?.label} — {t20.find(a => a.id === activeActivity)?.description}
+            </h3>
+            <p className="text-sm text-[#f5e6c8]/60 mt-1">
+              Streaming tracks matched to: <span className="text-[#D4A017]">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
+            </p>
+          </div>
+        )}
       </section>
 
       {/* WEEKLY RACE */}
-      <section className="bg-gradient-to-b from-[#3d2810] to-[#2A1506]">
-        <WeeklyRace />
-      </section>
+      <WeeklyRace />
 
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
-
-      <Footer />
-    </main>
+    </div>
   );
 }
