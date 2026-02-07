@@ -31,7 +31,7 @@ export default function Header() {
 
         {/* RIGHT: Desktop Menu */}
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/who" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Who</Link>
+          <Link href="/heroes" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Heroes</Link>
           <Link href="/artists" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Artists</Link>
           <Link href="/jazz" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Jazz</Link>
           <Link href="/singalongs" className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide transition-colors">Singalongs</Link>
@@ -55,7 +55,7 @@ export default function Header() {
       {/* Mobile Menu Dropdown */}
       {menuOpen && (
         <div className="md:hidden bg-[#2A1506] border-t border-[#5C3A1E]/40 px-4 py-4 flex flex-col gap-3">
-          <Link href="/who" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Who</Link>
+          <Link href="/heroes" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Heroes</Link>
           <Link href="/artists" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Artists</Link>
           <Link href="/jazz" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Jazz</Link>
           <Link href="/singalongs" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#D4A017] font-medium tracking-wide py-1">Singalongs</Link>
