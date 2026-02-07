@@ -40,8 +40,8 @@ export default function GlobalPlayer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [track, setTrack] = useState({
-    title: "Select a Feeling", 
-    artist: "Choose from above to play",
+    title: "Pick an Activity", 
+    artist: "Click any T20 box to stream",
     url: "", 
     moodColor: "#8B4513"
   });
