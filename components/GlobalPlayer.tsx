@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Pause, Play, AlertCircle } from 'lucide-react';
+import { Pause, Play, AlertCircle, Radio } from 'lucide-react';
 
 // GPM Master Vault - Standardized bucket URL for all audio
 const SITE_CATALOG_BASE = 'https://lbzpfqarraegkghxwbah.supabase.co/storage/v1/object/public/tracks/';
@@ -8,29 +8,18 @@ const SITE_CATALOG_BASE = 'https://lbzpfqarraegkghxwbah.supabase.co/storage/v1/o
 // Resolve any audio URL to the standardized tracks bucket
 const resolveAudioUrl = (url: string): string => {
   if (!url) return '';
-  
-  // If already using tracks, return as-is
   if (url.includes('tracks')) return url;
-  
-  // Extract filename from various URL formats
   let filename = url;
-  
-  // Handle full Supabase URLs
   if (url.includes('supabase.co/storage')) {
     const parts = url.split('/public/');
     if (parts.length > 1) {
-      // Get everything after the bucket name
       const pathParts = parts[1].split('/');
       filename = pathParts[pathParts.length - 1];
     }
   } else if (url.includes('/')) {
-    // Handle relative paths
     filename = url.split('/').pop() || url;
   }
-  
-  // Clean up filename (remove query params)
   filename = filename.split('?')[0];
-  
   console.log('[GlobalPlayer] Resolved URL:', { original: url, resolved: SITE_CATALOG_BASE + filename });
   return SITE_CATALOG_BASE + filename;
 };
@@ -40,9 +29,9 @@ export default function GlobalPlayer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [track, setTrack] = useState({
-    title: "Pick an Activity", 
-    artist: "Click any T20 box to stream",
-    url: "", 
+    title: "Pick an Activity",
+    artist: "Click any T20 box or GPM PIX to stream",
+    url: "",
     moodColor: "#8B4513"
   });
   const [pendingPlay, setPendingPlay] = useState(false);
@@ -50,28 +39,23 @@ export default function GlobalPlayer() {
 
   useEffect(() => {
     const handleTrackSelect = (e: CustomEvent) => {
-      setError(''); // Clear previous errors
+      setError('');
       setIsLoading(true);
-      setIsPlaying(false); // Stop current playback
-      setPendingPlay(true); // Mark that we want to play when ready
-      
-      // Clean artist name
+      setIsPlaying(false);
+      setPendingPlay(true);
       let safeArtist = e.detail.artist || "G Putnam Music";
       if (safeArtist.toLowerCase().includes("mayker")) {
         safeArtist = "G Putnam Music";
       }
-
       const newTrack = {
-        title: e.detail.title || "Unknown Track", 
+        title: e.detail.title || "Unknown Track",
         artist: safeArtist,
-        url: e.detail.url, 
+        url: e.detail.url,
         moodColor: e.detail.moodTheme?.primary || "#8B4513"
       };
-      
       console.log('[GlobalPlayer] Track selected:', newTrack);
       setTrack(newTrack);
     };
-
     window.addEventListener('play-track', handleTrackSelect as EventListener);
     return () => window.removeEventListener('play-track', handleTrackSelect as EventListener);
   }, []);
@@ -80,19 +64,12 @@ export default function GlobalPlayer() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !track.url) return;
-
     const handleCanPlay = () => {
       setIsLoading(false);
-      console.log('[GlobalPlayer] Audio ready to play');
-      
-      // Only auto-play if we have a pending play request
       if (pendingPlay) {
         setPendingPlay(false);
         audio.play()
-          .then(() => {
-            setIsPlaying(true);
-            console.log('[GlobalPlayer] Playback started successfully');
-          })
+          .then(() => setIsPlaying(true))
           .catch(err => {
             console.error('[GlobalPlayer] Playback failed:', err);
             setError('Playback failed - click play to try again');
@@ -100,51 +77,28 @@ export default function GlobalPlayer() {
           });
       }
     };
-
     const handleError = (e: Event) => {
-      console.error('[GlobalPlayer] Audio error:', e);
       const target = e.target as HTMLAudioElement;
       setIsLoading(false);
       setIsPlaying(false);
       setPendingPlay(false);
-      
       if (target.error) {
         switch (target.error.code) {
-          case 1:
-            setError('Playback aborted');
-            break;
-          case 2:
-            setError('Network error - file not found');
-            break;
-          case 3:
-            setError('Decode error - unsupported format');
-            break;
-          case 4:
-            setError('File not supported');
-            break;
-          default:
-            setError('Unknown playback error');
+          case 1: setError('Playback aborted'); break;
+          case 2: setError('Network error - file not found'); break;
+          case 3: setError('Decode error - unsupported format'); break;
+          case 4: setError('File not supported'); break;
+          default: setError('Unknown playback error');
         }
       }
     };
-
-    const handleLoadStart = () => {
-      console.log('[GlobalPlayer] Loading audio:', track.url);
-      setIsLoading(true);
-    };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-    };
-
+    const handleLoadStart = () => setIsLoading(true);
+    const handleEnded = () => setIsPlaying(false);
     audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('error', handleError);
     audio.addEventListener('loadstart', handleLoadStart);
     audio.addEventListener('ended', handleEnded);
-
-    // Load the new source
     audio.load();
-
     return () => {
       audio.removeEventListener('canplay', handleCanPlay);
       audio.removeEventListener('error', handleError);
@@ -157,10 +111,8 @@ export default function GlobalPlayer() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !track.url) return;
-    
     if (isPlaying) {
       audio.play().catch(err => {
-        console.error('[GlobalPlayer] Play failed:', err);
         setError('Playback failed - click play to try again');
         setIsPlaying(false);
       });
@@ -170,62 +122,91 @@ export default function GlobalPlayer() {
   }, [isPlaying]);
 
   const togglePlay = () => {
-    if (!track.url) {
-      setError('No track selected');
-      return;
-    }
+    if (!track.url) { setError('No track selected'); return; }
     setError('');
     setIsPlaying(!isPlaying);
   };
 
+  const hasTrack = track.url !== '';
+  const activeColor = track.moodColor === "#8B4513" ? "#D4A017" : track.moodColor;
+
   return (
-    <div 
-      className="fixed bottom-0 left-0 right-0 bg-[#2C241B] text-[#FFFDF5] p-4 shadow-2xl border-t z-50 transition-all duration-500" 
-      style={{ borderColor: track.moodColor }}
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 transition-all duration-500"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between relative">
-        {/* Error Banner */}
-        {error && (
-          <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs px-4 py-2 rounded-full font-bold flex items-center gap-2 animate-bounce shadow-lg">
-            <AlertCircle size={14} /> {error}
-          </div>
-        )}
-
-        {/* MC BOT Indicator - Always Displayed */}
-        <div className="flex items-center gap-2 mr-4 flex-shrink-0">
-          <div className="flex items-center gap-1.5 bg-[#D4A017]/20 border border-[#D4A017]/40 rounded-full px-3 py-1">
-            <span className="w-2 h-2 rounded-full bg-[#D4A017] animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4A017]">MC BOT</span>
-          </div>
+      {/* Error Banner */}
+      {error && (
+        <div className="flex items-center justify-center gap-2 bg-red-600 text-white text-xs px-4 py-1.5 font-bold">
+          <AlertCircle size={14} /> {error}
         </div>
+      )}
 
-        <div className="flex flex-col min-w-0 flex-1">
-          <h4 
-            className="text-sm font-bold uppercase tracking-widest transition-colors duration-500 truncate" 
-            style={{ color: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor }}
-          >
-            {track.title}
-          </h4>
-          <p className="text-xs opacity-60 truncate">{track.artist}</p>
-          
-          {/* Loading indicator */}
-          {isLoading && (
-            <p className="text-xs text-yellow-400 mt-1 animate-pulse">Loading audio...</p>
-          )}
-        </div>
+      {/* MC BOT Player Bar */}
+      <div
+        className="bg-[#1a1206] border-t-2 px-4 py-3 transition-all duration-500"
+        style={{ borderColor: activeColor }}
+      >
+        <div className="max-w-7xl mx-auto flex items-center gap-4">
 
-        <div className="flex items-center gap-4">
-          <button 
+          {/* MC BOT Identity Block */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div
+              className="w-12 h-12 rounded-lg flex items-center justify-center relative overflow-hidden"
+              style={{ backgroundColor: `${activeColor}15`, border: `2px solid ${activeColor}40` }}
+            >
+              <Radio
+                className="w-6 h-6 transition-colors duration-500"
+                style={{ color: activeColor }}
+              />
+              {(isPlaying || isLoading) && (
+                <span
+                  className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: activeColor }}
+                />
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span
+                className="text-sm font-black uppercase tracking-[0.2em] transition-colors duration-500"
+                style={{ color: activeColor }}
+              >
+                MC BOT
+              </span>
+              <span className="text-[10px] text-[#f5e6c8]/40 font-medium tracking-wide">
+                {isPlaying ? 'NOW STREAMING' : isLoading ? 'LOADING' : 'READY'}
+              </span>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="w-px h-10 bg-[#f5e6c8]/10 flex-shrink-0" />
+
+          {/* Track Info */}
+          <div className="flex flex-col min-w-0 flex-1">
+            <h4
+              className="text-sm font-bold uppercase tracking-widest truncate transition-colors duration-500"
+              style={{ color: hasTrack ? activeColor : '#FFD54F' }}
+            >
+              {track.title}
+            </h4>
+            <p className="text-xs text-[#f5e6c8]/50 truncate">
+              {track.artist}
+            </p>
+            {isLoading && (
+              <p className="text-[10px] text-yellow-400 mt-0.5 animate-pulse">Loading audio...</p>
+            )}
+          </div>
+
+          {/* Play/Pause Button */}
+          <button
             onClick={togglePlay}
             disabled={!track.url && !isLoading}
-            className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-[#2C241B] disabled:opacity-50 disabled:cursor-not-allowed" 
-            style={{ 
-              backgroundColor: track.moodColor === "#8B4513" ? "#FFD54F" : track.moodColor 
-            }}
+            className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all text-[#1a1206] disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
+            style={{ backgroundColor: activeColor }}
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-[#2C241B] border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-[#1a1206] border-t-transparent rounded-full animate-spin" />
             ) : isPlaying ? (
               <Pause size={20} fill="currentColor" />
             ) : (
@@ -233,13 +214,13 @@ export default function GlobalPlayer() {
             )}
           </button>
         </div>
-
-        <audio 
-          ref={audioRef} 
-          src={track.url} 
-          preload="auto"
-        />
       </div>
+
+      <audio
+        ref={audioRef}
+        src={track.url}
+        preload="auto"
+      />
     </div>
   );
 }
