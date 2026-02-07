@@ -116,9 +116,10 @@ export default function Hero() {
 
   return (
     <main className="min-h-screen flex flex-col text-white relative">
+            {/* HEADER - DARK BROWN */}
+      <Header />
       {/* HERO SECTION - TAN/WARM BACKGROUND */}
       <section className="relative bg-gradient-to-b from-[#C4A882] via-[#A8926E] to-[#8B7355]">
-        <Header />
         <div className="relative min-h-[60vh] flex flex-col items-center justify-center text-center px-6 py-16">
           {/* Brand Hero Image Area */}
           <div className="absolute inset-0 opacity-20">
