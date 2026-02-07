@@ -1,51 +1,28 @@
 'use client';
 import { createClient } from '@supabase/supabase-js';
-
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
-// import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 import WeeklyRace from '@/components/WeeklyRace';
-  // Supabase configuration
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
 
-import { 
-  ArrowRight, 
-  Music, 
-  Zap, 
-  Moon, 
-  Sun, 
-  MessageSquare, 
-  CloudRain, 
-  Wind, 
-  Activity,
-  Volume2,
-  Radio,
-  Coffee,
-  PartyPopper,
-  Car,
-  Target,
-  Heart,
-  Dumbbell,
-  Users,
-  Flame,
-  Sparkles,
-  Bot
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+);
+
+import {
+  Volume2, Activity, Coffee, PartyPopper, Car, Target,
+  Heart, Dumbbell, Users, Flame, Sparkles, Bot,
+  BookOpen, Headphones, Moon, Baby, Palette, Utensils,
+  Dog, Gamepad2, Briefcase, Code
 } from 'lucide-react';
 
-/**
- * Helper to normalize audio URL.
- */
 function normalizeAudioUrl(input?: string | null): string {
   if (!input) return '';
   const trimmed = input.trim();
   if (!trimmed) return '';
-
   if (
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
@@ -53,7 +30,6 @@ function normalizeAudioUrl(input?: string | null): string {
   ) {
     return trimmed;
   }
-
   return `/${trimmed}`;
 }
 
@@ -61,343 +37,162 @@ export default function Hero() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [audioReady, setAudioReady] = useState(false);
   const [audioError, setAudioError] = useState(false);
-  const [activeVibe, setActiveVibe] = useState('dnd');
-    const [loadingFeeling, setLoadingFeeling] = useState<string | null>(null);
+  const [activeActivity, setActiveActivity] = useState('focus');
+  const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
 
-  // THE FULL 12-VIBE GRID - BIC Level Sophistication
-  const vibes = [
-    { 
-      id: 'dnd', 
-      label: 'DND', 
-      description: 'Do Not Disturb',
-      icon: Volume2, 
-      color: 'from-amber-600/60',
-      roles: ['Deep Worker', 'Meditator', 'Late-Night Coder', 'Zen Seeker'],
-      context: 'Focus sessions, meditation, creative flow states'
-    },
-    { 
-      id: 'run', 
-      label: 'RUN', 
-      description: '100-120 BPM',
-      icon: Activity, 
-      color: 'from-amber-600/60',
-      roles: ['Marathoner', 'Gym Warrior', 'Morning Jogger', 'CrossFit Athlete'],
-      context: 'Cardio, HIIT, endurance training, outdoor runs'
-    },
-    { 
-      id: 'hang', 
-      label: 'HANG', 
-      description: 'Coffee Shop Vibes',
-      icon: Coffee, 
-      color: 'from-amber-600/60',
-      roles: ['Coffee Shop Regular', 'Friend Group Chiller', 'Patio Lounger'],
-      context: 'Casual gatherings, background ambiance, relaxed socializing'
-    },
-    { 
-      id: 'part', 
-      label: 'PAR-T', 
-      description: 'Party Mode',
-      icon: PartyPopper, 
-      color: 'from-amber-600/60',
-      roles: ['DJ', 'Dance Floor Enthusiast', 'Party Host', 'Club Goer'],
-      context: 'House parties, clubs, celebrations, high-energy social'
-    },
-    { 
-      id: 'kruze', 
-      label: 'KRUZE', 
-      description: 'Road Trip',
-      icon: Car, 
-      color: 'from-amber-600/60',
-      roles: ['Road Tripper', 'Sunday Driver', 'Commuter', 'Scenic Route Explorer'],
-      context: 'Driving, road trips, commutes, scenic journeys'
-    },
-    { 
-      id: 'paybk', 
-      label: 'PAYBK', 
-      description: 'Victory Anthems',
-      icon: Target, 
-      color: 'from-amber-600/60',
-      roles: ['Empowered Survivor', 'Growth Mindset Individual', 'Self-Love Advocate'],
-      context: 'Personal growth, moving on, winning through success'
-    },
-    { 
-      id: 'hrt', 
-      label: 'HRT', 
-      description: 'Heartfelt',
-      icon: Heart, 
-      color: 'from-amber-600/60',
-      roles: ['Romantic', 'Emotional Processor', 'Vulnerable Soul', 'Deep Feeler'],
-      context: 'Reflection, relationships, emotional processing'
-    },
-    { 
-      id: 'krshd', 
-      label: 'KRSH-D', 
-      description: 'Crushed It',
-      icon: Dumbbell, 
-      color: 'from-amber-600/60',
-      roles: ['Rock Enthusiast', 'Heavy Lifter', 'Intensity Seeker'],
-      context: 'Weightlifting, intense workouts, powerful moments'
-    },
-    { 
-      id: 'human', 
-      label: 'HUMAN', 
-      description: 'Authentic',
-      icon: Users, 
-      color: 'from-amber-600/60',
-      roles: ['Authentic Seeker', 'Organic Lover', 'Real Connection Advocate'],
-      context: 'Genuine moments, real connections, authentic experiences'
-    },
-    { 
-      id: 'sexy', 
-      label: 'SEXY', 
-      description: 'Sultry Grooves',
-      icon: Flame, 
-      color: 'from-amber-600/60',
-      roles: ['Romantic Evening Curator', 'Intimate Moment Creator', 'Sultry Mood Setter'],
-      context: 'Romantic evenings, intimate settings, sophisticated allure'
-    },
-    { 
-      id: 'pstvt', 
-      label: 'PSTVT', 
-      description: 'Positive Vibes',
-      icon: Sparkles, 
-      color: 'from-amber-600/60',
-      roles: ['Morning Person', 'Optimist', 'Motivational Seeker', 'Uplift Enthusiast'],
-      context: 'Morning routines, motivation sessions, positive mindset building'
-    },
-    { 
-      id: 'bot', 
-      label: 'BOT', 
-      description: 'MC BOT (Michael Clay)',
-      icon: Bot, 
-      color: 'from-amber-600/60',
-      roles: ['AI Enthusiast', 'Tech Lover', 'Future Thinker', 'Bot Curious'],
-      context: 'Tech exploration, AI curiosity, future thinking'
-    },
-    ];
+  // T20: THE TOP 20 ACTIVITIES LISTENERS STREAM TO MOST
+  const t20 = [
+    { id: 'focus', label: 'FOCUS', description: 'Deep Work & Study', icon: Volume2, mood: 'Focus', color: 'from-amber-500/50' },
+    { id: 'run', label: 'RUN', description: 'Cardio & Jogging', icon: Activity, mood: 'Energy', color: 'from-orange-500/50' },
+    { id: 'chill', label: 'CHILL', description: 'Coffee Shop Hangs', icon: Coffee, mood: 'Chill', color: 'from-stone-400/50' },
+    { id: 'party', label: 'PAR-T', description: 'Party Mode', icon: PartyPopper, mood: 'Energy', color: 'from-amber-400/50' },
+    { id: 'drive', label: 'KRUZE', description: 'Driving & Road Trips', icon: Car, mood: 'Upbeat', color: 'from-slate-400/50' },
+    { id: 'lift', label: 'LIFT', description: 'Weights & Training', icon: Dumbbell, mood: 'Energy', color: 'from-orange-600/50' },
+    { id: 'romance', label: 'HRT', description: 'Date Night', icon: Heart, mood: 'Romantic', color: 'from-rose-400/50' },
+    { id: 'cook', label: 'COOK', description: 'Kitchen Sessions', icon: Utensils, mood: 'Chill', color: 'from-amber-600/50' },
+    { id: 'create', label: 'CREATE', description: 'Art & Design', icon: Palette, mood: 'Focus', color: 'from-violet-400/50' },
+    { id: 'read', label: 'READ', description: 'Books & Podcasts', icon: BookOpen, mood: 'Reflective', color: 'from-stone-500/50' },
+    { id: 'commute', label: 'COMMUTE', description: 'Daily Transit', icon: Headphones, mood: 'Upbeat', color: 'from-slate-500/50' },
+    { id: 'wind-down', label: 'WIND DN', description: 'Evening Unwind', icon: Moon, mood: 'Chill', color: 'from-indigo-400/50' },
+    { id: 'family', label: 'FAMILY', description: 'Kids & Home', icon: Baby, mood: 'Upbeat', color: 'from-amber-300/50' },
+    { id: 'social', label: 'SOCIAL', description: 'Friends & Gatherings', icon: Users, mood: 'Upbeat', color: 'from-stone-400/50' },
+    { id: 'hustle', label: 'HUSTLE', description: 'Grind & Motivation', icon: Briefcase, mood: 'Energy', color: 'from-amber-700/50' },
+    { id: 'game', label: 'GAME', description: 'Gaming Sessions', icon: Gamepad2, mood: 'Energy', color: 'from-slate-600/50' },
+    { id: 'walkdog', label: 'WALK', description: 'Walking & Pets', icon: Dog, mood: 'Chill', color: 'from-green-500/50' },
+    { id: 'intimate', label: 'INTMT', description: 'Intimate Moments', icon: Flame, mood: 'Romantic', color: 'from-rose-500/50' },
+    { id: 'code', label: 'CODE', description: 'Dev & Build', icon: Code, mood: 'Focus', color: 'from-cyan-500/50' },
+    { id: 'vibe', label: 'VIBE', description: 'Good Energy Only', icon: Sparkles, mood: 'Upbeat', color: 'from-yellow-400/50' },
+  ];
 
-  // Mapping from feeling IDs to database mood values
-  const feelingToMood: Record<string, string> = {
-    'dnd': 'Focus',      // Do Not Disturb -> Focus mood
-    'run': 'Energy',     // Running -> Energy mood
-      'hang': 'Chill',       // Hanging out -> Chill mood
-      'part': 'Energy',      // Party -> Energy mood
-      'kruze': 'Upbeat',     // Cruising -> Upbeat mood
-    'paybk': 'Energy',   // Payback/Victory -> Energy mood
-      'hrt': 'Romantic',     // Heartfelt -> Romantic mood
-      'krshd': 'Energy',     // Crushed It -> Energy mood (intense workouts)
-      'human': 'Reflective', // Authentic/Human -> Reflective mood
-      'sexy': 'Romantic',    // Sultry/Romantic -> Romantic mood
-      'pstvt': 'Upbeat',     // Positive Vibes -> Upbeat mood
-    'bot': 'General',    // AI/Tech -> General mood
-  };
-
-    // Handle FEELING selection - fetch tracks and play audio
-  const handleFeelingClick = async (feelingId: string) => {
+  const handleActivityClick = async (activityId: string) => {
     try {
-      setLoadingFeeling(feelingId);
-      console.log(`[FEELING] Selected: ${feelingId}`);
+      setLoadingActivity(activityId);
+      const activity = t20.find(a => a.id === activityId);
+      if (!activity) return;
 
-          // MSJ-BOT special case: route to Scherer TV Thoroughbreds
-        // MSJ-BOT disabled: msj_tv_thoroughbreds table is empty, using standard gpm_tracks query
-    if (false && feelingId === 'bot') {
       const { data: tracks, error } = await supabase
-        .from('msj_tv_thoroughbreds')
+        .from('gpm_tracks')
         .select('*')
         .not('audio_url', 'is', null)
+        .neq('audio_url', 'EMPTY')
+        .neq('audio_url', '')
+        .not('audio_url', 'like', '%placeholder%')
+        .eq('mood', activity.mood)
         .limit(10);
 
       if (error) {
-        console.error('[MSJ-BOT] Supabase error:', error);
-        setLoadingFeeling(null);
+        console.error('[T20] Supabase error:', error);
+        setLoadingActivity(null);
         return;
       }
       if (!tracks || tracks.length === 0) {
-        console.warn('[MSJ-BOT] No Scherer TV tracks found');
-        setLoadingFeeling(null);
+        console.warn('[T20] No tracks for:', activityId);
+        setLoadingActivity(null);
         return;
       }
 
       const randomIndex = Math.floor(Math.random() * tracks.length);
       const track = tracks[randomIndex];
-
       const playEvent = new CustomEvent('play-track', {
         detail: {
           title: track.title || 'Unknown Track',
-          artist: track.artist || 'Michael Scherer',
+          artist: track.artist || 'G Putnam Music',
           url: track.audio_url,
-          moodTheme: { primary: '#8B4513' },
-          meta: {
-            tv_network: track.tv_network,
-            tv_show: track.tv_show,
-            gpmcc_sfw: track.gpmcc_sfw,
-            lemon_squeezy_url: track.lemon_squeezy_url,
-            composition_story: track.composition_story,
-            sync_tier: track.sync_tier,
-          },
-        },
-      });
-
-      window.dispatchEvent(playEvent);
-      console.log('[MSJ-BOT] Dispatched Scherer TV play-track event');
-      setLoadingFeeling(null);
-      return;
-    }
-
-
-      // Fetch tracks for this feeling from Supabase
-      const { data: tracks, error } = await supabase
-      .from('gpm_tracks')
-      .select('*')
-      .not('audio_url', 'is', null)
-                    .neq('audio_url', 'EMPTY')
-      .neq('audio_url', '')
-              .not('audio_url', 'like', '%placeholder%')
-      .eq('mood', feelingToMood[feelingId] || 'General')
-      .limit(10);
-      if (error) {
-        console.error('[FEELING] Supabase error:', error);
-        setLoadingFeeling(null);
-         return;
-           }
-
-      if (!tracks || tracks.length === 0) {
-        console.warn('[FEELING] No tracks found for:', feelingId);
-        setLoadingFeeling(null);
-        return;
-      }
-
-      console.log(`[FEELING] Loaded ${tracks.length} tracks`);
-
-      // Get first track and dispatch to GlobalPlayer
-    // Select a RANDOM track instead of always first
-    const randomIndex = Math.floor(Math.random() * tracks.length);
-    const firstTrack = tracks[randomIndex];      const playEvent = new CustomEvent('play-track', {
-        detail: {
-          title: firstTrack.title || 'Unknown Track',
-          artist: firstTrack.artist || 'G Putnam Music',
-          url: firstTrack.audio_url,          moodTheme: { primary: '#8B4513' }
+          moodTheme: { primary: '#D4A017' }
         }
       });
-
       window.dispatchEvent(playEvent);
-      console.log('[FEELING] Dispatched play-track event');
-      setLoadingFeeling(null);
+      setLoadingActivity(null);
     } catch (err) {
-      console.error('[FEELING] Error:', err);
-      setLoadingFeeling(null);
+      console.error('[T20] Error:', err);
+      setLoadingActivity(null);
     }
   };
 
-  // 1. MUSIC: Points to public/assets/fly-again.mp3
   const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
   const audioSrc = normalizedAudioUrl ?? '';
 
-  const scrollToMusic = () => {
-    const section = document.getElementById('featured');
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <main className="min-h-screen flex flex-col text-white relative">
-      
-      {/* 2. BACKGROUND: Points to public/assets/hero.jpg 337
-      
-      <div className="fixed inset-0 z-[-1]">
-        <Image
-          src="/assets/hero.jpg"
-          alt="Background"
-          fill
-          className="object-cover brightness-50"
-          priority
-        />
-      </div>
-
+      <div className="fixed inset-0 z-[-1] bg-gradient-to-b from-[#1a1207] via-[#0f0d0a] to-[#0a0908]" />
       <Header />
 
-      {/* Hero Content Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter drop-shadow-2xl">
+      {/* Hero */}
+      <section className="relative flex-1 flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
+        <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tighter text-[#D4A017] drop-shadow-2xl">
           G Putnam Music
         </h1>
-        <p className="text-xl text-neutral-200 max-w-2xl mb-4 drop-shadow-md">
+        <p className="text-xl text-[#C4A882] max-w-2xl mb-3">
           The One Stop Song Shop.
         </p>
-        <p className="text-sm text-neutral-300 max-w-3xl mb-8 drop-shadow-md">
-          Context-Aware, Role-Based, Sophisticated Music Intelligence<br />
-          500+ GPMC catalog tracks • 12 Feeling Boxes • 2+ hours streaming without repeats
+        <p className="text-sm text-[#8a8078] max-w-3xl mb-8">
+          Activity-Based, Context-Aware Music Intelligence<br />
+          1,000+ GPMC catalog tracks &bull; T20 Activity Boxes &bull; 2+ hours streaming without repeats
         </p>
-                </section>
-          {/* FEELING/VIBE SELECTOR Section - 12 Boxes */}
-      <section className="relative z-10 bg-black/40 backdrop-blur-sm py-12 px-4">
+      </section>
+
+      {/* T20 ACTIVITY SELECTOR */}
+      <section className="relative z-10 bg-[#1a1207]/80 backdrop-blur-sm py-12 px-4 border-t border-[#D4A017]/20">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 drop-shadow-lg">
-            Select Your Feeling
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-2 text-[#D4A017]">
+            What Are You Doing?
           </h2>
-          <p className="text-center text-neutral-300 mb-8 text-sm">
-            Sophisticated Music Intelligence • Role-Based Contexts • Smart Randomization
+          <p className="text-center text-[#8a8078] mb-8 text-sm">
+            T20 &mdash; Top 20 Activities Listeners Stream To Most
           </p>
-          
-          {/* 12-GRID LAYOUT */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {vibes.map((vibe) => {
-              const Icon = vibe.icon;
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {t20.map((act) => {
+              const Icon = act.icon;
               return (
                 <button
-                  key={vibe.id}
-            onClick={() => { setActiveVibe(vibe.id); handleFeelingClick(vibe.id); }}                  className={`group relative h-28 md:h-32 overflow-hidden rounded-xl border bg-neutral-900/40 backdrop-blur-sm transition-all duration-300 ${
-                    activeVibe === vibe.id
-                      ? 'border-white ring-2 ring-white/50 bg-neutral-800/60 scale-105'
-                      : 'border-white/10 hover:border-white/30 hover:bg-neutral-800/40'
+                  key={act.id}
+                  onClick={() => { setActiveActivity(act.id); handleActivityClick(act.id); }}
+                  className={`group relative h-24 md:h-28 overflow-hidden rounded-lg border transition-all duration-300 ${
+                    activeActivity === act.id
+                      ? 'border-[#D4A017] ring-2 ring-[#D4A017]/40 bg-[#D4A017]/10 scale-[1.03]'
+                      : 'border-[#3d3529]/60 hover:border-[#D4A017]/40 bg-[#1a1207]/60 hover:bg-[#1a1207]/90'
                   }`}
-                  title={`${vibe.description} - ${vibe.context}`}
+                  title={act.description}
                 >
-                  {/* Hover Gradient */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${vibe.color} to-transparent opacity-30 group-hover:opacity-100 transition-opacity duration-300`}
-                  />
-
-                  {/* Icon & Label */}
-                  <div className="relative h-full flex flex-col items-center justify-center gap-2 p-4">
-                    <Icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                    <span className="text-xs md:text-sm font-bold text-white">{vibe.label}</span>
-                    <span className="text-[10px] text-neutral-300 text-center leading-tight">{vibe.description}</span>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${act.color} to-transparent opacity-0 group-hover:opacity-40 transition-opacity duration-300`} />
+                  <div className="relative h-full flex flex-col items-center justify-center gap-1.5 p-3">
+                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${
+                      activeActivity === act.id ? 'text-[#D4A017]' : 'text-[#8a8078] group-hover:text-[#C4A882]'
+                    }`} />
+                    <span className={`text-xs md:text-sm font-bold ${
+                      activeActivity === act.id ? 'text-[#D4A017]' : 'text-[#C4A882]'
+                    }`}>{act.label}</span>
+                    <span className="text-[9px] md:text-[10px] text-[#6b6158] text-center leading-tight">{act.description}</span>
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {/* Active Vibe Info */}
-          {activeVibe && (
-            <div className="mt-8 p-6 bg-neutral-900/60 backdrop-blur-sm rounded-xl border border-white/10">
-              <h3 className="text-xl font-bold mb-2">
-                {vibes.find(v => v.id === activeVibe)?.label} - {vibes.find(v => v.id === activeVibe)?.description}
+          {activeActivity && (
+            <div className="mt-6 p-5 bg-[#1a1207]/70 rounded-lg border border-[#3d3529]/40">
+              <h3 className="text-lg font-bold text-[#D4A017] mb-1">
+                {t20.find(a => a.id === activeActivity)?.label} &mdash; {t20.find(a => a.id === activeActivity)?.description}
               </h3>
-              <p className="text-sm text-neutral-300 mb-3">
-                <strong>Roles:</strong> {vibes.find(v => v.id === activeVibe)?.roles.join(', ')}
-              </p>
-              <p className="text-sm text-neutral-400">
-                <strong>Context:</strong> {vibes.find(v => v.id === activeVibe)?.context}
+              <p className="text-sm text-[#8a8078]">
+                Streaming tracks matched to: <span className="text-[#C4A882]">{t20.find(a => a.id === activeActivity)?.mood}</span> mood
               </p>
             </div>
           )}
         </div>
       </section>
 
-        <WeeklyRace />
-
+      <WeeklyRace />
       <GlobalPlayer />
 
-      {/* Invisible Audio Logic */}
-      <audio 
+      <audio
         ref={audioRef}
         src={audioSrc}
         onCanPlay={() => setAudioReady(true)}
         onError={() => setAudioError(true)}
         className="hidden"
       />
-
       <Footer />
     </main>
   );
