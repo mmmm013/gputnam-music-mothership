@@ -10,22 +10,25 @@ const supabase = (SUPABASE_URL && SUPABASE_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
-interface PlaylistWithTracks {
+// Supabase storage base for audio files
+const AUDIO_STORAGE_BASE = 'https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio';
+
+interface FeaturedPick {
   id: number;
   display_name: string;
-  tracks: Array<{
-    track_id: string;
-    title: string;
-    artist: string;
-    mp3_url: string;
-  }>;
+  title: string;
+  artist: string;
+  filename: string;
+  icon: string;
+  mood_tag: string;
+  theme_color: string;
 }
 
 export default function FeaturedPlaylists() {
-  const [playlists, setPlaylists] = useState<PlaylistWithTracks[]>([]);
+  const [picks, setPicks] = useState<FeaturedPick[]>([]);
   const [status, setStatus] = useState('INITIALIZING');
   const [errorMsg, setErrorMsg] = useState('');
-  const [debugInfo, setDebugInfo] = useState('');
+  const [activePick, setActivePick] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchGPMPix() {
@@ -36,65 +39,22 @@ export default function FeaturedPlaylists() {
       }
 
       try {
-        // Pull all configs from featured_playlists_config
         const { data: configs, error: configError } = await supabase
           .from('featured_playlists_config')
           .select('*')
           .order('sort_order');
 
-        if (configError) {
-          setDebugInfo(`Config error: ${configError.message}`);
-          throw configError;
-        }
+        if (configError) throw configError;
 
         if (!configs || configs.length === 0) {
-          setDebugInfo('featured_playlists_config returned 0 rows');
           setStatus('EMPTY');
           return;
         }
 
-        // Log the columns available on first config for debugging
-        const colNames = Object.keys(configs[0]).join(', ');
-        setDebugInfo(`Found ${configs.length} config(s). Columns: [${colNames}]`);
-
-        // Hydrate with tracks using track_ids array from config
-        const hydratedPlaylists = await Promise.all(
-          configs.map(async (config: any) => {
-            const trackIds = config.track_ids || [];
-            const displayName = config.display_name || config.name || `Playlist ${config.id}`;
-
-            if (!Array.isArray(trackIds) || trackIds.length === 0) {
-              return { ...config, display_name: displayName, tracks: [] };
-            }
-
-            const { data: tracks, error: tracksError } = await supabase
-              .from('gpm_tracks')
-              .select('track_id, title, artist, mp3_url, audio_url')
-              .in('track_id', trackIds);
-
-            if (tracksError) {
-              setDebugInfo(prev => prev + ` | gpm_tracks error: ${tracksError.message}`);
-              return { ...config, display_name: displayName, tracks: [] };
-            }
-
-            const hydratedTracks = (tracks || []).map((t: any) => ({
-              track_id: t.track_id,
-              title: t.title || displayName,
-              artist: t.artist || 'G Putnam Music',
-              mp3_url: t.mp3_url || t.audio_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${t.track_id}.mp3`
-            }));
-
-            return { ...config, display_name: displayName, tracks: hydratedTracks };
-          })
-        );
-
-        const activeFleet = hydratedPlaylists.filter(p => p.tracks.length > 0);
-        setPlaylists(activeFleet);
-        setStatus(activeFleet.length > 0 ? 'SUCCESS' : 'EMPTY');
-
-        if (activeFleet.length === 0) {
-          setDebugInfo(prev => prev + ` | All ${hydratedPlaylists.length} playlists had 0 hydrated tracks`);
-        }
+        // Each config IS a featured pick with its own audio
+        const validPicks = configs.filter((c: any) => c.display_name && c.filename);
+        setPicks(validPicks);
+        setStatus(validPicks.length > 0 ? 'SUCCESS' : 'EMPTY');
       } catch (err: any) {
         setStatus('DB ERROR');
         setErrorMsg(err.message);
@@ -104,16 +64,15 @@ export default function FeaturedPlaylists() {
     fetchGPMPix();
   }, []);
 
-  const playTrack = (playlist: PlaylistWithTracks) => {
-    if (playlist.tracks.length === 0) return;
-    const randomIdx = Math.floor(Math.random() * playlist.tracks.length);
-    const track = playlist.tracks[randomIdx];
+  const playPick = (pick: FeaturedPick) => {
+    setActivePick(pick.id);
+    const audioUrl = `${AUDIO_STORAGE_BASE}/${pick.filename}`;
     window.dispatchEvent(new CustomEvent('play-track', {
       detail: {
-        url: track.mp3_url,
-        title: track.title,
-        artist: track.artist,
-        moodTheme: { primary: "#D4A017" }
+        url: audioUrl,
+        title: pick.title || pick.display_name,
+        artist: pick.artist || 'G Putnam Music',
+        moodTheme: { primary: pick.theme_color || '#D4A017' }
       }
     }));
   };
@@ -143,31 +102,38 @@ export default function FeaturedPlaylists() {
         </div>
       )}
 
-      {debugInfo && (
-        <p className="text-[#f5e6c8]/30 text-xs mb-4 font-mono break-all">
-          {debugInfo}
-        </p>
-      )}
-
-      {status === 'EMPTY' && !debugInfo.includes('Columns:') && (
+      {status === 'EMPTY' && (
         <p className="text-[#f5e6c8]/50 text-sm text-center py-4">
           Featured playlists loading soon...
         </p>
       )}
 
-      <div className="flex flex-wrap gap-4 justify-center">
-        {playlists.map((playlist) => (
+      <div className="flex flex-wrap gap-3 justify-center">
+        {picks.map((pick) => (
           <button
-            key={playlist.id}
-            onClick={() => playTrack(playlist)}
-            className="group flex flex-col items-center gap-2 p-4 rounded-lg bg-[#2a1f0f] hover:bg-[#3a2a15] transition-all hover:scale-105"
+            key={pick.id}
+            onClick={() => playPick(pick)}
+            className={`group flex flex-col items-center gap-2 p-4 rounded-lg transition-all hover:scale-105 ${
+              activePick === pick.id
+                ? 'bg-[#D4A017]/20 ring-1 ring-[#D4A017]/50'
+                : 'bg-[#2a1f0f] hover:bg-[#3a2a15]'
+            }`}
           >
-            <span className="text-lg font-black uppercase text-[#D4A017] group-hover:text-[#f5e6c8] transition-colors">
-              {playlist.display_name}
+            {pick.icon && (
+              <span className="text-2xl">{pick.icon}</span>
+            )}
+            <span className={`text-sm font-black uppercase transition-colors ${
+              activePick === pick.id
+                ? 'text-[#D4A017]'
+                : 'text-[#f5e6c8]/80 group-hover:text-[#D4A017]'
+            }`}>
+              {pick.display_name}
             </span>
-            <span className="text-[10px] text-[#f5e6c8]/30">
-              {playlist.tracks.length} track{playlist.tracks.length !== 1 ? 's' : ''}
-            </span>
+            {pick.mood_tag && (
+              <span className="text-[10px] text-[#f5e6c8]/30">
+                {pick.mood_tag}
+              </span>
+            )}
           </button>
         ))}
       </div>
