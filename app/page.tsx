@@ -93,6 +93,7 @@ export default function Hero() {
         setLoadingActivity(null);
         return;
       }
+
       if (!tracks || tracks.length === 0) {
         console.warn('[T20] No tracks for:', activityId);
         setLoadingActivity(null);
@@ -145,7 +146,6 @@ export default function Hero() {
           </div>
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-[#C4A882]/85 via-[#A8926E]/80 to-[#8B7355]/90" />
-
         <div className="relative min-h-[65vh] flex flex-col items-center justify-center text-center px-6 py-16 z-10">
           <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tighter text-[#2A1506] drop-shadow-lg">
             G Putnam Music
@@ -157,41 +157,42 @@ export default function Hero() {
             Activity-Based, Context-Aware Music Intelligence
           </p>
 
-          {/* Featured Playlist Card */}
-          <div className="bg-[#2A1506]/80 backdrop-blur-sm rounded-2xl p-6 max-w-md w-full border border-[#D4A017]/30 shadow-2xl mb-8">
-            <div className="flex items-center gap-4">
-              <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                <Image
-                  src="/cover_love_renews.jpg"
-                  alt="Featured Playlist"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="text-left">
-                <p className="text-xs uppercase tracking-wider text-[#D4A017] font-bold mb-1">Featured Playlist</p>
-                <p className="text-lg font-bold text-[#F5E6D0]">Love Renews</p>
-                <p className="text-sm text-[#C4A882]">G Putnam Music Collection</p>
-              </div>
+          {/* Featured Playlist - NO RECTANGLE */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+              <Image
+                src="/cover_love_renews.jpg"
+                alt="Featured Playlist"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="text-left">
+              <p className="text-xs uppercase tracking-wider text-[#D4A017] font-bold">Featured Playlist</p>
+              <p className="text-lg font-bold text-[#2A1506]">Love Renews</p>
+              <p className="text-sm text-[#5a4530]">G Putnam Music Collection</p>
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-[#5a4530]">
-            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">1,000+ GPMC Catalog Tracks</span>
-            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">T20 Activity Boxes</span>
-            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">2+ Hours No Repeats</span>
+          {/* Stats - NO BORDERS, clean text */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-[#5a4530] font-medium">
+            <span>1,000+ GPMC Catalog Tracks</span>
+            <span className="text-[#D4A017]">•</span>
+            <span>T20 Activity Boxes</span>
+            <span className="text-[#D4A017]">•</span>
+            <span>2+ Hours No Repeats</span>
           </div>
         </div>
       </section>
 
-      {/* T20 ACTIVITY SELECTOR - NO BOXES, CLEAN LABELS */}
+      {/* T20 ACTIVITY SELECTOR */}
       <section className="relative z-10 bg-[#2A1506] py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black text-center mb-2 text-[#D4A017]">
             What Are You Doing?
           </h2>
           <p className="text-center text-[#C4A882] mb-10 text-base">
-            T20 &mdash; Top 20 Activities Listeners Stream To Most
+            T20 — Top 20 Activities Listeners Stream To Most
           </p>
 
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-10 gap-y-8 gap-x-2">
@@ -212,10 +213,11 @@ export default function Hero() {
             ))}
           </div>
 
+          {/* Active activity - NO RECTANGLE */}
           {activeActivity && (
-            <div className="mt-8 p-6 bg-[#1a1207]/90 rounded-xl border border-[#D4A017]/30">
-              <h3 className="text-xl font-bold text-[#D4A017] mb-2">
-                {t20.find(a => a.id === activeActivity)?.label} &mdash; {t20.find(a => a.id === activeActivity)?.description}
+            <div className="mt-10 text-center">
+              <h3 className="text-xl font-bold text-[#D4A017] mb-1">
+                {t20.find(a => a.id === activeActivity)?.label} — {t20.find(a => a.id === activeActivity)?.description}
               </h3>
               <p className="text-base text-[#8a8078]">
                 Streaming tracks matched to: <span className="text-[#C4A882] font-semibold">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
