@@ -1,6 +1,6 @@
 'use client';
 import { createClient } from '@supabase/supabase-js';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -18,6 +18,13 @@ import {
   BookOpen, Headphones, Moon, Baby, Palette, Utensils,
   Dog, Gamepad2, Briefcase, Code
 } from 'lucide-react';
+
+// Brand hero images for rotation
+const HERO_IMAGES = [
+  '/assets/hero.jpg',
+  '/k-hero.jpg',
+  '/k-hero-alternate.JPG',
+];
 
 function normalizeAudioUrl(input?: string | null): string {
   if (!input) return '';
@@ -39,6 +46,15 @@ export default function Hero() {
   const [audioError, setAudioError] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string>('focus');
   const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  // Rotate hero images every 8 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   // T20: THE TOP 20 ACTIVITIES LISTENERS STREAM TO MOST
   const t20 = [
@@ -85,7 +101,6 @@ export default function Hero() {
         setLoadingActivity(null);
         return;
       }
-
       if (!tracks || tracks.length === 0) {
         console.warn('[T20] No tracks for:', activityId);
         setLoadingActivity(null);
@@ -116,31 +131,65 @@ export default function Hero() {
 
   return (
     <main className="min-h-screen flex flex-col text-white relative">
-            {/* HEADER - DARK BROWN */}
+      {/* HEADER - DARK BROWN */}
       <Header />
-      {/* HERO SECTION - TAN/WARM BACKGROUND */}
-      <section className="relative bg-gradient-to-b from-[#C4A882] via-[#A8926E] to-[#8B7355]">
-        <div className="relative min-h-[60vh] flex flex-col items-center justify-center text-center px-6 py-16">
-          {/* Brand Hero Image Area */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] bg-repeat opacity-30" />
+
+      {/* HERO SECTION - TAN/WARM + ROTATING BRAND IMAGE */}
+      <section className="relative overflow-hidden">
+        {/* Rotating Hero Background Images */}
+        {HERO_IMAGES.map((src, i) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-[2000ms] ${
+              i === heroIndex ? 'opacity-40' : 'opacity-0'
+            }`}
+          >
+            <Image
+              src={src}
+              alt="G Putnam Music"
+              fill
+              className="object-cover"
+              priority={i === 0}
+            />
           </div>
-          
-          <div className="relative z-10">
-            <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tighter text-[#2A1506] drop-shadow-lg">
-              G Putnam Music
-            </h1>
-            <p className="text-2xl md:text-3xl text-[#3d2810] font-semibold max-w-2xl mb-3">
-              The One Stop Song Shop
-            </p>
-            <p className="text-base text-[#4a3520] max-w-3xl mb-6">
-              Activity-Based, Context-Aware Music Intelligence
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-[#5a4530]">
-              <span className="bg-[#2A1506]/10 px-4 py-2 rounded-full">1,000+ GPMC Catalog Tracks</span>
-              <span className="bg-[#2A1506]/10 px-4 py-2 rounded-full">T20 Activity Boxes</span>
-              <span className="bg-[#2A1506]/10 px-4 py-2 rounded-full">2+ Hours No Repeats</span>
+        ))}
+        {/* Tan overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#C4A882]/85 via-[#A8926E]/80 to-[#8B7355]/90" />
+
+        <div className="relative min-h-[65vh] flex flex-col items-center justify-center text-center px-6 py-16 z-10">
+          <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tighter text-[#2A1506] drop-shadow-lg">
+            G Putnam Music
+          </h1>
+          <p className="text-2xl md:text-3xl text-[#3d2810] font-semibold max-w-2xl mb-3">
+            The One Stop Song Shop
+          </p>
+          <p className="text-base text-[#4a3520] max-w-3xl mb-8">
+            Activity-Based, Context-Aware Music Intelligence
+          </p>
+
+          {/* Featured Playlist Card */}
+          <div className="bg-[#2A1506]/80 backdrop-blur-sm rounded-2xl p-6 max-w-md w-full border border-[#D4A017]/30 shadow-2xl mb-8">
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                <Image
+                  src="/cover_love_renews.jpg"
+                  alt="Featured Playlist"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-xs uppercase tracking-wider text-[#D4A017] font-bold mb-1">Featured Playlist</p>
+                <p className="text-lg font-bold text-[#F5E6D0]">Love Renews</p>
+                <p className="text-sm text-[#C4A882]">G Putnam Music Collection</p>
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-[#5a4530]">
+            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">1,000+ GPMC Catalog Tracks</span>
+            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">T20 Activity Boxes</span>
+            <span className="bg-[#2A1506]/15 backdrop-blur-sm px-4 py-2 rounded-full border border-[#2A1506]/20">2+ Hours No Repeats</span>
           </div>
         </div>
       </section>
@@ -152,9 +201,9 @@ export default function Hero() {
             What Are You Doing?
           </h2>
           <p className="text-center text-[#C4A882] mb-10 text-base">
-            T20 — Top 20 Activities Listeners Stream To Most
+            T20 &mdash; Top 20 Activities Listeners Stream To Most
           </p>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {t20.map((act) => {
               const Icon = act.icon;
@@ -183,11 +232,11 @@ export default function Hero() {
               );
             })}
           </div>
-          
+
           {activeActivity && (
             <div className="mt-8 p-6 bg-[#1a1207]/90 rounded-xl border border-[#D4A017]/30">
               <h3 className="text-xl font-bold text-[#D4A017] mb-2">
-                {t20.find(a => a.id === activeActivity)?.label} — {t20.find(a => a.id === activeActivity)?.description}
+                {t20.find(a => a.id === activeActivity)?.label} &mdash; {t20.find(a => a.id === activeActivity)?.description}
               </h3>
               <p className="text-base text-[#8a8078]">
                 Streaming tracks matched to: <span className="text-[#C4A882] font-semibold">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
@@ -212,7 +261,7 @@ export default function Hero() {
         onError={() => setAudioError(true)}
         className="hidden"
       />
-      
+
       <Footer />
     </main>
   );
