@@ -191,6 +191,14 @@ export default function GlobalPlayer() {
           </div>
         )}
 
+        {/* MC BOT Indicator - Always Displayed */}
+        <div className="flex items-center gap-2 mr-4 flex-shrink-0">
+          <div className="flex items-center gap-1.5 bg-[#D4A017]/20 border border-[#D4A017]/40 rounded-full px-3 py-1">
+            <span className="w-2 h-2 rounded-full bg-[#D4A017] animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4A017]">MC BOT</span>
+          </div>
+        </div>
+
         <div className="flex flex-col min-w-0 flex-1">
           <h4 
             className="text-sm font-bold uppercase tracking-widest transition-colors duration-500 truncate" 
