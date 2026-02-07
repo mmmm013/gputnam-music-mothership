@@ -1,6 +1,6 @@
 'use client';
 import { createClient } from '@supabase/supabase-js';
-import React, { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,24 +19,7 @@ const HERO_IMAGES = [
   '/k-hero-alternate.JPG',
 ];
 
-function normalizeAudioUrl(input?: string | null): string {
-  if (!input) return '';
-  const trimmed = input.trim();
-  if (!trimmed) return '';
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('/')
-  ) {
-    return trimmed;
-  }
-  return `/${trimmed}`;
-}
-
 export default function Hero() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioReady, setAudioReady] = useState(false);
-  const [audioError, setAudioError] = useState(false);
   const [activeActivity, setActiveActivity] = useState<string>('focus');
   const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
@@ -119,69 +102,59 @@ export default function Hero() {
     }
   };
 
-  const normalizedAudioUrl = normalizeAudioUrl('/assets/fly-again.mp3');
-  const audioSrc = normalizedAudioUrl ?? '';
-
   return (
-    <main className="min-h-screen flex flex-col text-white relative">
+    <main className="min-h-screen bg-[#1a100e]">
+
       {/* HEADER - DARK BROWN */}
       <Header />
 
       {/* HERO SECTION - TAN/WARM + ROTATING BRAND IMAGE */}
-      <section className="relative overflow-hidden">
+      <section className="relative w-full h-[75vh] overflow-hidden">
         {HERO_IMAGES.map((src, i) => (
-          <div
+          <Image
             key={src}
-            className={`absolute inset-0 transition-opacity duration-[2000ms] ${
-              i === heroIndex ? 'opacity-40' : 'opacity-0'
+            src={src}
+            alt="G Putnam Music"
+            fill
+            className={`object-cover transition-opacity duration-1000 ${
+              i === heroIndex ? 'opacity-100' : 'opacity-0'
             }`}
-          >
-            <Image
-              src={src}
-              alt="G Putnam Music"
-              fill
-              className="object-cover"
-              priority={i === 0}
-            />
-          </div>
+            priority={i === 0}
+          />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#C4A882]/85 via-[#A8926E]/80 to-[#8B7355]/90" />
-        <div className="relative min-h-[65vh] flex flex-col items-center justify-center text-center px-6 py-16 z-10">
-          <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tighter text-[#2A1506] drop-shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#C4A882]/40 via-[#C4A882]/20 to-[#2A1506]" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+          <h1 className="text-6xl md:text-8xl font-black text-[#D4A017] drop-shadow-lg mb-2">
             G Putnam Music
           </h1>
-          <p className="text-2xl md:text-3xl text-[#3d2810] font-semibold max-w-2xl mb-3">
+          <p className="text-xl md:text-2xl text-[#C4A882] font-medium tracking-wide mb-1">
             The One Stop Song Shop
           </p>
-          <p className="text-base text-[#4a3520] max-w-3xl mb-8">
+          <p className="text-sm text-[#C4A882]/70 tracking-wider mb-8">
             Activity-Based, Context-Aware Music Intelligence
           </p>
 
           {/* Featured Playlist - NO RECTANGLE */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+            <div className="relative w-16 h-16 rounded-lg overflow-hidden shadow-lg">
               <Image
-                src="/cover_love_renews.jpg"
+                src="/assets/hero.jpg"
                 alt="Featured Playlist"
                 fill
                 className="object-cover"
               />
             </div>
             <div className="text-left">
-              <p className="text-xs uppercase tracking-wider text-[#D4A017] font-bold">Featured Playlist</p>
-              <p className="text-lg font-bold text-[#2A1506]">Love Renews</p>
-              <p className="text-sm text-[#5a4530]">G Putnam Music Collection</p>
+              <p className="text-xs font-bold text-[#D4A017] uppercase tracking-widest">Featured Playlist</p>
+              <p className="text-lg font-bold text-[#FFD54F]">Love Renews</p>
+              <p className="text-sm text-[#C4A882]/70">G Putnam Music Collection</p>
             </div>
           </div>
 
           {/* Stats - NO BORDERS, clean text */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-[#5a4530] font-medium">
-            <span>1,000+ GPMC Catalog Tracks</span>
-            <span className="text-[#D4A017]">•</span>
-            <span>T20 Activity Boxes</span>
-            <span className="text-[#D4A017]">•</span>
-            <span>2+ Hours No Repeats</span>
-          </div>
+          <p className="text-sm text-[#C4A882]/60 tracking-wide">
+            1,000+ GPMC Catalog Tracks &nbsp;&middot;&nbsp; T20 Activity Boxes &nbsp;&middot;&nbsp; 2+ Hours No Repeats
+          </p>
         </div>
       </section>
 
@@ -234,14 +207,6 @@ export default function Hero() {
 
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
-
-      <audio
-        ref={audioRef}
-        src={audioSrc}
-        onCanPlay={() => setAudioReady(true)}
-        onError={() => setAudioError(true)}
-        className="hidden"
-      />
 
       <Footer />
     </main>
