@@ -11,11 +11,8 @@ const supabase = (SUPABASE_URL && SUPABASE_KEY)
   : null;
 
 interface PlaylistWithTracks {
-  id: string;
-  name: string;
-  description: string;
-  mood_category: string;
-  image_url: string;
+  id: number;
+  display_name: string;
   tracks: Array<{
     track_id: string;
     title: string;
@@ -28,6 +25,7 @@ export default function FeaturedPlaylists() {
   const [playlists, setPlaylists] = useState<PlaylistWithTracks[]>([]);
   const [status, setStatus] = useState('INITIALIZING');
   const [errorMsg, setErrorMsg] = useState('');
+  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
     async function fetchGPMPix() {
@@ -38,100 +36,67 @@ export default function FeaturedPlaylists() {
       }
 
       try {
-        // Step 1: Pull featured playlists from playlists table
-        const { data: featuredPlaylists, error: playlistError } = await supabase
-          .from('playlists')
+        // Pull all configs from featured_playlists_config
+        const { data: configs, error: configError } = await supabase
+          .from('featured_playlists_config')
           .select('*')
-          .eq('is_featured', true)
-          .order('created_at', { ascending: false })
-          .limit(5);
+          .order('sort_order');
 
-        if (playlistError) throw playlistError;
+        if (configError) {
+          setDebugInfo(`Config error: ${configError.message}`);
+          throw configError;
+        }
 
-        if (!featuredPlaylists || featuredPlaylists.length === 0) {
-          // Fallback: try featured_playlists_config table
-          const { data: configs, error: configError } = await supabase
-            .from('featured_playlists_config')
-            .select('*')
-            .not('display_name', 'is', null)
-            .order('sort_order');
-
-          if (configError || !configs || configs.length === 0) {
-            setStatus('EMPTY');
-            return;
-          }
-
-          // Hydrate config-based playlists with tracks
-          const hydratedConfigs = await Promise.all(
-            configs.map(async (config: any) => {
-              const { data: playlistTracks } = await supabase
-                .from('featured_playlist_tracks')
-                .select(`
-                  track_id,
-                  gpm_tracks (
-                    title,
-                    artist,
-                    mp3_url
-                  )
-                `)
-                .eq('playlist_id', config.id);
-
-              const tracks = (playlistTracks || []).map((pt: any) => ({
-                track_id: pt.track_id,
-                title: pt.gpm_tracks?.title || config.display_name,
-                artist: pt.gpm_tracks?.artist || 'G Putnam Music',
-                mp3_url: pt.gpm_tracks?.mp3_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${pt.track_id}.mp3`
-              }));
-
-              return {
-                id: config.id,
-                name: config.display_name,
-                description: '',
-                mood_category: '',
-                image_url: '',
-                tracks
-              };
-            })
-          );
-
-          const activeConfigs = hydratedConfigs.filter(p => p.tracks.length > 0);
-          setPlaylists(activeConfigs);
-          setStatus(activeConfigs.length > 0 ? 'SUCCESS' : 'EMPTY');
+        if (!configs || configs.length === 0) {
+          setDebugInfo('featured_playlists_config returned 0 rows');
+          setStatus('EMPTY');
           return;
         }
 
-        // Step 2: Hydrate playlists with track data from gpm_tracks
+        setDebugInfo(`Found ${configs.length} config(s): ${configs.map((c: any) => c.display_name || c.name || c.id).join(', ')}`);
+
+        // Hydrate with tracks
         const hydratedPlaylists = await Promise.all(
-          featuredPlaylists.map(async (playlist: any) => {
-            const trackIds = playlist.track_ids || [];
-
-            if (trackIds.length === 0) {
-              return { ...playlist, tracks: [] };
-            }
-
-            const { data: tracks, error: tracksError } = await supabase
-              .from('gpm_tracks')
-              .select('track_id, title, artist, mp3_url, audio_url')
-              .in('track_id', trackIds);
+          configs.map(async (config: any) => {
+            const { data: playlistTracks, error: tracksError } = await supabase
+              .from('featured_playlist_tracks')
+              .select(`
+                track_id,
+                gpm_tracks (
+                  title,
+                  artist,
+                  mp3_url
+                )
+              `)
+              .eq('playlist_id', config.id);
 
             if (tracksError) {
-              return { ...playlist, tracks: [] };
+              setDebugInfo(prev => prev + ` | Tracks error for ${config.id}: ${tracksError.message}`);
+              return { ...config, display_name: config.display_name || config.name || `Playlist ${config.id}`, tracks: [] };
             }
 
-            const hydratedTracks = (tracks || []).map((t: any) => ({
-              track_id: t.track_id,
-              title: t.title || playlist.name,
-              artist: t.artist || 'G Putnam Music',
-              mp3_url: t.mp3_url || t.audio_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${t.track_id}.mp3`
+            const tracks = (playlistTracks || []).map((pt: any) => ({
+              track_id: pt.track_id,
+              title: pt.gpm_tracks?.title || config.display_name || 'Unknown',
+              artist: pt.gpm_tracks?.artist || 'G Putnam Music',
+              mp3_url: pt.gpm_tracks?.mp3_url || `https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio/${pt.track_id}.mp3`
             }));
 
-            return { ...playlist, tracks: hydratedTracks };
+            return {
+              ...config,
+              display_name: config.display_name || config.name || `Playlist ${config.id}`,
+              tracks
+            };
           })
         );
 
         const activeFleet = hydratedPlaylists.filter(p => p.tracks.length > 0);
         setPlaylists(activeFleet);
         setStatus(activeFleet.length > 0 ? 'SUCCESS' : 'EMPTY');
+
+        if (activeFleet.length === 0) {
+          setDebugInfo(prev => prev + ` | All ${hydratedPlaylists.length} playlists had 0 tracks`);
+        }
       } catch (err: any) {
         setStatus('DB ERROR');
         setErrorMsg(err.message);
@@ -142,6 +107,7 @@ export default function FeaturedPlaylists() {
   }, []);
 
   const playTrack = (playlist: PlaylistWithTracks) => {
+    if (playlist.tracks.length === 0) return;
     const track = playlist.tracks[0];
     window.dispatchEvent(new CustomEvent('play-track', {
       detail: {
@@ -178,6 +144,12 @@ export default function FeaturedPlaylists() {
         </div>
       )}
 
+      {debugInfo && (
+        <p className="text-[#f5e6c8]/30 text-xs mb-4 font-mono">
+          {debugInfo}
+        </p>
+      )}
+
       {status === 'EMPTY' && (
         <p className="text-[#f5e6c8]/50 text-sm text-center py-4">
           Featured playlists loading soon...
@@ -192,13 +164,8 @@ export default function FeaturedPlaylists() {
             className="group flex flex-col items-center gap-2 p-4 rounded-lg bg-[#2a1f0f] hover:bg-[#3a2a15] transition-all hover:scale-105"
           >
             <span className="text-lg font-black uppercase text-[#D4A017] group-hover:text-[#f5e6c8] transition-colors">
-              {playlist.name}
+              {playlist.display_name}
             </span>
-            {playlist.description && (
-              <span className="text-xs text-[#f5e6c8]/50">
-                {playlist.description}
-              </span>
-            )}
             <span className="text-[10px] text-[#f5e6c8]/30">
               {playlist.tracks.length} track{playlist.tracks.length !== 1 ? 's' : ''}
             </span>
