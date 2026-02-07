@@ -10,18 +10,19 @@ const supabase = (SUPABASE_URL && SUPABASE_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
-// Supabase storage base for audio files
-const AUDIO_STORAGE_BASE = 'https://eajxgrbxvkhfmmfiotpm.supabase.co/storage/v1/object/public/audio';
-
 interface FeaturedPick {
   id: number;
   display_name: string;
+  view_name: string;
+  gpmc_link_view_name: string;
   title: string;
   artist: string;
   filename: string;
   icon: string;
   mood_tag: string;
   theme_color: string;
+  site_id: string;
+  brand_key: string;
 }
 
 export default function FeaturedPlaylists() {
@@ -51,8 +52,8 @@ export default function FeaturedPlaylists() {
           return;
         }
 
-        // Each config IS a featured pick with its own audio
-        const validPicks = configs.filter((c: any) => c.display_name && c.filename);
+        // All configs with display_name are valid picks
+        const validPicks = configs.filter((c: any) => c.display_name);
         setPicks(validPicks);
         setStatus(validPicks.length > 0 ? 'SUCCESS' : 'EMPTY');
       } catch (err: any) {
@@ -64,17 +65,61 @@ export default function FeaturedPlaylists() {
     fetchGPMPix();
   }, []);
 
-  const playPick = (pick: FeaturedPick) => {
+  const playPick = async (pick: FeaturedPick) => {
+    if (!supabase) return;
     setActivePick(pick.id);
-    const audioUrl = `${AUDIO_STORAGE_BASE}/${pick.filename}`;
-    window.dispatchEvent(new CustomEvent('play-track', {
-      detail: {
-        url: audioUrl,
-        title: pick.title || pick.display_name,
-        artist: pick.artist || 'G Putnam Music',
-        moodTheme: { primary: pick.theme_color || '#D4A017' }
+
+    try {
+      // Try to get tracks matching this mood from gpm_tracks
+      const moodTag = pick.mood_tag || pick.display_name;
+      const { data: tracks } = await supabase
+        .from('gpm_tracks')
+        .select('*')
+        .not('audio_url', 'is', null)
+        .neq('audio_url', 'EMPTY')
+        .neq('audio_url', '')
+        .not('audio_url', 'like', '%placeholder%')
+        .ilike('mood', `%${moodTag}%`)
+        .limit(10);
+
+      if (tracks && tracks.length > 0) {
+        const randomIdx = Math.floor(Math.random() * tracks.length);
+        const track = tracks[randomIdx];
+        window.dispatchEvent(new CustomEvent('play-track', {
+          detail: {
+            url: track.audio_url || track.mp3_url,
+            title: track.title || pick.display_name,
+            artist: track.artist || 'G Putnam Music',
+            moodTheme: { primary: pick.theme_color || '#D4A017' }
+          }
+        }));
+      } else {
+        // Fallback: try broader mood match
+        const { data: fallbackTracks } = await supabase
+          .from('gpm_tracks')
+          .select('*')
+          .not('audio_url', 'is', null)
+          .neq('audio_url', 'EMPTY')
+          .neq('audio_url', '')
+          .not('audio_url', 'like', '%placeholder%')
+          .limit(10);
+
+        if (fallbackTracks && fallbackTracks.length > 0) {
+          const randomIdx = Math.floor(Math.random() * fallbackTracks.length);
+          const track = fallbackTracks[randomIdx];
+          window.dispatchEvent(new CustomEvent('play-track', {
+            detail: {
+              url: track.audio_url || track.mp3_url,
+              title: track.title || pick.display_name,
+              artist: track.artist || 'G Putnam Music',
+              moodTheme: { primary: pick.theme_color || '#D4A017' }
+            }
+          }));
+        }
       }
-    }));
+    } catch (err) {
+      console.error('[GPM PIX] Error playing pick:', err);
+    }
   };
 
   return (
