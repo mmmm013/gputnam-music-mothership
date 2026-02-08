@@ -92,7 +92,7 @@ export default function Hero() {
           title: track.title || 'Unknown Track',
           artist: track.artist || 'G Putnam Music',
           url: track.audio_url,
-          moodTheme: { primary: '#D4A017' }
+          moodTheme: { primary: '#C8A882' }
         }
       });
       window.dispatchEvent(playEvent);
@@ -124,7 +124,7 @@ export default function Hero() {
         ))}
               <div className="absolute inset-0 bg-[#1a1206]/60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-                  <h1 className="text-5xl md:text-7xl font-black text-[#D4A017]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(26,18,6,0.5)' }}>
+                  <h1 className="text-5xl md:text-7xl font-black text-[#C8A882]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(26,18,6,0.5)' }}>
             G Putnam Music
           </h1>
                   <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
@@ -148,7 +148,7 @@ export default function Hero() {
 
       {/* T20 ACTIVITY SELECTOR */}
       <section className="py-8 px-4 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-center text-[#D4A017] mb-2">
+        <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-2">
           What Are You Doing?
         </h2>
         <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
@@ -170,7 +170,7 @@ export default function Hero() {
             >
               <span className="text-2xl">{act.emoji}</span>
               <span className={`text-[10px] font-bold ${
-                activeActivity === act.id ? 'text-[#D4A017]' : 'text-[#f5e6c8]/70'
+                activeActivity === act.id ? 'text-[#C8A882]' : 'text-[#f5e6c8]/70'
               }`}>
                 {act.label}
               </span>
@@ -181,11 +181,11 @@ export default function Hero() {
         {/* Active activity - NO RECTANGLE */}
         {activeActivity && (
           <div className="text-center mt-6">
-            <h3 className="text-lg font-bold text-[#D4A017]">
+            <h3 className="text-lg font-bold text-[#C8A882]">
               {t20.find(a => a.id === activeActivity)?.label} — {t20.find(a => a.id === activeActivity)?.description}
             </h3>
             <p className="text-sm text-[#f5e6c8]/60 mt-1">
-              Streaming tracks matched to: <span className="text-[#D4A017]">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
+              Streaming tracks matched to: <span className="text-[#C8A882]">{t20.find(a => a.id === activeActivity)?.mood}</span> vibe
             </p>
           </div>
         )}
