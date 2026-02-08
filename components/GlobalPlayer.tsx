@@ -128,7 +128,7 @@ export default function GlobalPlayer() {
   };
 
   const hasTrack = track.url !== '';
-  const activeColor = track.moodColor === "#8B4513" ? "#D4A017" : track.moodColor;
+  const activeColor = track.moodColor === "#8B4513" ? "#C8A882" : track.moodColor;
 
   return (
     <div
@@ -185,7 +185,7 @@ export default function GlobalPlayer() {
           <div className="flex flex-col min-w-0 flex-1">
             <h4
               className="text-sm font-bold uppercase tracking-widest truncate transition-colors duration-500"
-              style={{ color: hasTrack ? activeColor : '#FFD54F' }}
+              style={{ color: hasTrack ? activeColor : '#D7CCC8' }}
             >
               {track.title}
             </h4>
