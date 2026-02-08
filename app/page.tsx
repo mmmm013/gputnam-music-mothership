@@ -121,8 +121,7 @@ export default function Hero() {
             src={src}
             alt="G Putnam Music"
             fill
-              className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${  {heroIndex === i ? 'opacity-100' : 'opacity-0'}`}
-            priority={i === 0}
+                      className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${heroIndex === i ? 'opacity-100' : 'opacity-0'}`}            priority={i === 0}
           />
         ))}
               <div className="absolute inset-0 bg-[#1a1206]/60" />
