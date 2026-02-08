@@ -122,15 +122,15 @@ export default function Hero() {
             priority={i === 0}
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1206]/60 via-transparent to-[#1a1206]" />
+              <div className="absolute inset-0 bg-[#1a1206]/60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-          <h1 className="text-5xl md:text-7xl font-black text-[#D4A017] drop-shadow-lg">
+                  <h1 className="text-5xl md:text-7xl font-black text-[#D4A017]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(26,18,6,0.5)' }}>
             G Putnam Music
           </h1>
-          <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium">
+                  <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
             The One Stop Song Shop
           </p>
-          <p className="text-sm text-[#f5e6c8]/70 mt-1">
+                  <p className="text-sm text-[#f5e6c8]/70 mt-1" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
             Activity-Based, Context-Aware Music Intelligence
           </p>
         </div>
