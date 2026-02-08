@@ -15,9 +15,12 @@ const supabase = createClient(
 
 // Brand hero images for rotation
 const HERO_IMAGES = [
-  '/assets/hero.jpg',
-  '/k-hero.jpg',
-  '/k-hero-alternate.JPG',
+  '/assets/hero.jpg',      // 0: marble/gold abstract - center
+  '/k-hero.jpg',           // 1: portrait - top 20%
+  '/k-hero-alternate.JPG', // 2: sunlight outdoor - center
+  '/IMG_7429.JPG',         // 3: studio front - center
+  '/IMG_7624.JPG',         // 4: studio side working - center
+  '/IMG_7720.JPG',         // 5: red blazer portrait - top 20%
 ];
 
 export default function Hero() {
@@ -116,8 +119,7 @@ export default function Hero() {
             src={src}
             alt="G Putnam Music"
             fill
-              className={`object-cover ${i === 1 ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${              i === heroIndex ? 'opacity-100' : 'opacity-0'
-            }`}
+              className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${            }`}
             priority={i === 0}
           />
         ))}
