@@ -21,6 +21,8 @@ const HERO_IMAGES = [
   '/IMG_7429.JPG',         // 3: studio front - center
   '/IMG_7624.JPG',         // 4: studio side working - center
   '/IMG_7720.JPG',         // 5: red blazer portrait - top 20%
+    '/assets/MC BW 1.jpeg',      // 6: Michael Clay album cover - center
+  '/assets/MC BW 2.jpeg',      // 7: Michael Clay album cover 2 - center
 ];
 
 export default function Hero() {
