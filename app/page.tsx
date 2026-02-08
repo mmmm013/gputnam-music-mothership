@@ -116,8 +116,7 @@ export default function Hero() {
             src={src}
             alt="G Putnam Music"
             fill
-            className={`object-cover object-[center_20%] transition-opacity duration-1000 ${
-              i === heroIndex ? 'opacity-100' : 'opacity-0'
+              className={`object-cover ${i === 1 ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${              i === heroIndex ? 'opacity-100' : 'opacity-0'
             }`}
             priority={i === 0}
           />
