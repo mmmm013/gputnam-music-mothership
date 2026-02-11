@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import WeeklyRace from '@/components/WeeklyRace';
-import FeaturedPlaylists from '@/components/FeaturedPlaylists';
+// import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -15,14 +15,14 @@ const supabase = createClient(
 
 // Brand hero images for rotation
 const HERO_IMAGES = [
-  '/assets/hero.jpg',      // 0: marble/gold abstract - center
-  '/k-hero.jpg',           // 1: portrait - top 20%
-  '/k-hero-alternate.JPG', // 2: sunlight outdoor - center
-  '/IMG_7429.JPG',         // 3: studio front - center
-  '/IMG_7624.JPG',         // 4: studio side working - center
-  '/IMG_7720.JPG',         // 5: red blazer portrait - top 20%
-    '/assets/MC BW 1.jpeg',      // 6: Michael Clay album cover - center
-  '/assets/MC BW 2.jpeg',      // 7: Michael Clay album cover 2 - center
+  '/assets/hero.jpg',       // 0: marble/gold abstract - center
+  '/k-hero.jpg',            // 1: portrait - top 20%
+  '/k-hero-alternate.JPG',  // 2: sunlight outdoor - center
+  '/IMG_7429.JPG',          // 3: studio front - center
+  '/IMG_7624.JPG',          // 4: studio side working - center
+  '/IMG_7720.JPG',          // 5: red blazer portrait - top 20%
+  '/assets/MC BW 1.jpeg',   // 6: Michael Clay album cover - center
+  '/assets/MC BW 2.jpeg',   // 7: Michael Clay album cover 2 - center
 ];
 
 export default function Hero() {
@@ -121,18 +121,18 @@ export default function Hero() {
             src={src}
             alt="G Putnam Music"
             fill
-                      className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${heroIndex === i ? 'opacity-100' : 'opacity-0'}`}            priority={i === 0}
+            className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_20%]' : 'object-center'} transition-opacity duration-1000 ${heroIndex === i ? 'opacity-100' : 'opacity-0'}`} priority={i === 0}
           />
         ))}
-              <div className="absolute inset-0 bg-[#1a1206]/60" />
+        <div className="absolute inset-0 bg-[#1a1206]/60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-                  <h1 className="text-5xl md:text-7xl font-black text-[#C8A882]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(26,18,6,0.5)' }}>
+          <h1 className="text-5xl md:text-7xl font-black text-[#C8A882]" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6), 0 0 40px rgba(26,18,6,0.5)' }}>
             G Putnam Music
           </h1>
-                  <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
+          <p className="text-xl md:text-2xl text-[#f5e6c8] mt-2 font-medium" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
             The One Stop Song Shop
           </p>
-                  <p className="text-sm text-[#f5e6c8]/70 mt-1" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+          <p className="text-sm text-[#f5e6c8]/70 mt-1" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
             Activity-Based, Context-Aware Music Intelligence
           </p>
         </div>
@@ -146,7 +146,6 @@ export default function Hero() {
         <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
-
         <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
           {t20.map((act) => (
             <button
@@ -183,24 +182,22 @@ export default function Hero() {
         )}
       </section>
 
-            {/* GPM PIX - FEATURED PLAYLISTS */}
-      <section className="py-8 px-4">
+      {/* GPM PIX - HIDDEN: User requested removal to avoid overwhelming users */}
+      {/* <section className="py-8 px-4">
         <FeaturedPlaylists />
-      </section>
+      </section> */}
 
       {/* Stats - NO BORDERS, clean text */}
       <div className="text-center py-4 text-[#f5e6c8]/60 text-sm">
         1,000+ GPMC Catalog Tracks&nbsp; · &nbsp;T20 Activity Boxes&nbsp; · &nbsp;2+ Hours No Repeats
       </div>
 
-
-
       {/* WEEKLY RACE */}
       <WeeklyRace />
 
-
-            {/* FOOTER */}
+      {/* FOOTER */}
       <Footer />
+
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
     </div>
