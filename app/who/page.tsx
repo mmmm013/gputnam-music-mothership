@@ -16,12 +16,12 @@ export default function WhoPage() {
         </p>
         {/* Michael Scherer Studio Portrait */}
         <div className="relative w-full max-w-md mx-auto mb-12 rounded-2xl overflow-hidden shadow-2xl">
-          <div className="relative w-full h-[420px]">
+          <div className="relative w-full h-[480px]">
             <Image
               src="/IMG_7429.JPG"
               alt="Michael Scherer in the studio"
               fill
-              className="object-cover object-[center_40%]"
+              className="object-cover object-[center_30%]"
               priority
             />
           </div>
