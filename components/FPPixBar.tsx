@@ -87,7 +87,7 @@ export default function FPPixBar() {
   if (!ready || picks.length === 0) return null;
 
   return (
-    <div className="w-full bg-[#1a1206]/90 border-t border-[#D4A017]/20 backdrop-blur-sm">
+    <div className="w-full pb-24 bg-[#1a1206]/90 border-t border-[#D4A017]/20 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-black text-[#D4A017]/60 uppercase tracking-widest shrink-0">
