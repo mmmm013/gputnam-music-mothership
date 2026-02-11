@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import stiLogo from '@/../images/gpm_logo copy 2.png';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#C8A882]/60 shadow-md">
             <Image
-              src="/gpm_logo.jpg"
+              src={stiLogo}
               alt="G Putnam Music Logo"
               fill
               className="object-cover"
@@ -21,7 +22,7 @@ export default function Header() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-[#C8A882] tracking-wide leading-tight group-hover:text-[#D7CCC8] transition-colors">G Putnam Music</span>
+            <span className="text-lg font-bold text-[#C8A882] tracking-wide leading-tight group-hover:text-[#D07CC8] transition-colors">G Putnam Music</span>
             <span className="text-[10px] text-[#C8A882]/70 uppercase tracking-widest leading-tight">The One Stop Song Shop</span>
           </div>
         </Link>
@@ -35,7 +36,7 @@ export default function Header() {
           <Link href="/uru" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">URU</Link>
           <Link href="/gift" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">Gift</Link>
           <Link href="/kupid" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">kUpId</Link>
-          <Link href="/join" className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-1.5 rounded-full font-bold hover:bg-[#D7CCC8] transition-colors tracking-wide">Join</Link>
+          <Link href="/join" className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-1.5 rounded-full font-bold text-center hover:bg-[#D07CC8] transition-colors tracking-wide">Join</Link>
         </div>
 
         {/* Mobile Hamburger */}
@@ -57,7 +58,7 @@ export default function Header() {
           <Link href="/uru" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">URU</Link>
           <Link href="/gift" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">Gift</Link>
           <Link href="/kupid" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">kUpId</Link>
-          <Link href="/join" onClick={() => setMenuOpen(false)} className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-2 rounded-full font-bold text-center hover:bg-[#D7CCC8] transition-colors tracking-wide">Join</Link>
+          <Link href="/join" onClick={() => setMenuOpen(false)} className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-2 rounded-full font-bold text-center hover:bg-[#D07CC8] transition-colors tracking-wide">Join</Link>
         </div>
       )}
     </nav>
