@@ -31,7 +31,7 @@ export default function JoinPage() {
   return (
     <main className="min-h-screen w-full bg-gradient-to-b from-[#FFD54F] to-[#FF8F00] text-[#3E2723] font-sans selection:bg-[#3E2723] selection:text-[#FFD54F]">
 
-      {/* UPDATED NAV: INCLUDES CLIPS & VIDEOS */}
+            {/* NAV: JAZZ, HEROES, JOIN THE FLEET, MIP PORTAL */}
       <nav className="p-4 flex flex-col md:flex-row justify-between items-center bg-[#FFD54F]/90 border-b border-[#3E2723]/10 sticky top-0 z-50 backdrop-blur-md">
         <div className="flex items-center gap-3 mb-4 md:mb-0">
           <img src="/gpm_logp.jpg" alt="GPM" className="w-10 h-10 rounded border border-[#3E2723]/20" />
@@ -40,10 +40,7 @@ export default function JoinPage() {
         <div className="flex flex-wrap justify-center gap-6 text-[10px] font-bold tracking-[0.1em] uppercase text-[#3E2723]">
           <a href="/jazz" className="hover:text-white transition">JAZZ</a>
           <a href="/heroes" className="hover:text-white transition">HEROES</a>
-          {/* NEW LINKS */}
-          <a href="/clips" className="hover:text-white transition">CLIPS</a>
-          <a href="/videos" className="hover:text-white transition">VIDEOS</a>
-
+        
           <span className="border-b-2 border-[#3E2723]">JOIN THE FLEET</span>
           <a href="/mip" className="bg-[#3E2723] text-[#FFD54F] px-3 py-1 rounded-full hover:scale-105 transition flex items-center gap-1">MIP PORTAL</a>
         </div>
