@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 import WeeklyRace from '@/components/WeeklyRace';
+import FeaturedPlaylists from '@/components/FeaturedPlaylists';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -138,11 +139,14 @@ export default function Hero() {
         </div>
       </section>
 
+              {/* FEATURED PLAYLISTS - 5-SLOT FP GRID */}
+        <FeaturedPlaylists />
+
       {/* T20 ACTIVITY SELECTOR */}
       <section className="py-8 px-4 max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-2">
-          What Are You Doing?
-        </h2>
+
+                  
         <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
