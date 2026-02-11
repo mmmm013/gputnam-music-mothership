@@ -2,30 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { Heart, Shield, CheckCircle, Star, Video, Award, Lock, Radio } from 'lucide-react';
-import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
 
-// Scherer FP PIX - Rotating Featured PIX showcasing Michael Scherer
-const SCHERER_FP = [
-  { src: '/IMG_7429.JPG', label: 'Studio Session', style: 'Smooth Jazz', tempo: 'Mid-Tempo', mood: 'Focus' },
-  { src: '/IMG_7624.JPG', label: 'At the Console', style: 'Production Craft', tempo: 'Variable BPM', mood: 'Creative' },
-  { src: '/IMG_7720.JPG', label: 'The Producer', style: 'Cinematic', tempo: 'Slow Build', mood: 'Reflective' },
-];
 
 export default function HeroesPage() {
   const [step, setStep] = useState<'intro' | 'verifying' | 'approved'>('intro');
   const [scanProgress, setScanProgress] = useState(0);
-    const [schererPixIndex, setSchererPixIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSchererPixIndex((prev) => (prev + 1) % SCHERER_FP.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
+    
   const startVerification = (e: React.FormEvent) => {
     e.preventDefault();
     setStep('verifying');
@@ -67,42 +52,7 @@ export default function HeroesPage() {
         </div>
       </section>
 
-              {/* FP PIX — MICHAEL SCHERER */}
-        <section className="py-12 bg-[#3E2723]">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="text-center text-sm font-black text-[#FFD95A] uppercase tracking-[0.3em] mb-6">
-              FP PIX — Michael Scherer
-            </h2>
-            <div className="relative w-full h-64 md:h-88 rounded-xl overflow-hidden">
-              {SCHERER_FP.map((fp, i) => (
-                <div key={fp.src} className={`absolute inset-0 transition-opacity duration-1000 ${schererPixIndex === i ? 'opacity-100' : 'opacity-0'}`}>
-                  <Image
-                    src={fp.src}
-                    alt={`Michael Scherer - ${fp.label}`}
-                    fill
-                    className="object-cover"
-                    style={{ objectPosition: fp.src === '/IMG_7720.JPG' ? 'center 25%' : 'center' }}
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white font-black text-lg">{fp.label}</p>
-                    <div className="flex gap-2 mt-1">
-                      <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">{fp.style}</span>
-                      <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">{fp.tempo}</span>
-                      <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">{fp.mood}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-center gap-2 mt-4">
-              {SCHERER_FP.map((_, i) => (
-                <div key={i} className={`w-2 h-2 rounded-full transition-colors ${schererPixIndex === i ? 'bg-[#FFD95A]' : 'bg-white/30'}`} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-      {/* SECURITY FORM SECTION */}
+              RITY FORM SECTION */}
       <div className="container mx-auto px-4 py-20 relative z-20">
         <div className="max-w-2xl mx-auto bg-white border-4 border-[#3E2723] rounded-3xl p-1 shadow-[12px_12px_0px_0px_rgba(62,39,35,0.15)]">
           
