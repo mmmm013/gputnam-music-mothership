@@ -138,16 +138,6 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* GPM PIX - FEATURED PLAYLISTS */}
-      <section className="py-8 px-4">
-        <FeaturedPlaylists />
-      </section>
-
-      {/* Stats - NO BORDERS, clean text */}
-      <div className="text-center py-4 text-[#f5e6c8]/60 text-sm">
-        1,000+ GPMC Catalog Tracks&nbsp; · &nbsp;T20 Activity Boxes&nbsp; · &nbsp;2+ Hours No Repeats
-      </div>
-
       {/* T20 ACTIVITY SELECTOR */}
       <section className="py-8 px-4 max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-2">
@@ -192,6 +182,18 @@ export default function Hero() {
           </div>
         )}
       </section>
+
+            {/* GPM PIX - FEATURED PLAYLISTS */}
+      <section className="py-8 px-4">
+        <FeaturedPlaylists />
+      </section>
+
+      {/* Stats - NO BORDERS, clean text */}
+      <div className="text-center py-4 text-[#f5e6c8]/60 text-sm">
+        1,000+ GPMC Catalog Tracks&nbsp; · &nbsp;T20 Activity Boxes&nbsp; · &nbsp;2+ Hours No Repeats
+      </div>
+
+
 
       {/* WEEKLY RACE */}
       <WeeklyRace />
