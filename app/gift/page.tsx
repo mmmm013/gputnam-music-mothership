@@ -1,8 +1,10 @@
-'use client';
+n each page!'use client';
 
 import { useState } from 'react';
 import { GIFT_TIERS, type TierConfig, type GiftTier, initiateCheckout} from '@/lib/gift-protocol';
 import GiftTierCard from '@/components/GiftTierCard';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 
 export default function GiftPage() {
@@ -39,6 +41,7 @@ export default function GiftPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
+            <Header />
       {/* Hero */}
       <section className="pt-20 pb-12 px-4 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
@@ -137,6 +140,7 @@ export default function GiftPage() {
         </section>
       )}
 
-          </main>
+          <Footer />      
+    </main>
   );
 }
