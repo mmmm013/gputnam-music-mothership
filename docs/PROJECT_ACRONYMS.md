@@ -28,6 +28,9 @@
 | **FP** | **Featured Playlists** | The 5-slot grid on Homepage (Read/Listen). |
 | **AT** | **Acronym Table** | This document. |
 | **VOC** | **Voice of Customer** | Strategy driven by user needs/feedback. |
+| **PIX** | **Processed Track Card** | A track processed through PPP. The visual/playable digest of a GPMC track. NOT images/photos. |
+| **PPP** | **PIX Processing Pipeline** | The pipeline that transforms raw tracks into PIX (tagged, playable, mood-matched cards). |
+| **MIP1** | **Most Important Person Tier 1** | Priority access designation. US Military = automatic MIP1 status. |
 
 ---
 *Protocol Saved for Retrieval.*
