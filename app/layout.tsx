@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/react';
+import FPPixBar from '@/components/FPPixBar';
 
 export const metadata: Metadata = {
   title: 'G Putnam Music',
@@ -36,6 +37,7 @@ export default function RootLayout({
         <main className="relative w-full">
           {children}
         </main>
+                    <FPPixBar />
                     <Analytics />
       </body>
     </html>
