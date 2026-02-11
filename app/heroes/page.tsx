@@ -52,7 +52,39 @@ export default function HeroesPage() {
         </div>
       </section>
 
-              RITY FORM SECTION */}
+
+              {/* US MILITARY MIP1 - PRIORITY ACCESS */}
+        <section className="py-12 bg-[#2a1f0f] text-center">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-[#3E2723] border border-[#C8A882]/30 px-4 py-1 rounded-full mb-6">
+              <Award size={14} className="text-[#C8A882]" />
+              <span className="text-xs font-black text-[#C8A882] tracking-[0.2em] uppercase">MIP1 Priority Access</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-[#FFD95A] mb-4 tracking-tight">US MILITARY</h2>
+            <p className="text-lg text-[#f5e6c8]/80 mb-2">Active Duty. Veterans. Reserves. Guard.</p>
+            <p className="text-sm text-[#f5e6c8]/60 mb-8">MIP1 designation grants priority free streaming access. Validate with your .mil email or DD-214.</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-[#3E2723] rounded-lg p-4 border border-[#C8A882]/10">
+                <Shield size={24} className="text-[#C8A882] mx-auto mb-2" />
+                <p className="text-xs text-[#f5e6c8]/70 font-bold uppercase">Army</p>
+              </div>
+              <div className="bg-[#3E2723] rounded-lg p-4 border border-[#C8A882]/10">
+                <Shield size={24} className="text-[#C8A882] mx-auto mb-2" />
+                <p className="text-xs text-[#f5e6c8]/70 font-bold uppercase">Navy</p>
+              </div>
+              <div className="bg-[#3E2723] rounded-lg p-4 border border-[#C8A882]/10">
+                <Shield size={24} className="text-[#C8A882] mx-auto mb-2" />
+                <p className="text-xs text-[#f5e6c8]/70 font-bold uppercase">Air Force</p>
+              </div>
+              <div className="bg-[#3E2723] rounded-lg p-4 border border-[#C8A882]/10">
+                <Shield size={24} className="text-[#C8A882] mx-auto mb-2" />
+                <p className="text-xs text-[#f5e6c8]/70 font-bold uppercase">Marines</p>
+              </div>
+            </div>
+            <p className="text-xs text-[#f5e6c8]/40">Coast Guard, Space Force, and all branches welcome. MIP1 = Most Important Person/Partner.</p>
+          </div>
+        </section>
+                      {/* SECURITY FORM SECTION */}
       <div className="container mx-auto px-4 py-20 relative z-20">
         <div className="max-w-2xl mx-auto bg-white border-4 border-[#3E2723] rounded-3xl p-1 shadow-[12px_12px_0px_0px_rgba(62,39,35,0.15)]">
           
