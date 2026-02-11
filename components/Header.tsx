@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import stiLogo from '@/../images/gpm_logo copy 2.png';
+import stiLogo from '@/images/gpm_logo copy 2.png';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
