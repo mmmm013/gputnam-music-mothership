@@ -209,7 +209,7 @@ export default function Hero() {
                 alt={`Michael Scherer - ${fp.label}`}
                 fill
               className="object-cover"
-              style={{ objectPosition: fp.src === '/IMG_7720.JPG' ? 'center 85%' : 'center' }}
+              style={{ objectPosition: fp.src === '/IMG_7720.JPG' ? 'center 75%' : 'center' }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#1a1206]/90 via-[#1a1206]/30 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
