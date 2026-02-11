@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { GIFT_TIERS, type TierConfig, type GiftTier, initiateCheckout, HARDWARE_LINK } from '@/lib/gift-protocol';
+import { GIFT_TIERS, type TierConfig, type GiftTier, initiateCheckout} from '@/lib/gift-protocol';
 import GiftTierCard from '@/components/GiftTierCard';
-import Link from 'next/link';
+
 
 export default function GiftPage() {
   const [selectedTier, setSelectedTier] = useState<TierConfig | null>(null);
@@ -137,15 +137,6 @@ export default function GiftPage() {
         </section>
       )}
 
-      {/* Hardware Link Footer */}
-      <footer className="text-center pb-12">
-        <Link
-          href={HARDWARE_LINK}
-          className="text-sm text-white/40 hover:text-amber-400 transition-colors"
-        >
-          K-503 / M-kut Hardware Integration
-        </Link>
-      </footer>
-    </main>
+      main>
   );
 }
