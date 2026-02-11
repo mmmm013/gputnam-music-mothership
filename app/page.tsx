@@ -151,7 +151,7 @@ export default function Hero() {
               <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
-                      ="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
           {t20.map((act) => (
             <button
               key={act.id}
