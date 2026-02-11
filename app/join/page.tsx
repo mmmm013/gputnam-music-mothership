@@ -50,7 +50,7 @@ export default function JoinPage() {
           <Anchor size={48} className="text-[#FFD54F]" strokeWidth={2} />
         </div>
         <h1 className="text-5xl md:text-7xl font-black text-[#3E2723] mb-4 tracking-tight drop-shadow-sm leading-none">
-          Board the <br/>SponsorSHIP.
+          Board the <br/>SponsorKUB.
         </h1>
         <p className="text-xl font-bold text-[#3E2723] opacity-80 mb-8 uppercase tracking-widest">
           Partner with us to keep the music flowing.
@@ -68,7 +68,7 @@ export default function JoinPage() {
           <div className="bg-[#FFF8E1] border-2 border-[#3E2723] rounded-3xl p-8 shadow-[8px_8px_0px_0px_rgba(62,39,35,1)]">
             <h2 className="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-2"><Compass size={24} /> The Course</h2>
             <div className="space-y-6 text-lg font-bold text-[#3E2723]/80 leading-relaxed">
-              <p>SponsorSHIPs are the engine of G Putnam Music. You aren't just a fan; you are a partner.</p>
+              <p>SponsorKUBs are the engine of G Putnam Music. You aren't just a fan; you are a partner.</p>
               <p>Your contribution keeps the <strong>Singalongs</strong> free for pediatric wards and the <strong>Kleigh</strong> stream running for fans worldwide.</p>
               <p><span className="text-[#E65100]">100% of proceeds</span> fuel development & artist support.</p>
             </div>
