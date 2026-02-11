@@ -14,23 +14,22 @@ export default function WhoPage() {
         <p className="text-xl font-serif italic text-[#5D4037]/80 mb-12 leading-relaxed">
           "Music is what feelings sound like."
         </p>
-
         {/* Michael Scherer Studio Portrait */}
         <div className="relative w-full max-w-md mx-auto mb-12 rounded-2xl overflow-hidden shadow-2xl">
-          <Image
-            src="/IMG_7429.JPG"
-            alt="Michael Scherer in the studio"
-            width={800}
-            height={600}
-            className="object-cover w-full h-auto"
-            priority
-          />
+          <div className="relative w-full h-[420px]">
+            <Image
+              src="/IMG_7429.JPG"
+              alt="Michael Scherer in the studio"
+              fill
+              className="object-cover object-[center_40%]"
+              priority
+            />
+          </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1a1206]/80 to-transparent p-4">
             <p className="text-[#C8A882] text-sm font-bold">Michael Scherer</p>
             <p className="text-[#f5e6c8]/70 text-xs">Producer & Jazz Artist — Eclipse Studio</p>
           </div>
         </div>
-
         <div className="prose prose-lg mx-auto text-[#2C2418]">
           <p>
             G Putnam Music (GPMC) is a multi-genre production house dedicated to the art of the stream.
