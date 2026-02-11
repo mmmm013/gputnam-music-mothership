@@ -24,30 +24,16 @@ const HERO_IMAGES = [
   '/assets/MC BW 2.jpeg',     // 7: Michael Clay album cover 2 - center
 ];
 
-// Scherer FP PIX - Rotating Featured PIX showcasing Michael Scherer
-const SCHERER_FP = [
-  { src: '/IMG_7429.JPG', label: 'Studio Session', style: 'Smooth Jazz', tempo: 'Mid-Tempo', mood: 'Focus' },
-  { src: '/IMG_7624.JPG', label: 'At the Console', style: 'Production Craft', tempo: 'Variable BPM', mood: 'Creative' },
-  { src: '/IMG_7720.JPG', label: 'The Producer', style: 'Cinematic', tempo: 'Slow Build', mood: 'Reflective' },
-];
 
 export default function Hero() {
   const [activeActivity, setActiveActivity] = useState<string>('focus');
   const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [schererPixIndex, setSchererPixIndex] = useState(0);
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 8000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSchererPixIndex((prev) => (prev + 1) % SCHERER_FP.length);
-    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -63,7 +49,7 @@ export default function Hero() {
     { id: 'cook', label: 'COOK', description: 'Kitchen Sessions', emoji: '🍳', mood: 'Chill' },
     { id: 'create', label: 'CREATE', description: 'Art & Design', emoji: '🎨', mood: 'Focus' },
     { id: 'read', label: 'READ', description: 'Books & Podcasts', emoji: '📖', mood: 'Reflective' },
-    { id: 'commute', label: 'COMMUTE', description: 'Daily Transit', emoji: '🚇', mood: 'Upbeat' },
+    // { id: 'commute', label: 'COMMUTE', description: 'Daily Transit', emoji: '🚇', mood: 'Upbeat' },
     { id: 'wind-down', label: 'WIND DN', description: 'Evening Unwind', emoji: '🌙', mood: 'Chill' },
     { id: 'family', label: 'FAMILY', description: 'Kids & Home', emoji: '👨‍👩‍👧', mood: 'Upbeat' },
     { id: 'social', label: 'SOCIAL', description: 'Friends & Gatherings', emoji: '👥', mood: 'Upbeat' },
@@ -194,44 +180,6 @@ export default function Hero() {
             </p>
           </div>
         )}
-      </section>
-
-      {/* MICHAEL SCHERER FP PIX - Rotating Featured PIX */}
-      <section className="py-8 px-4 max-w-4xl mx-auto">
-        <h2 className="text-lg font-bold text-center text-[#C8A882] mb-4 uppercase tracking-widest">
-          FP PIX — Michael Scherer
-        </h2>
-        <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden">
-          {SCHERER_FP.map((fp, i) => (
-            <div key={fp.src} className={`absolute inset-0 transition-opacity duration-1000 ${schererPixIndex === i ? 'opacity-100' : 'opacity-0'}`}>
-              <Image
-                src={fp.src}
-                alt={`Michael Scherer - ${fp.label}`}
-                fill
-              className="object-cover"
-                            style={{ objectPosition: fp.src === '/IMG_7720.JPG' ? 'center 25%' : 'center' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1a1206]/90 via-[#1a1206]/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                <p className="text-[#C8A882] text-lg font-bold">{fp.label}</p>
-                <div className="flex gap-3 mt-1">
-                  <span className="text-[#f5e6c8]/70 text-xs bg-[#2C2418] px-2 py-0.5 rounded-full">{fp.style}</span>
-                  <span className="text-[#f5e6c8]/70 text-xs bg-[#2C2418] px-2 py-0.5 rounded-full">{fp.tempo}</span>
-                  <span className="text-[#f5e6c8]/70 text-xs bg-[#2C2418] px-2 py-0.5 rounded-full">{fp.mood}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-center gap-2 mt-3">
-          {SCHERER_FP.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setSchererPixIndex(i)}
-              className={`w-2 h-2 rounded-full transition-all ${schererPixIndex === i ? 'bg-[#C8A882] w-4' : 'bg-[#f5e6c8]/30'}`}
-            />
-          ))}
-        </div>
       </section>
 
       {/* Stats - NO BORDERS, clean text */}
