@@ -143,14 +143,15 @@ export default function Hero() {
         <FeaturedPlaylists />
 
       {/* T20 ACTIVITY SELECTOR */}
-      <section className="py-8 px-4 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-2">
-
+            <section className="py-8 px-4 max-w-6xl mx-auto">
                   
-        <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
+        <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-2">
+          What Are You Doing?
+        </h2>
+              <p className="text-center text-[#f5e6c8]/60 text-sm mb-6">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
+                      ="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3">
           {t20.map((act) => (
             <button
               key={act.id}
