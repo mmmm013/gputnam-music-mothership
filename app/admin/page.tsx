@@ -7,7 +7,7 @@ export default function AdminPage() {
       <div className="w-full max-w-4xl">
         <div className="flex justify-between items-center py-6 border-b border-white/10 mb-8">
           <h1 className="text-xl font-bold text-white tracking-widest">GPM <span className="text-[#FFD54F]">COMMAND</span></h1>
-          <Link href="/" className="text-xs text-[#FFD54F] hover:underline opacity-50 hover:opacity-100">← Back to Mothership</Link>
+          <Link href="/" className="text-xs text-[#FFD54F] hover:underline opacity-50 hover:opacity-100">← Back to Flagship</Link>
         </div>
         
         <AdminUpload />
