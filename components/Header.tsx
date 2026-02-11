@@ -22,7 +22,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-bold text-[#C8A882] tracking-wide leading-tight group-hover:text-[#D7CCC8] transition-colors">G Putnam Music</span>
-            <span className="text-[10px] text-[#C4A882]/70 uppercase tracking-widest leading-tight">The One Stop Song Shop</span>
+            <span className="text-[10px] text-[#C8A882]/70 uppercase tracking-widest leading-tight">The One Stop Song Shop</span>
           </div>
         </Link>
 
@@ -37,6 +37,7 @@ export default function Header() {
           <Link href="/uru" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">URU</Link>
           <Link href="/ships" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">Ships</Link>
           <Link href="/gift" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">Gift</Link>
+          <Link href="/kupid" className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide transition-colors">kUpId</Link>
           <Link href="/join" className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-1.5 rounded-full font-bold hover:bg-[#D7CCC8] transition-colors tracking-wide">Join</Link>
         </div>
 
@@ -61,6 +62,7 @@ export default function Header() {
           <Link href="/uru" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">URU</Link>
           <Link href="/ships" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">Ships</Link>
           <Link href="/gift" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">Gift</Link>
+          <Link href="/kupid" onClick={() => setMenuOpen(false)} className="text-sm text-[#C4A882] hover:text-[#C8A882] font-medium tracking-wide py-1">kUpId</Link>
           <Link href="/join" onClick={() => setMenuOpen(false)} className="text-sm bg-[#C8A882] text-[#2A1506] px-4 py-2 rounded-full font-bold text-center hover:bg-[#D7CCC8] transition-colors tracking-wide">Join</Link>
         </div>
       )}
