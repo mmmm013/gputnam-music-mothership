@@ -16,7 +16,7 @@ const KUPID_TIERS = [
       'Digital certificate of authenticity',
       'Access to GPM Locket holder community',
     ],
-    stripeLink: 'https://buy.stripe.com/28EI4mgV08My4lC2p84ow04',
+        stripeLink: 'https://buy.stripe.com/28E14mgV08My41C2p84ow04',
     color: 'from-amber-600 to-yellow-500',
     borderColor: 'border-amber-500/40',
     badge: 'GENESIS',
