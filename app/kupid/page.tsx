@@ -7,11 +7,11 @@ import Link from 'next/link';
 const KUPID_TIERS = [
   {
     id: 'genesis',
-    name: 'K-kUpId Genesis Locket',
+    name: 'K-KUTs Genesis Locket',
     price: '$333',
-    description: 'Entry-level K-kUpId locket with curated music pairings. Discover the lock-and-key that unlocks your personal creative frequency.',
+    description: 'Entry-level K-KUTs locket with curated music pairings. Discover the lock-and-key that unlocks your personal creative frequency.',
     features: [
-      'Personal K-kUpId Genesis Locket',
+      'Personal K-KUTs Genesis Locket',
       'Curated music frequency pairing',
       'Digital certificate of authenticity',
       'Access to GPM Locket holder community',
@@ -23,11 +23,11 @@ const KUPID_TIERS = [
   },
   {
     id: 'sovereign',
-    name: 'K-kUpId Sovereign Locket',
+    name: 'K-KUTs Sovereign Locket',
     price: '$1,100',
-    description: 'The Sovereign-tier K-kUpId locket with expanded music library access and personal frequency calibration.',
+    description: 'The Sovereign-tier K-KUTs locket with expanded music library access and personal frequency calibration.',
     features: [
-      'Sovereign K-kUpId Locket',
+      'Sovereign K-KUTs Locket',
       'Expanded frequency library',
       'Personal calibration session',
       'Priority access to new releases',
@@ -41,11 +41,11 @@ const KUPID_TIERS = [
   },
   {
     id: 'historic',
-    name: 'K-kUpId Historic Locket',
+    name: 'K-KUTs Historic Locket',
     price: '$3,300',
-    description: 'The Historic-tier K-kUpId locket with full creative archive access. A patented invention with legacy value.',
+    description: 'The Historic-tier K-KUTs locket with full creative archive access. A patented invention with legacy value.',
     features: [
-      'Historic K-kUpId Locket',
+      'Historic K-KUTs Locket',
       'Full creative archive access',
       'Lifetime frequency updates',
       'VIP studio sessions',
@@ -71,7 +71,7 @@ export default function KupidPage() {
             Patented Invention
           </span>
           <h1 className="text-5xl md:text-7xl font-black text-[#D7CCC8] mb-4 tracking-tight leading-none">
-            K-kUpId
+            K-KUTs
             <span className="block text-2xl md:text-3xl mt-2 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-bold">
               Sovereign Locket
             </span>
@@ -129,9 +129,9 @@ export default function KupidPage() {
 
       {/* Info Section */}
       <section className="max-w-3xl mx-auto px-4 pb-16 text-center">
-        <h2 className="text-2xl font-black mb-4 text-[#2C2418]">What is K-kUpId?</h2>
+        <h2 className="text-2xl font-black mb-4 text-[#2C2418]">What is K-KUTs?</h2>
         <p className="text-[#2C2418]/70 leading-relaxed mb-6">
-          K-kUpId is a patented music-frequency locket technology by G Putnam Music. Each locket is electronically paired to curated music frequencies designed to amplify focus, creativity, and personal energy. The K-kUpId Sovereign Locket is the flagship product of GPM&apos;s hardware line.
+          K-KUTs is a patented music-frequency locket technology by G Putnam Music. Each locket is electronically paired to curated music frequencies designed to amplify focus, creativity, and personal energy. The K-KUTs Sovereign Locket is the flagship product of GPM&apos;s hardware line.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Link href="/gift" className="text-sm text-amber-600 hover:text-amber-800 font-bold transition-colors">
