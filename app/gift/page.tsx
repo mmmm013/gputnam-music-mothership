@@ -1,4 +1,4 @@
-n each page!'use client';
+'use client';
 
 import { useState } from 'react';
 import { GIFT_TIERS, type TierConfig, type GiftTier, initiateCheckout} from '@/lib/gift-protocol';
