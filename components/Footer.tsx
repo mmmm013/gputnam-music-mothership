@@ -16,6 +16,10 @@ export default function Footer() {
         <p className="text-center text-xs text-[#C4A882]/40">
           G Putnam Music, LLC. All Rights Reserved.
         </p>
+                <p className="text-center text-xs text-[#C4A882]/50 mt-2 tracking-widest">
+          <span className="inline-block border border-[#C4A882]/30 rounded px-2 py-0.5">ah<sup>c</sup> &mdash; All Human Created</span>
+        </p>
+        <p className="text-center text-[10px] text-[#C4A882]/30 mt-1">One-Stop Sync &bull; MIP Owned &bull; Broadcast Ready</p>
       </div>
     </footer>
   );
