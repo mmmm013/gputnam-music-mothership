@@ -5,19 +5,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10',
 });
 
-// SponsorSHIP tier pricing (cents/month)
+// Pride tier pricing (cents/month)
 const TIER_AMOUNTS: Record<string, number> = {
-  kayak: 500,
-  speedboat: 1000,
-  clipper: 2500,
-  cruiseliner: 10000,
+  joey: 500,
+  climber: 1000,
+  alpha: 2500,
+  elder: 10000,
 };
 
 const TIER_LABELS: Record<string, string> = {
-  kayak: 'Kayak — Solo Paddler',
-  speedboat: 'Speedboat — Fast Lane',
-  clipper: 'Clipper — Full Sails',
-  cruiseliner: 'Cruiseliner — The Captain',
+  joey: 'Joey \u2014 The Young One',
+  climber: 'Climber \u2014 On the Rise',
+  alpha: 'Alpha \u2014 The Leader',
+  elder: 'Elder \u2014 The Patriarch',
 };
 
 export async function POST(req: NextRequest) {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     if (!tier || !TIER_AMOUNTS[tier]) {
       return NextResponse.json(
-        { error: 'Invalid tier. Must be: kayak, speedboat, clipper, or cruiseliner' },
+        { error: 'Invalid tier. Must be: joey, climber, alpha, or elder' },
         { status: 400 }
       );
     }
@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `GPM SponsorSHIP: ${label}`,
-              description: 'Monthly SponsorSHIP — 100% fuels development & artist support',
+              name: `GPM Pride: ${label}`,
+              description: 'Monthly Pride membership \u2014 100% fuels development & artist support',
               images: ['https://www.gputnammusic.com/og-image.png'],
             },
             unit_amount: amount,
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${baseUrl}/join?cancelled=true`,
       metadata: {
         tier,
-        source: 'sponsorship_join',
+        source: 'pride_join',
       },
     });
 
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     console.error('Subscription checkout error:', err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to create subscription checkout' },
+      { error: err instanceof Error ? err.message : 'Unable to create subscription checkout' },
       { status: 500 }
     );
   }
