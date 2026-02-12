@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Anchor, Wind, Ship, Compass, Check, Users, ShieldCheck, Film, Video } from 'lucide-react';
+import { Heart, TreePine, Mountain, Crown, Check, Users, ShieldCheck, Compass } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -8,7 +8,7 @@ export default function JoinPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  const handleBoard = async (tier: string) => {
+  const handleJoin = async (tier: string) => {
     setLoading(tier);
     setError('');
     try {
@@ -36,10 +36,10 @@ export default function JoinPage() {
 
       <div className="container mx-auto px-4 mt-16 text-center max-w-3xl">
         <div className="inline-block p-6 rounded-full bg-[#3E2723] mb-8 shadow-xl">
-          <Anchor size={48} className="text-[#FFD54F]" strokeWidth={2} />
+          <Users size={48} className="text-[#FFD54F]" strokeWidth={2} />
         </div>
         <h1 className="text-5xl md:text-7xl font-black text-[#3E2723] mb-4 tracking-tight drop-shadow-sm leading-none">
-          Board the <br/>K-KUB.
+          Join the<br/>Pride.
         </h1>
         <p className="text-xl font-bold text-[#3E2723] opacity-80 mb-8 uppercase tracking-widest">
           Partner with us to keep the music flowing.
@@ -63,7 +63,7 @@ export default function JoinPage() {
             </div>
 
             <div className="mt-8 pt-8 border-t-2 border-[#3E2723]/10 space-y-4">
-              <h3 className="font-black text-sm uppercase">Crew Benefits:</h3>
+              <h3 className="font-black text-sm uppercase">Pride Benefits:</h3>
               <div className="flex items-center gap-3 font-bold"><Check size={20} className="text-[#E65100]" /> Access to URU Story Engine</div>
               <div className="flex items-center gap-3 font-bold"><Check size={20} className="text-[#E65100]" /> Unlimited Plays (No Limits)</div>
               <div className="flex items-center gap-3 font-bold"><Check size={20} className="text-[#E65100]" /> Verified "Sponsor" Rank</div>
@@ -71,48 +71,48 @@ export default function JoinPage() {
           </div>
 
           <div className="space-y-4">
-            {/* KAYAK */}
+            {/* JOEY */}
             <div className="bg-[#3E2723] text-[#FFD54F] p-6 rounded-2xl border-2 border-[#3E2723] shadow-lg flex items-center justify-between hover:scale-[1.02] transition">
               <div className="flex items-center gap-4">
-                <div className="bg-[#FFD54F] text-[#3E2723] p-3 rounded-full"><Wind size={24} /></div>
+                <div className="bg-[#FFD54F] text-[#3E2723] p-3 rounded-full"><Heart size={24} /></div>
                 <div>
-                  <div className="font-black text-xl">KAYAK</div><div className="text-xs opacity-70 font-bold uppercase">Solo Paddler</div>
+                  <div className="font-black text-xl">JOEY</div><div className="text-xs opacity-70 font-bold uppercase">The Young One</div>
                 </div>
               </div>
-              <div className="text-right"><div className="font-black text-2xl">$5</div><button onClick={() => handleBoard('kayak')} disabled={loading === 'kayak'} className="text-[10px] underline hover:text-white cursor-pointer disabled:opacity-50">{loading === 'kayak' ? 'LOADING...' : 'BOARD'}</button></div>
+              <div className="text-right"><div className="font-black text-2xl">$5</div><button onClick={() => handleJoin('joey')} disabled={loading === 'joey'} className="text-[10px] underline hover:text-white cursor-pointer disabled:opacity-50">{loading === 'joey' ? 'LOADING...' : 'JOIN'}</button></div>
             </div>
 
-            {/* SPEEDBOAT */}
+            {/* CLIMBER */}
             <div className="bg-white border-2 border-[#3E2723] p-6 rounded-2xl shadow-sm flex items-center justify-between hover:scale-[1.02] transition group">
               <div className="flex items-center gap-4">
-                <div className="bg-[#E65100] text-white p-3 rounded-full"><Wind size={24} /></div>
+                <div className="bg-[#E65100] text-white p-3 rounded-full"><TreePine size={24} /></div>
                 <div>
-                  <div className="font-black text-xl text-[#3E2723]">SPEEDBOAT</div><div className="text-xs text-[#3E2723] opacity-60 font-bold uppercase">Fast Lane</div>
+                  <div className="font-black text-xl text-[#3E2723]">CLIMBER</div><div className="text-xs text-[#3E2723] opacity-60 font-bold uppercase">On the Rise</div>
                 </div>
               </div>
-              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$10</div><button onClick={() => handleBoard('speedboat')} disabled={loading === 'speedboat'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-[#E65100] cursor-pointer disabled:opacity-50">{loading === 'speedboat' ? 'LOADING...' : 'BOARD'}</button></div>
+              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$10</div><button onClick={() => handleJoin('climber')} disabled={loading === 'climber'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-[#E65100] cursor-pointer disabled:opacity-50">{loading === 'climber' ? 'LOADING...' : 'JOIN'}</button></div>
             </div>
 
-            {/* CLIPPER */}
+            {/* ALPHA */}
             <div className="bg-white border-2 border-[#3E2723] p-6 rounded-2xl shadow-sm flex items-center justify-between hover:scale-[1.02] transition group">
               <div className="flex items-center gap-4">
-                <div className="bg-[#2E7D32] text-white p-3 rounded-full"><Ship size={24} /></div>
+                <div className="bg-[#2E7D32] text-white p-3 rounded-full"><Mountain size={24} /></div>
                 <div>
-                  <div className="font-black text-xl text-[#3E2723]">CLIPPER</div><div className="text-xs text-[#3E2723] opacity-60 font-bold uppercase">Full Sails</div>
+                  <div className="font-black text-xl text-[#3E2723]">ALPHA</div><div className="text-xs text-[#3E2723] opacity-60 font-bold uppercase">The Leader</div>
                 </div>
               </div>
-              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$25</div><button onClick={() => handleBoard('clipper')} disabled={loading === 'clipper'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-[#2E7D32] cursor-pointer disabled:opacity-50">{loading === 'clipper' ? 'LOADING...' : 'BOARD'}</button></div>
+              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$25</div><button onClick={() => handleJoin('alpha')} disabled={loading === 'alpha'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-[#2E7D32] cursor-pointer disabled:opacity-50">{loading === 'alpha' ? 'LOADING...' : 'JOIN'}</button></div>
             </div>
 
-            {/* CRUISELINER */}
+            {/* ELDER */}
             <div className="bg-gradient-to-r from-[#FFD54F] to-[#FFB300] border-2 border-[#3E2723] p-6 rounded-2xl shadow-lg flex items-center justify-between hover:scale-[1.02] transition">
               <div className="flex items-center gap-4">
-                <div className="bg-[#3E2723] text-[#FFD54F] p-3 rounded-full"><Anchor size={24} /></div>
+                <div className="bg-[#3E2723] text-[#FFD54F] p-3 rounded-full"><Crown size={24} /></div>
                 <div>
-                  <div className="font-black text-xl text-[#3E2723]">CRUISELINER</div><div className="text-xs text-[#3E2723] font-bold uppercase">The Captain</div>
+                  <div className="font-black text-xl text-[#3E2723]">ELDER</div><div className="text-xs text-[#3E2723] font-bold uppercase">The Patriarch</div>
                 </div>
               </div>
-              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$100</div><button onClick={() => handleBoard('cruiseliner')} disabled={loading === 'cruiseliner'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-white cursor-pointer disabled:opacity-50">{loading === 'cruiseliner' ? 'LOADING...' : 'BOARD'}</button></div>
+              <div className="text-right"><div className="font-black text-2xl text-[#3E2723]">$100</div><button onClick={() => handleJoin('elder')} disabled={loading === 'elder'} className="text-[10px] text-[#3E2723] font-bold underline hover:text-white cursor-pointer disabled:opacity-50">{loading === 'elder' ? 'LOADING...' : 'JOIN'}</button></div>
             </div>
           </div>
         </div>
