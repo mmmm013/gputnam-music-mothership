@@ -60,6 +60,22 @@ const PLAYLISTS: Playlist[] = [
       { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
       { title: "Fool's Game", artist: 'G Putnam Music', src: '/pix/fools-game-(master-2).mp3' },
     ],
+      {
+    name: 'Eclipse Sessions',
+    tracks: [
+      { title: 'Jump', artist: 'Michael Scherer', src: '/pix/jump.mp3' },
+      { title: 'New Orleans Piano Trio', artist: 'Michael Scherer', src: '/pix/new-orleans-piano-trio-1.mp3' },
+      { title: 'Score 3: The End', artist: 'Michael Scherer', src: '/pix/score-3--the-end.mp3' },
+    ],
+  },
+  {
+    name: "Valentine's Day",
+    tracks: [
+      { title: 'A Calm Evening', artist: 'Kleigh', src: '/pix/kleigh--a-calm-evening.mp3' },
+      { title: 'Wanna Know You', artist: 'G Putnam Music', src: '/pix/wanna-know-you.mp3' },
+      { title: 'Waterfall', artist: 'Kleigh', src: '/pix/kleigh--waterfall.mp3' },
+    ],
+  },
   },
 ];
 
@@ -240,11 +256,11 @@ function PlaylistPlayer({ playlist, index }: { playlist: Playlist; index: number
 export default function FeaturedPlaylists() {
   return (
     <section className="w-full py-10 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-black text-[#D4A017] mb-2 tracking-wider uppercase">Featured Playlists</h2>
-        <p className="text-sm text-[#C8A882]/60 mb-8">Stream now from the GPM catalog</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <p className="text-sm text-[#C8A882]/60 mb-0">Stream now from the GPM catalog</p>
+        <p className="text-sm text-[#FF6B8A] mt-1 font-semibold">Happy Valentine&apos;s Day from G Putnam Music — Caring and Sharing through song.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
           {PLAYLISTS.map((playlist, idx) => (
             <PlaylistPlayer key={idx} playlist={playlist} index={idx} />
           ))}
