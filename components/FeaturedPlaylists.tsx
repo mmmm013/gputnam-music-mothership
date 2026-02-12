@@ -1,17 +1,15 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Music } from 'lucide-react';
+import { useState } from 'react';
+import { Play, Pause } from 'lucide-react';
+import Image from 'next/image';
 
 /**
- * FEATURED PLAYLISTS - 3-Song Media Players
- * Each FP is a mini playlist player with 3 stacked tracks
- * Tracks served from /pix/ (high-fidelity 320kbps MP3s)
- * Owner requirement: "An FP is a Media player with 3 songs stacked"
+ * FEATURED PLAYLISTS - BIG Visual Playlist Cards
+ * Each FP looks like a REAL playlist (DISCO / Spotify style)
+ * Large cover art + bold title + numbered track rows
+ * Owner: "a playlist LOOKS LIKE A PLAYLIST! BE BIG!"
  *
- * CURATION RULE: Each FP trio pulls from DISTINCT inner groups.
- * 2 tracks share a rough vibe/mood. 1 track is EDGIER.
- * Inner Groups: A=Chill/Reflective, B=Upbeat/Fun, C=Emotional/Inspirational,
- *              D=Edgier/Attitude, E=Kleigh Produced/Studio, F=Jazz/Special
+ * CURATION: Each trio from distinct inner groups, 2 similar vibe + 1 edgier
  */
 
 interface Track {
@@ -22,13 +20,16 @@ interface Track {
 
 interface Playlist {
   name: string;
+  subtitle: string;
+  cover: string;
   tracks: Track[];
 }
 
 const PLAYLISTS: Playlist[] = [
   {
-    // FP1: Legacy/Reflective tone | Groups: E(Kleigh) + C(Emotional) + D(Edgier)
     name: "Grandpa's Story",
+    subtitle: 'Legacy Collection',
+    cover: '/assets/hero.jpg',
     tracks: [
       { title: 'Reflections', artist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
       { title: 'I Need an Angel', artist: 'G Putnam Music', src: '/pix/i-need-an-angel.mp3' },
@@ -36,8 +37,9 @@ const PLAYLISTS: Playlist[] = [
     ],
   },
   {
-    // FP2: Chill/Atmospheric tone | Groups: A(Chill Kleigh) + A(Chill GPM) + E(Studio edge)
     name: 'Kleigh Spotlight',
+    subtitle: 'Chill & Atmospheric',
+    cover: '/images/kleigh_guitar.png',
     tracks: [
       { title: 'Breathing Serenity', artist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
       { title: 'Nighttime', artist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
@@ -45,8 +47,9 @@ const PLAYLISTS: Playlist[] = [
     ],
   },
   {
-    // FP3: Uplifting/Positive tone | Groups: C(Inspirational) + A(Chill) + D(Edgier)
     name: 'Who is G Putnam Music',
+    subtitle: 'Uplifting & Positive',
+    cover: '/assets/MC by Tree Looking Left.jpg',
     tracks: [
       { title: 'I Was Made to Be Awesome', artist: 'G Putnam Music', src: '/pix/i-was-made-to-be-awesome.mp3' },
       { title: 'Perfect Day', artist: 'G Putnam Music', src: '/pix/perfect-day.mp3' },
@@ -54,8 +57,9 @@ const PLAYLISTS: Playlist[] = [
     ],
   },
   {
-    // FP4: Energetic/Fun tone | Groups: B(Upbeat) + B(Upbeat) + D(Edgier)
     name: 'The First Note',
+    subtitle: 'Energy & Fun',
+    cover: '/assets/Front Pose.jpg',
     tracks: [
       { title: 'Dance Party', artist: 'G Putnam Music', src: '/pix/dance-party.mp3' },
       { title: 'Going Outside', artist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
@@ -63,8 +67,9 @@ const PLAYLISTS: Playlist[] = [
     ],
   },
   {
-    // FP5: Aspirational/Freedom tone | Groups: C(Inspirational) + C(Freedom) + D(Edgier)
     name: 'The SHIPS Engine',
+    subtitle: 'Freedom & Aspiration',
+    cover: '/assets/Smoking 1.jpg',
     tracks: [
       { title: 'I Live Free', artist: 'G Putnam Music', src: '/pix/i-live-free--instro.mp3' },
       { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
@@ -74,105 +79,83 @@ const PLAYLISTS: Playlist[] = [
 ];
 
 export default function FeaturedPlaylists() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState<{ playlist: number; track: number } | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  const handlePlay = (playlistIdx: number, trackIdx: number, src: string, title: string, artist: string) => {
-    // If same track is playing, pause it
-    if (playing?.playlist === playlistIdx && playing?.track === trackIdx) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+  const handlePlay = (pIdx: number, tIdx: number, track: Track) => {
+    if (playing?.playlist === pIdx && playing?.track === tIdx) {
       setPlaying(null);
+      window.dispatchEvent(new CustomEvent('pause-track'));
       return;
     }
-
-    // Stop any currently playing audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-
-    // Dispatch play-track event for the global player bar
+    setPlaying({ playlist: pIdx, track: tIdx });
     window.dispatchEvent(new CustomEvent('play-track', {
-      detail: {
-        url: src,
-        title,
-        artist,
-        moodTheme: { primary: '#D4A017' }
-      }
+      detail: { url: track.src, title: track.title, artist: track.artist, moodTheme: { primary: '#D4A017' } }
     }));
-
-    setPlaying({ playlist: playlistIdx, track: trackIdx });
   };
 
-  // Listen for audio ending to reset state
-  useEffect(() => {
-    const handleEnded = () => setPlaying(null);
-    const audio = audioRef.current;
-    if (audio) {
-      audio.addEventListener('ended', handleEnded);
-    }
-    return () => {
-      if (audio) {
-        audio.removeEventListener('ended', handleEnded);
-      }
-    };
-  }, [playing]);
-
   return (
-    <section className="w-full py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-lg font-bold text-[#D4A017] mb-1 tracking-wider">FEATURED PLAYLISTS</h2>
-        <p className="text-xs text-[#C8A882]/60 mb-6">5-Slot FP Grid · A-B-A-B-A · Legacy & Product</p>
+    <section className="w-full py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-2xl font-black text-[#D4A017] mb-2 tracking-wider uppercase">Featured Playlists</h2>
+        <p className="text-sm text-[#C8A882]/60 mb-8">Curated collections from the GPM catalog</p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
           {PLAYLISTS.map((playlist, pIdx) => (
             <div
               key={pIdx}
-              className="bg-[#1a120a] border border-[#D4A017]/15 rounded-xl p-4 flex flex-col gap-1"
+              className="flex-shrink-0 w-[280px] sm:w-[300px] bg-gradient-to-b from-[#1e150b] to-[#120c06] border border-[#D4A017]/10 rounded-2xl overflow-hidden snap-start hover:border-[#D4A017]/30 transition-all group"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[#D4A017]/15 flex items-center justify-center">
-                  <Music className="w-4 h-4 text-[#D4A017]" />
+              {/* COVER ART - BIG */}
+              <div className="relative w-full aspect-square overflow-hidden">
+                <Image
+                  src={playlist.cover}
+                  alt={playlist.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="300px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#120c06] via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h3 className="text-xl font-black text-white drop-shadow-lg leading-tight">{playlist.name}</h3>
+                  <p className="text-xs text-[#D4A017]/80 font-semibold uppercase tracking-wider mt-1">{playlist.subtitle}</p>
                 </div>
-                <span className="text-sm font-bold text-[#FFF8E1] leading-tight">{playlist.name}</span>
               </div>
 
-              {playlist.tracks.map((track, tIdx) => {
-                const isActive = playing?.playlist === pIdx && playing?.track === tIdx;
-                return (
-                  <button
-                    key={tIdx}
-                    onClick={() => handlePlay(pIdx, tIdx, track.src, track.title, track.artist)}
-                    className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-all text-left w-full
-                      ${isActive
-                        ? 'bg-[#D4A017]/20 border border-[#D4A017]/40'
-                        : 'hover:bg-[#2a1f0f] border border-transparent'
-                      }`}
-                  >
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0
-                      ${isActive ? 'bg-[#D4A017]/40' : 'bg-[#D4A017]/10'}`}>
-                      {isActive
-                        ? <Pause className="w-3.5 h-3.5 text-[#D4A017]" />
-                        : <Play className="w-3.5 h-3.5 text-[#D4A017] ml-0.5" />
-                      }
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-[#FFF8E1] truncate">{track.title}</p>
-                      <p className="text-[10px] text-[#C8A882]/50 truncate">{track.artist}</p>
-                    </div>
-                  </button>
-                );
-              })}
+              {/* TRACK LIST */}
+              <div className="px-3 py-3">
+                {playlist.tracks.map((track, tIdx) => {
+                  const isActive = playing?.playlist === pIdx && playing?.track === tIdx;
+                  return (
+                    <button
+                      key={tIdx}
+                      onClick={() => handlePlay(pIdx, tIdx, track)}
+                      className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl transition-all text-left
+                        ${isActive
+                          ? 'bg-[#D4A017]/15 border border-[#D4A017]/30'
+                          : 'hover:bg-[#ffffff08] border border-transparent'
+                        }`}
+                    >
+                      {/* Track Number / Play Icon */}
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
+                        ${isActive ? 'bg-[#D4A017]' : 'bg-[#D4A017]/10 group-hover:bg-[#D4A017]/15'}`}>
+                        {isActive
+                          ? <Pause className="w-4 h-4 text-[#120c06]" fill="currentColor" />
+                          : <Play className="w-4 h-4 text-[#D4A017] ml-0.5" fill="currentColor" />
+                        }
+                      </div>
+
+                      {/* Track Info */}
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-sm font-bold truncate ${isActive ? 'text-[#D4A017]' : 'text-[#FFF8E1]'}`}>{track.title}</p>
+                        <p className="text-xs text-[#C8A882]/50 truncate">{track.artist}</p>
+                      </div>
+
+                      {/* Track Number */}
+                      <span className="text-xs text-[#C8A882]/30 font-mono flex-shrink-0">{tIdx + 1}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
