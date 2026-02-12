@@ -1,14 +1,12 @@
 'use client';
-import { useState } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 
 /**
- * FEATURED PLAYLISTS - BIG Visual Playlist Cards
- * Each FP looks like a REAL playlist (DISCO / Spotify style)
- * Large cover art + bold title + numbered track rows
- * Owner: "a playlist LOOKS LIKE A PLAYLIST! BE BIG!"
- *
- * CURATION: Each trio from distinct inner groups, 2 similar vibe + 1 edgier
+ * FEATURED PLAYLISTS - REAL Audio Media Players
+ * Each FP is a self-contained streaming audio player widget
+ * Owner: "FPs MUST BE FUCKING Media players. Playlists. Audio players."
+ * "We're a fucking MOBILE MUSIC-STREAMING PLATFORM! Music is OUR REASON!"
  */
 
 interface Track {
@@ -19,16 +17,12 @@ interface Track {
 
 interface Playlist {
   name: string;
-  subtitle: string;
-  cover: string;
   tracks: Track[];
 }
 
 const PLAYLISTS: Playlist[] = [
   {
     name: "Grandpa's Story",
-    subtitle: 'Legacy Collection',
-    cover: '/assets/hero.jpg',
     tracks: [
       { title: 'Reflections', artist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
       { title: 'I Need an Angel', artist: 'G Putnam Music', src: '/pix/i-need-an-angel.mp3' },
@@ -37,8 +31,6 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     name: 'Kleigh Spotlight',
-    subtitle: 'Chill & Atmospheric',
-    cover: '/assets/MOON-1[32199].jpg',
     tracks: [
       { title: 'Breathing Serenity', artist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
       { title: 'Nighttime', artist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
@@ -47,8 +39,6 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     name: 'Who is G Putnam Music',
-    subtitle: 'Uplifting & Positive',
-    cover: '/assets/MC by Tree Looking Left.jpg',
     tracks: [
       { title: 'I Was Made to Be Awesome', artist: 'G Putnam Music', src: '/pix/i-was-made-to-be-awesome.mp3' },
       { title: 'Perfect Day', artist: 'G Putnam Music', src: '/pix/perfect-day.mp3' },
@@ -57,8 +47,6 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     name: 'The First Note',
-    subtitle: 'Energy & Fun',
-    cover: '/assets/Front Pose.jpg',
     tracks: [
       { title: 'Dance Party', artist: 'G Putnam Music', src: '/pix/dance-party.mp3' },
       { title: 'Going Outside', artist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
@@ -67,8 +55,6 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     name: 'The SHIPS Engine',
-    subtitle: 'Freedom & Aspiration',
-    cover: '/assets/Smoking 1.jpg',
     tracks: [
       { title: 'I Live Free', artist: 'G Putnam Music', src: '/pix/i-live-free--instro.mp3' },
       { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
@@ -77,84 +63,190 @@ const PLAYLISTS: Playlist[] = [
   },
 ];
 
-export default function FeaturedPlaylists() {
-  const [playing, setPlaying] = useState<{ playlist: number; track: number } | null>(null);
+function formatTime(sec: number): string {
+  if (!sec || isNaN(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
-  const handlePlay = (pIdx: number, tIdx: number, track: Track) => {
-    if (playing?.playlist === pIdx && playing?.track === tIdx) {
-      setPlaying(null);
-      window.dispatchEvent(new CustomEvent('pause-track'));
-      return;
+function PlaylistPlayer({ playlist, index }: { playlist: Playlist; index: number }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.8);
+
+  const track = playlist.tracks[currentTrack];
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onLoadedMetadata = () => setDuration(audio.duration);
+    const onEnded = () => {
+      if (currentTrack < playlist.tracks.length - 1) {
+        setCurrentTrack(prev => prev + 1);
+      } else {
+        setIsPlaying(false);
+        setCurrentTrack(0);
+      }
+    };
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('loadedmetadata', onLoadedMetadata);
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+
+    return () => {
+      audio.removeEventListener('timeupdate', onTimeUpdate);
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+    };
+  }, [currentTrack, playlist.tracks.length]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && isPlaying) {
+      audio.play().catch(() => setIsPlaying(false));
     }
-    setPlaying({ playlist: pIdx, track: tIdx });
-    window.dispatchEvent(new CustomEvent('play-track', {
-      detail: { url: track.src, title: track.title, artist: track.artist, moodTheme: { primary: '#D4A017' } }
-    }));
+  }, [currentTrack]);
+
+  const togglePlay = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
+  }, [isPlaying]);
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * duration;
   };
 
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setVolume(val);
+    if (audioRef.current) audioRef.current.volume = val;
+  };
+
+  const selectTrack = (idx: number) => {
+    setCurrentTrack(idx);
+    setIsPlaying(true);
+  };
+
+  const skipPrev = () => setCurrentTrack(prev => Math.max(0, prev - 1));
+  const skipNext = () => setCurrentTrack(prev => Math.min(playlist.tracks.length - 1, prev + 1));
+
+  const progress = duration ? (currentTime / duration) * 100 : 0;
+
+  return (
+    <div className="bg-[#1a120a] border border-[#D4A017]/20 rounded-xl overflow-hidden w-full max-w-md">
+      {/* Player Header */}
+      <div className="bg-gradient-to-r from-[#D4A017]/20 to-[#D4A017]/5 px-4 py-3 border-b border-[#D4A017]/10">
+        <h3 className="text-sm font-black text-[#D4A017] uppercase tracking-wider">{playlist.name}</h3>
+        <p className="text-xs text-[#C8A882]/60">{playlist.tracks.length} tracks</p>
+      </div>
+
+      {/* Now Playing + Controls */}
+      <div className="px-4 py-4">
+        <p className="text-xs text-[#C8A882]/50 uppercase tracking-wider mb-1">Now Playing</p>
+        <p className="text-lg font-bold text-[#FFF8E1] truncate">{track.title}</p>
+        <p className="text-sm text-[#D4A017]/70">{track.artist}</p>
+
+        {/* Progress Bar */}
+        <div
+          className="mt-4 h-2 bg-[#ffffff10] rounded-full cursor-pointer relative overflow-hidden"
+          onClick={handleSeek}
+        >
+          <div
+            className="absolute inset-y-0 left-0 bg-[#D4A017] rounded-full transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-xs text-[#C8A882]/50 mt-1">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+
+        {/* Playback Controls */}
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <button onClick={skipPrev} className="p-2 text-[#C8A882]/60 hover:text-[#D4A017] transition">
+            <SkipBack size={20} />
+          </button>
+          <button
+            onClick={togglePlay}
+            className="w-14 h-14 rounded-full bg-[#D4A017] flex items-center justify-center text-[#1a120a] hover:scale-105 transition shadow-lg"
+          >
+            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+          </button>
+          <button onClick={skipNext} className="p-2 text-[#C8A882]/60 hover:text-[#D4A017] transition">
+            <SkipForward size={20} />
+          </button>
+        </div>
+
+        {/* Volume */}
+        <div className="flex items-center gap-2 mt-4">
+          <Volume2 size={16} className="text-[#C8A882]/40" />
+          <input
+            type="range" min="0" max="1" step="0.01" value={volume}
+            onChange={handleVolumeChange}
+            className="flex-1 h-1 accent-[#D4A017] bg-[#ffffff10] rounded-full cursor-pointer"
+          />
+        </div>
+      </div>
+
+      {/* Track List */}
+      <div className="border-t border-[#D4A017]/10">
+        {playlist.tracks.map((t, idx) => (
+          <button
+            key={idx}
+            onClick={() => selectTrack(idx)}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition
+              ${currentTrack === idx ? 'bg-[#D4A017]/10' : 'hover:bg-[#ffffff05]'}
+              ${idx < playlist.tracks.length - 1 ? 'border-b border-[#ffffff08]' : ''}`}
+          >
+            <span className={`w-6 text-xs font-mono ${currentTrack === idx ? 'text-[#D4A017]' : 'text-[#C8A882]/30'}`}>
+              {currentTrack === idx && isPlaying ? '\u25B6' : idx + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-semibold truncate ${currentTrack === idx ? 'text-[#D4A017]' : 'text-[#FFF8E1]'}`}>
+                {t.title}
+              </p>
+              <p className="text-xs text-[#C8A882]/50 truncate">{t.artist}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <audio ref={audioRef} src={track.src} preload="metadata" />
+    </div>
+  );
+}
+
+export default function FeaturedPlaylists() {
   return (
     <section className="w-full py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl font-black text-[#D4A017] mb-2 tracking-wider uppercase">Featured Playlists</h2>
-        <p className="text-sm text-[#C8A882]/60 mb-8">Curated collections from the GPM catalog</p>
+        <p className="text-sm text-[#C8A882]/60 mb-8">Stream now from the GPM catalog</p>
 
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
-          {PLAYLISTS.map((playlist, pIdx) => (
-            <div
-              key={pIdx}
-              className="flex-shrink-0 w-[280px] sm:w-[300px] bg-gradient-to-b from-[#1e150b] to-[#120c06] border border-[#D4A017]/10 rounded-2xl overflow-hidden snap-start hover:border-[#D4A017]/30 transition-all group"
-            >
-              {/* COVER ART - BIG */}
-              <div className="relative w-full aspect-square overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={playlist.cover}
-                  alt={playlist.name}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#120c06] via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-xl font-black text-white drop-shadow-lg leading-tight">{playlist.name}</h3>
-                  <p className="text-xs text-[#D4A017]/80 font-semibold uppercase tracking-wider mt-1">{playlist.subtitle}</p>
-                </div>
-              </div>
-
-              {/* TRACK LIST */}
-              <div className="px-3 py-3">
-                {playlist.tracks.map((track, tIdx) => {
-                  const isActive = playing?.playlist === pIdx && playing?.track === tIdx;
-                  return (
-                    <button
-                      key={tIdx}
-                      onClick={() => handlePlay(pIdx, tIdx, track)}
-                      className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl transition-all text-left
-                        ${isActive
-                          ? 'bg-[#D4A017]/15 border border-[#D4A017]/30'
-                          : 'hover:bg-[#ffffff08] border border-transparent'
-                        }`}
-                    >
-                      {/* Play Icon */}
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
-                        ${isActive ? 'bg-[#D4A017]' : 'bg-[#D4A017]/10'}`}>
-                        {isActive
-                          ? <Pause className="w-4 h-4 text-[#120c06]" fill="currentColor" />
-                          : <Play className="w-4 h-4 text-[#D4A017] ml-0.5" fill="currentColor" />
-                        }
-                      </div>
-
-                      {/* Track Info */}
-                      <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-bold truncate ${isActive ? 'text-[#D4A017]' : 'text-[#FFF8E1]'}`}>{track.title}</p>
-                        <p className="text-xs text-[#C8A882]/50 truncate">{track.artist}</p>
-                      </div>
-
-                      {/* Track Number */}
-                      <span className="text-xs text-[#C8A882]/30 font-mono flex-shrink-0">{tIdx + 1}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {PLAYLISTS.map((playlist, idx) => (
+            <PlaylistPlayer key={idx} playlist={playlist} index={idx} />
           ))}
         </div>
       </div>
