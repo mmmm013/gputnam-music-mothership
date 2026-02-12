@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Play, Music, Disc3 } from 'lucide-react';
+import { BookOpen, Music, Users, Play, Anchor } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,283 +11,173 @@ const supabase = (SUPABASE_URL && SUPABASE_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_KEY)
   : null;
 
-interface FeaturedPick {
-  id: number;
-  display_name: string;
-  view_name: string;
-  gpmc_link_view_name: string;
+/**
+ * FP MASTER PROTOCOL - 5-SLOT GRID (A-B-A-B-A)
+ * Pattern: READ - LISTEN - READ - LISTEN - READ
+ * Slots 1, 3, 5 = Static READ links
+ * Slots 2, 4 = Dynamic LISTEN (shuffled from trackLibrary)
+ */
+
+interface TrackLibraryItem {
   title: string;
   artist: string;
   filename: string;
-  icon: string;
-  mood_tag: string;
-  theme_color: string;
-  site_id: string;
-  brand_key: string;
+  label: string;
 }
 
-interface TrackItem {
-  id: number;
-  title: string;
-  artist: string;
-  audio_url: string;
-  mp3_url?: string;
-  mood?: string;
+// IV. ASSET REQUIREMENTS - tracks that MUST exist in Supabase songs bucket
+const trackLibrary: TrackLibraryItem[] = [
+  { title: 'The First Note', artist: 'GPM', filename: 'first-note.mp3', label: 'SONIC BRAND' },
+  { title: 'Bought Into Your Game', artist: 'Kleigh', filename: '038 - kleigh - bought into your game.mp3', label: 'GPMC LEGACY' },
+  { title: 'Scherer Feature', artist: 'Michael Scherer', filename: 'scherer-feature.mp3', label: 'CO-COPYRIGHT' },
+  { title: 'Nelson Feature', artist: 'Erik W. Nelson', filename: 'nelson-feature.mp3', label: 'CO-COPYRIGHT' },
+];
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 export default function FeaturedPlaylists() {
-  const [picks, setPicks] = useState<FeaturedPick[]>([]);
-  const [status, setStatus] = useState('INITIALIZING');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [activePick, setActivePick] = useState<FeaturedPick | null>(null);
-  const [trackList, setTrackList] = useState<TrackItem[]>([]);
-  const [nowPlaying, setNowPlaying] = useState<TrackItem | null>(null);
-  const [loadingTracks, setLoadingTracks] = useState(false);
-  const [totalTrackCount, setTotalTrackCount] = useState(0);
+  const [slot2Track, setSlot2Track] = useState<TrackLibraryItem | null>(null);
+  const [slot4Track, setSlot4Track] = useState<TrackLibraryItem | null>(null);
+  const [playingSlot, setPlayingSlot] = useState<number | null>(null);
 
+  // II. DYNAMIC INJECTION ENGINE - shuffle trackLibrary on every page load
   useEffect(() => {
-    async function fetchGPMPix() {
-      if (!supabase) {
-        setStatus('CRITICAL FAILURE');
-        setErrorMsg('MISSING API KEYS.');
-        return;
-      }
-      try {
-        const { data: configs, error: configError } = await supabase
-          .from('featured_playlists_config')
-          .select('*')
-          .order('sort_order');
-
-        if (configError) throw configError;
-
-        if (!configs || configs.length === 0) {
-          setStatus('EMPTY');
-          return;
-        }
-
-        const validPicks = configs.filter((c: any) => c.display_name);
-        setPicks(validPicks);
-        setStatus(validPicks.length > 0 ? 'SUCCESS' : 'EMPTY');
-      } catch (err: any) {
-        setStatus('DB ERROR');
-        setErrorMsg(err.message);
-      }
-    }
-    fetchGPMPix();
+    const shuffled = shuffleArray(trackLibrary);
+    setSlot2Track(shuffled[0]);
+    setSlot4Track(shuffled[1] || shuffled[0]);
   }, []);
 
-  const loadAndPlayPick = async (pick: FeaturedPick) => {
+  const playAudio = async (track: TrackLibraryItem, slotNumber: number) => {
     if (!supabase) return;
-    setActivePick(pick);
-    setLoadingTracks(true);
-    setTrackList([]);
-    setNowPlaying(null);
-    setTotalTrackCount(0);
+
+    setPlayingSlot(slotNumber);
 
     try {
-      const moodTag = pick.mood_tag || pick.display_name;
+      // Get public URL from Supabase songs bucket
+      const { data } = supabase.storage.from('songs').getPublicUrl(track.filename);
 
-      // Get total count of playable tracks for this mood
-      const { count } = await supabase
-        .from('gpm_tracks')
-        .select('*', { count: 'exact', head: true })
-        .not('audio_url', 'is', null)
-        .neq('audio_url', 'EMPTY')
-        .neq('audio_url', '')
-        .not('audio_url', 'like', '%placeholder%')
-        .ilike('mood', `%${moodTag}%`);
-
-      setTotalTrackCount(count || 0);
-
-      // Fetch 20 tracks for display
-      const { data: tracks } = await supabase
-        .from('gpm_tracks')
-        .select('*')
-        .not('audio_url', 'is', null)
-        .neq('audio_url', 'EMPTY')
-        .neq('audio_url', '')
-        .not('audio_url', 'like', '%placeholder%')
-        .ilike('mood', `%${moodTag}%`)
-        .limit(20);
-
-      let finalTracks = tracks || [];
-
-      if (finalTracks.length === 0) {
-        const { data: fallbackTracks } = await supabase
-          .from('gpm_tracks')
-          .select('*')
-          .not('audio_url', 'is', null)
-          .neq('audio_url', 'EMPTY')
-          .neq('audio_url', '')
-          .not('audio_url', 'like', '%placeholder%')
-          .limit(20);
-        finalTracks = fallbackTracks || [];
-      }
-
-      setTrackList(finalTracks);
-      setLoadingTracks(false);
-
-      if (finalTracks.length > 0) {
-        const randomIdx = Math.floor(Math.random() * finalTracks.length);
-        const track = finalTracks[randomIdx];
-        playTrack(track, pick);
+      if (data?.publicUrl) {
+        window.dispatchEvent(new CustomEvent('play-track', {
+          detail: {
+            url: data.publicUrl,
+            title: track.title,
+            artist: track.artist,
+            moodTheme: { primary: '#D4A017' }
+          }
+        }));
       }
     } catch (err) {
-      console.error('[GPM PIX] Error:', err);
-      setLoadingTracks(false);
+      console.error('[FP] Audio error:', err);
     }
   };
 
-  const playTrack = (track: TrackItem, pick?: FeaturedPick) => {
-    setNowPlaying(track);
-    const activeMood = pick || activePick;
-    window.dispatchEvent(new CustomEvent('play-track', {
-      detail: {
-        url: track.audio_url || track.mp3_url,
-        title: track.title || 'Unknown Track',
-        artist: track.artist || 'G Putnam Music',
-        moodTheme: { primary: activeMood?.theme_color || '#D4A017' }
-      }
-    }));
-  };
+  // The 5-slot grid definition per FP_MASTER_PROTOCOL.md
+  const slots = [
+    {
+      number: 1,
+      type: 'READ' as const,
+      title: "Grandpa's Story",
+      subtitle: 'Hero Legacy',
+      href: '/heroes',
+      icon: BookOpen,
+    },
+    {
+      number: 2,
+      type: 'LISTEN' as const,
+      title: slot2Track?.title || 'The First Note',
+      subtitle: slot2Track ? `${slot2Track.artist} · ${slot2Track.label}` : 'Sonic Brand',
+      track: slot2Track,
+      icon: Music,
+    },
+    {
+      number: 3,
+      type: 'READ' as const,
+      title: 'Who is G Putnam Music',
+      subtitle: 'Artist Bio',
+      href: '/who',
+      icon: Users,
+    },
+    {
+      number: 4,
+      type: 'LISTEN' as const,
+      title: slot4Track?.title || 'Studio Session A',
+      subtitle: slot4Track ? `${slot4Track.artist} · ${slot4Track.label}` : 'GPMC Catalog',
+      track: slot4Track,
+      icon: Play,
+    },
+    {
+      number: 5,
+      type: 'READ' as const,
+      title: 'The SHIPS Engine',
+      subtitle: 'Business / Sponsorship',
+      href: '/ships',
+      icon: Anchor,
+    },
+  ];
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-black text-[#D4A017] uppercase tracking-wide">
-          GPM PIX
-        </h2>
-        <span className={`text-xs font-mono px-2 py-1 rounded ${
-          status === 'SUCCESS' ? 'bg-green-900/50 text-green-400' :
-          status === 'EMPTY' ? 'bg-yellow-900/50 text-yellow-400' :
-          status === 'INITIALIZING' ? 'bg-blue-900/50 text-blue-400' :
-          'bg-red-900/50 text-red-400'
-        }`}>
-          {status}
-        </span>
-      </div>
+    <section className="w-full py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-lg font-bold text-[#D4A017] mb-1 tracking-wider">FEATURED PLAYLISTS</h2>
+        <p className="text-xs text-[#C8A882]/60 mb-6">5-Slot FP Grid · A-B-A-B-A · Legacy & Product</p>
 
-      {errorMsg && (
-        <div className="flex items-center gap-2 text-red-400 mb-4">
-          <AlertTriangle size={16} />
-          <span className="text-sm">{errorMsg}</span>
-        </div>
-      )}
+        <div className="grid grid-cols-5 gap-3">
+          {slots.map((slot) => {
+            const IconComponent = slot.icon;
+            const isPlaying = playingSlot === slot.number;
 
-      {status === 'EMPTY' && (
-        <p className="text-[#f5e6c8]/50 text-sm text-center py-4">
-          Featured playlists loading soon...
-        </p>
-      )}
-
-      {/* PICK SELECTOR ROW */}
-      <div className="flex flex-wrap gap-3 justify-center mb-6">
-        {picks.map((pick) => (
-          <button
-            key={pick.id}
-            onClick={() => loadAndPlayPick(pick)}
-            className={`group flex flex-col items-center gap-2 p-4 rounded-lg transition-all hover:scale-105 ${
-              activePick?.id === pick.id
-                ? 'bg-[#D4A017]/20 ring-1 ring-[#D4A017]/50'
-                : 'bg-[#2a1f0f] hover:bg-[#3a2a15]'
-            }`}
-          >
-            {pick.icon && (
-              <span className="text-2xl">{pick.icon}</span>
-            )}
-            <span className={`text-sm font-black uppercase transition-colors ${
-              activePick?.id === pick.id
-                ? 'text-[#D4A017]'
-                : 'text-[#f5e6c8]/80 group-hover:text-[#D4A017]'
-            }`}>
-              {pick.display_name}
-            </span>
-            {pick.mood_tag && (
-              <span className="text-[10px] text-[#f5e6c8]/30">
-                {pick.mood_tag}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* FP DISPLAY PANEL */}
-      {activePick && (
-        <div className="bg-[#2a1f0f]/80 rounded-xl p-6 border border-[#D4A017]/20">
-          {/* Active Pick Header */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-lg bg-[#D4A017]/10 flex items-center justify-center">
-              {activePick.icon ? (
-                <span className="text-3xl">{activePick.icon}</span>
-              ) : (
-                <Music className="w-8 h-8 text-[#D4A017]" />
-              )}
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-[#D4A017] uppercase">
-                {activePick.display_name}
-              </h3>
-              <p className="text-sm text-[#f5e6c8]/50">
-                {activePick.mood_tag ? `${activePick.mood_tag} vibes` : 'Featured playlist'}
-                {totalTrackCount > 0 && ` \u00b7 ${totalTrackCount} tracks`}
-              </p>
-            </div>
-          </div>
-
-          {/* Loading State */}
-          {loadingTracks && (
-            <div className="flex items-center justify-center py-8">
-              <Disc3 className="w-6 h-6 text-[#D4A017] animate-spin" />
-              <span className="ml-2 text-[#f5e6c8]/50 text-sm">Loading tracks...</span>
-            </div>
-          )}
-
-          {/* Track List */}
-          {!loadingTracks && trackList.length > 0 && (
-            <div className="space-y-1">
-              {trackList.map((track, idx) => (
-                <button
-                  key={track.id || idx}
-                  onClick={() => playTrack(track)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left hover:bg-[#D4A017]/10 ${
-                    nowPlaying?.id === track.id
-                      ? 'bg-[#D4A017]/15 ring-1 ring-[#D4A017]/30'
-                      : ''
-                  }`}
+            if (slot.type === 'READ' && slot.href) {
+              return (
+                <Link
+                  key={slot.number}
+                  href={slot.href}
+                  className={`group flex flex-col items-center gap-2 p-4 rounded-xl 
+                    bg-[#2a1f0f] hover:bg-[#3a2a15] border border-[#D4A017]/10 
+                    hover:border-[#D4A017]/40 transition-all hover:scale-105`}
                 >
-                  <span className="text-xs text-[#f5e6c8]/30 w-6 text-right font-mono">
-                    {nowPlaying?.id === track.id ? (
-                      <Disc3 className="w-4 h-4 text-[#D4A017] animate-spin inline" />
-                    ) : (
-                      idx + 1
-                    )}
-                  </span>
-                  <Play className={`w-4 h-4 flex-shrink-0 ${
-                    nowPlaying?.id === track.id ? 'text-[#D4A017]' : 'text-[#f5e6c8]/30'
-                  }`} />
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate ${
-                      nowPlaying?.id === track.id ? 'text-[#D4A017]' : 'text-[#f5e6c8]/90'
-                    }`}>
-                      {track.title || 'Untitled'}
-                    </p>
-                    <p className="text-xs text-[#f5e6c8]/40 truncate">
-                      {track.artist || 'G Putnam Music'}
-                    </p>
+                  <div className="w-10 h-10 rounded-full bg-[#D4A017]/10 flex items-center justify-center group-hover:bg-[#D4A017]/20 transition-colors">
+                    <IconComponent className="w-5 h-5 text-[#D4A017]" />
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
+                  <span className="text-xs font-semibold text-[#FFF8E1] text-center leading-tight">{slot.title}</span>
+                  <span className="text-[10px] text-[#C8A882]/50 uppercase tracking-wide">READ</span>
+                </Link>
+              );
+            }
 
-          {/* No Tracks State */}
-          {!loadingTracks && trackList.length === 0 && (
-            <p className="text-center text-[#f5e6c8]/40 text-sm py-6">
-              No tracks found for this mood. Check back soon.
-            </p>
-          )}
+            if (slot.type === 'LISTEN' && slot.track) {
+              return (
+                <button
+                  key={slot.number}
+                  onClick={() => playAudio(slot.track!, slot.number)}
+                  className={`group flex flex-col items-center gap-2 p-4 rounded-xl 
+                    border transition-all hover:scale-105
+                    ${isPlaying 
+                      ? 'bg-[#D4A017]/20 border-[#D4A017]/50 ring-1 ring-[#D4A017]/30' 
+                      : 'bg-[#1a120a] hover:bg-[#2a1a0f] border-[#D4A017]/10 hover:border-[#D4A017]/40'
+                    }`}
+                >
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors
+                    ${isPlaying ? 'bg-[#D4A017]/30' : 'bg-[#D4A017]/10 group-hover:bg-[#D4A017]/20'}`}>
+                    <IconComponent className="w-5 h-5 text-[#D4A017]" />
+                  </div>
+                  <span className="text-xs font-semibold text-[#FFF8E1] text-center leading-tight">{slot.title}</span>
+                  <span className="text-[10px] text-[#C8A882]/50 text-center">{slot.subtitle}</span>
+                  <span className="text-[10px] text-[#D4A017]/60 uppercase tracking-wide">{isPlaying ? 'PLAYING' : 'LISTEN'}</span>
+                </button>
+              );
+            }
+
+            return null;
+          })}
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
