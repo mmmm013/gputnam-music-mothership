@@ -74,7 +74,7 @@ export default function FPPixBar() {
           detail: {
             url: track.audio_url || track.mp3_url,
             title: track.title || 'Unknown Track',
-            artist: track.artist || 'G Putnam Music',
+            vocalist: track.artist || 'G Putnam Music',
             moodTheme: { primary: pick.theme_color || '#D4A017' }
           }
         }));
