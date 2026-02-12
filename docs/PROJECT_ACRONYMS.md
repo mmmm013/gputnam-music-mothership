@@ -5,7 +5,7 @@
 ## I. CORE ENTITIES & ROLES
 | Acronym | Definition | Role/Context |
 | :--- | :--- | :--- |
-| **GPM** | **G Putnam Music** | The Brand / The Artist / The Enterprise. |
+| **GPM** | **G Putnam Music** | The Brand / The Vocalist / The Enterprise. |
 | **GPMC** | **G Putnam Music Catalog** | The library of all audio/visual assets. |
 | **MIP** | **Most Important Person/Partner** | Co-Copyright Collaborators (Scherer, Nelson). Strategy focuses on *their* ease of use. |
 | **G** | **Gemini AI** | Designer / Operations / Directional Intelligence. |

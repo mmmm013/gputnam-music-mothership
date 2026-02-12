@@ -27,7 +27,7 @@ export default function WhoPage() {
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1a1206]/80 to-transparent p-4">
             <p className="text-[#C8A882] text-sm font-bold">Michael Scherer</p>
-            <p className="text-[#f5e6c8]/70 text-xs">Producer & Jazz Artist — Eclipse Studio</p>
+            <p className="text-[#f5e6c8]/70 text-xs">Producer & Jazz Vocalist — Eclipse Studio</p>
           </div>
         </div>
         <div className="prose prose-lg mx-auto text-[#2C2418]">

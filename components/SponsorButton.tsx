@@ -12,7 +12,7 @@ export default function SponsorButton() {
         Become a <span className="text-yellow-400">Kleigh SponsorCub</span>
       </h3>
       <p className="text-neutral-400 mb-6 text-center max-w-md px-4">
-        Unlock exclusive high-energy tracks, support the artist directly, and get the "Cub" badge.
+        Unlock exclusive high-energy tracks, support the vocalist directly, and get the "Cub" badge.
       </p>
 
       <a 

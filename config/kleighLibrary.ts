@@ -12,7 +12,7 @@ export interface LicenseInfo {
 export interface Track {
   id: string;
   title: string;
-  artist: string;
+  vocalist: string;
   url: string; // The DIRECT audio link from Disco (use signed URLs or short-lived tokens when possible)
   coverImage: string;
   moods: Mood[];
@@ -40,7 +40,7 @@ export const KLEIGH_LIBRARY: Track[] = [
   {
     id: 'k1',
     title: 'Kleigh Song 01',
-    artist: 'Kleigh',
+    vocalist: 'Kleigh',
     url: 'https://musicmaykers.disco.ac/your-direct-mp3-link-here',
     coverImage: '/images/kleigh-cover.jpg',
     moods: ['Melancholy', 'Focus'],
@@ -64,7 +64,7 @@ export const KLEIGH_LIBRARY: Track[] = [
   {
     id: 'k2',
     title: 'Kleigh Song 02',
-    artist: 'Kleigh',
+    vocalist: 'Kleigh',
     url: 'https://musicmaykers.disco.ac/your-direct-mp3-link-here',
     coverImage: '/images/kleigh-cover.jpg',
     moods: ['High Energy', 'Uplifting'],

@@ -78,7 +78,7 @@ export default function SponsorshipModal({ isOpen, onClose }: { isOpen: boolean;
 
         <div className="mt-4 text-center border-t border-[#FFD54F]/10 pt-4">
           <p className="text-[#A07CCB] text-sm leading-relaxed font-medium mb-2">
-            100% of proceeds support Artist Development.
+            100% of proceeds support Vocalist Development.
           </p>
           <p className="text-[10px] text-[#A07CCB] opacity-50 uppercase font-bold tracking-widest">
             Secure Payments via Stripe
