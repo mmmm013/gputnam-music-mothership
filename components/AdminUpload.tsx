@@ -104,6 +104,7 @@ export default function AdminUpload() {
                 <option value="Michael Clay">Michael Clay (Instro)</option>
                 <option value="Michael Scherer">Michael Scherer</option>
                 <option value="Wounded & Willing">Wounded & Willing</option>
+                              <option value="Elliot Sedgwick">Elliot Sedgwick</option>
               </select>
             </div>
           </div>
