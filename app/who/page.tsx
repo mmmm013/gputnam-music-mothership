@@ -21,7 +21,7 @@ export default function WhoPage() {
               src="/IMG_7429.JPG"
               alt="Michael Scherer in the studio"
               fill
-              className="object-cover object-[center_30%]"
+                            className="object-cover object-[center_20%]"
               priority
             />
           </div>
