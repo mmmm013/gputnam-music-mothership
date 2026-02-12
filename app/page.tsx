@@ -96,7 +96,7 @@ export default function Hero() {
       const playEvent = new CustomEvent('play-track', {
         detail: {
           title: track.title || 'Unknown Track',
-          artist: track.artist || 'G Putnam Music',
+          vocalist: track.artist || 'G Putnam Music',
           url: track.audio_url,
           moodTheme: { primary: '#C8A882' }
         }
