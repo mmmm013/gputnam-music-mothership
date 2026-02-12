@@ -60,6 +60,7 @@ const PLAYLISTS: Playlist[] = [
       { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
       { title: "Fool's Game", artist: 'G Putnam Music', src: '/pix/fools-game-(master-2).mp3' },
     ],
+      },
       {
     name: 'Eclipse Sessions',
     tracks: [
@@ -74,9 +75,9 @@ const PLAYLISTS: Playlist[] = [
       { title: 'A Calm Evening', artist: 'Kleigh', src: '/pix/kleigh--a-calm-evening.mp3' },
       { title: 'Wanna Know You', artist: 'G Putnam Music', src: '/pix/wanna-know-you.mp3' },
       { title: 'Waterfall', artist: 'Kleigh', src: '/pix/kleigh--waterfall.mp3' },
-    ],
+          ],
   },
-  },
+    
 ];
 
 function formatTime(sec: number): string {
