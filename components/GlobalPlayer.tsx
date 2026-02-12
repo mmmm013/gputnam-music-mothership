@@ -30,7 +30,7 @@ export default function GlobalPlayer() {
   const [error, setError] = useState('');
   const [track, setTrack] = useState({
     title: "Pick an Activity",
-    artist: "Click any T20 box or GPM PIX to stream",
+    vocalist: "Click any T20 box or GPM PIX to stream",
     url: "",
     moodColor: "#8B4513"
   });
@@ -43,13 +43,13 @@ export default function GlobalPlayer() {
       setIsLoading(true);
       setIsPlaying(false);
       setPendingPlay(true);
-      let safeArtist = e.detail.artist || "G Putnam Music";
+      let safeArtist = e.detail.vocalist || "G Putnam Music";
       if (safeArtist.toLowerCase().includes("mayker")) {
         safeArtist = "G Putnam Music";
       }
       const newTrack = {
         title: e.detail.title || "Unknown Track",
-        artist: safeArtist,
+        vocalist: safeArtist,
         url: e.detail.url,
         moodColor: e.detail.moodTheme?.primary || "#8B4513"
       };
@@ -190,7 +190,7 @@ export default function GlobalPlayer() {
               {track.title}
             </h4>
             <p className="text-xs text-[#f5e6c8]/50 truncate">
-              {track.artist}
+              {track.vocalist}
             </p>
             {isLoading && (
               <p className="text-[10px] text-yellow-400 mt-0.5 animate-pulse">Loading audio...</p>
