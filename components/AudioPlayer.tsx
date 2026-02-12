@@ -5,7 +5,7 @@ import { Play, Pause, AlertCircle } from 'lucide-react';
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState('');
-  const [track, setTrack] = useState({ title: 'PICK AN ACTIVITY', artist: 'Click any T20 box or GPM PIX to stream' });
+  const [track, setTrack] = useState({ title: 'PICK AN ACTIVITY', vocalist: 'Click any T20 box or GPM PIX to stream' });
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Listen for play-track events from FeaturedPlaylists and T20
@@ -17,7 +17,7 @@ export default function AudioPlayer() {
       // Update track state
       setTrack({
         title: trackData.title,
-        artist: trackData.artist
+        vocalist: trackData.vocalist
       });
 
       // Update audio source
@@ -96,7 +96,7 @@ export default function AudioPlayer() {
           </button>
           <div className="overflow-hidden">
             <div className="font-bold text-sm text-[#FFD54F] truncate">{track.title}</div>
-            <div className="text-xs opacity-50 uppercase tracking-widest truncate">{track.artist}</div>
+            <div className="text-xs opacity-50 uppercase tracking-widest truncate">{track.vocalist}</div>
           </div>
         </div>
         <audio ref={audioRef} preload="none" />
