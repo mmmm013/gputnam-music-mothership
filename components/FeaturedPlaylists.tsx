@@ -7,6 +7,11 @@ import { Play, Pause, Music } from 'lucide-react';
  * Each FP is a mini playlist player with 3 stacked tracks
  * Tracks served from /pix/ (high-fidelity 320kbps MP3s)
  * Owner requirement: "An FP is a Media player with 3 songs stacked"
+ *
+ * CURATION RULE: Each FP trio pulls from DISTINCT inner groups.
+ * 2 tracks share a rough vibe/mood. 1 track is EDGIER.
+ * Inner Groups: A=Chill/Reflective, B=Upbeat/Fun, C=Emotional/Inspirational,
+ *              D=Edgier/Attitude, E=Kleigh Produced/Studio, F=Jazz/Special
  */
 
 interface Track {
@@ -22,43 +27,48 @@ interface Playlist {
 
 const PLAYLISTS: Playlist[] = [
   {
+    // FP1: Legacy/Reflective tone | Groups: E(Kleigh) + C(Emotional) + D(Edgier)
     name: "Grandpa's Story",
     tracks: [
-      { title: 'Bought Into Your Game', artist: 'Kleigh', src: '/pix/bought-into-your-game.mp3' },
+      { title: 'Reflections', artist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
       { title: 'I Need an Angel', artist: 'G Putnam Music', src: '/pix/i-need-an-angel.mp3' },
-      { title: 'Memories', artist: 'G Putnam Music', src: '/pix/here-in-the-night.mp3' },
+      { title: 'Bought Into Your Game', artist: 'Kleigh', src: '/pix/bought-into-your-game.mp3' },
     ],
   },
   {
+    // FP2: Chill/Atmospheric tone | Groups: A(Chill Kleigh) + A(Chill GPM) + E(Studio edge)
     name: 'Kleigh Spotlight',
     tracks: [
       { title: 'Breathing Serenity', artist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
-      { title: 'Nightfall', artist: 'Kleigh', src: '/pix/kleigh--nightfall.mp3' },
-      { title: 'A Calm Evening', artist: 'Kleigh', src: '/pix/kleigh--a-calm-evening.mp3' },
+      { title: 'Nighttime', artist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
+      { title: 'Down (Stripped)', artist: 'Kleigh', src: '/pix/kleigh--down-(stripped)-with-reverb--69bpm-fmaj.mp3' },
     ],
   },
   {
+    // FP3: Uplifting/Positive tone | Groups: C(Inspirational) + A(Chill) + D(Edgier)
     name: 'Who is G Putnam Music',
     tracks: [
       { title: 'I Was Made to Be Awesome', artist: 'G Putnam Music', src: '/pix/i-was-made-to-be-awesome.mp3' },
       { title: 'Perfect Day', artist: 'G Putnam Music', src: '/pix/perfect-day.mp3' },
-      { title: 'Going Outside', artist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
+      { title: 'Why Does Life Gotta Be This Hard', artist: 'G Putnam Music', src: '/pix/why-does-life-gotta-be-this-hard.mp3' },
     ],
   },
   {
+    // FP4: Energetic/Fun tone | Groups: B(Upbeat) + B(Upbeat) + D(Edgier)
     name: 'The First Note',
     tracks: [
-      { title: 'Rhythm Play', artist: 'G Putnam Music', src: '/pix/rhythm-play.mp3' },
       { title: 'Dance Party', artist: 'G Putnam Music', src: '/pix/dance-party.mp3' },
-      { title: 'Jump', artist: 'G Putnam Music', src: '/pix/jump.mp3' },
+      { title: 'Going Outside', artist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
+      { title: 'I Am a Fighter', artist: 'G Putnam Music', src: '/pix/i-am-a-fighter--el-mix-instro.mp3' },
     ],
   },
   {
+    // FP5: Aspirational/Freedom tone | Groups: C(Inspirational) + C(Freedom) + D(Edgier)
     name: 'The SHIPS Engine',
     tracks: [
       { title: 'I Live Free', artist: 'G Putnam Music', src: '/pix/i-live-free--instro.mp3' },
-      { title: 'Reflections', artist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
-      { title: 'Wanna Know You', artist: 'G Putnam Music', src: '/pix/wanna-know-you.mp3' },
+      { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
+      { title: "Fool's Game", artist: 'G Putnam Music', src: '/pix/fools-game-(master-2).mp3' },
     ],
   },
 ];
@@ -107,7 +117,6 @@ export default function FeaturedPlaylists() {
   // Listen for audio ending to reset state
   useEffect(() => {
     const handleEnded = () => setPlaying(null);
-    const handlePause = () => setPlaying(null);
     const audio = audioRef.current;
     if (audio) {
       audio.addEventListener('ended', handleEnded);
