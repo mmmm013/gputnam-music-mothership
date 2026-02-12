@@ -11,7 +11,7 @@ export default function AdminUpload() {
 
   // Form State
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('KLEIGH'); // Default
+  const [vocalist, setVocalist] = useState('KLEIGH'); // Default
   const [bpm, setBpm] = useState('');
   const [context, setContext] = useState('Run'); 
   const [file, setFile] = useState<File | null>(null);
@@ -47,7 +47,7 @@ export default function AdminUpload() {
         .from('songs')
         .insert({
           title: title,
-          artist: artist, 
+          artist: vocalist, 
           bpm: parseInt(bpm) || 0,
           functional_contexts: [context.toLowerCase()],
           audio_url: publicUrl,
@@ -56,7 +56,7 @@ export default function AdminUpload() {
 
       if (dbError) throw dbError;
 
-      setMessage(`SUCCESS: ${title} by ${artist} is Live.`);
+      setMessage(`SUCCESS: ${title} by ${vocalist} is Live.`);
       setTitle('');
       setFile(null);
     } catch (error: any) {
@@ -79,7 +79,7 @@ export default function AdminUpload() {
 
       <div className="space-y-4">
         
-        {/* Row 1: Title & Artist */}
+        {/* Row 1: Title & Vocalist */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs uppercase text-white/50 mb-1">Track Title</label>
@@ -92,12 +92,12 @@ export default function AdminUpload() {
             />
           </div>
           <div>
-            <label className="block text-xs uppercase text-white/50 mb-1">Artist (Roster)</label>
+            <label className="block text-xs uppercase text-white/50 mb-1">Vocalist (Roster)</label>
             <div className="relative">
               <Users size={16} className="absolute left-3 top-3.5 text-white/30"/>
               <select 
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
+                value={vocalist}
+                onChange={(e) => setVocalist(e.target.value)}
                 className="w-full bg-black/40 border border-white/10 p-3 pl-10 rounded text-[#D7CCC8] appearance-none"
               >
                 <option value="KLEIGH">KLEIGH</option>
