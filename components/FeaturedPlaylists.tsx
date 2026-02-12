@@ -11,7 +11,7 @@ import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 
 interface Track {
   title: string;
-  artist: string;
+  vocalist: string;
   src: string;
 }
 
@@ -24,57 +24,57 @@ const PLAYLISTS: Playlist[] = [
   {
     name: "Grandpa's Story",
     tracks: [
-      { title: 'Reflections', artist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
-      { title: 'I Need an Angel', artist: 'G Putnam Music', src: '/pix/i-need-an-angel.mp3' },
-      { title: 'Bought Into Your Game', artist: 'Kleigh', src: '/pix/bought-into-your-game.mp3' },
+      { title: 'Reflections', vocalist: 'Kleigh', src: '/pix/kleigh--reflections.mp3' },
+      { title: 'I Need an Angel', vocalist: 'G Putnam Music', src: '/pix/i-need-an-angel.mp3' },
+      { title: 'Bought Into Your Game', vocalist: 'Kleigh', src: '/pix/bought-into-your-game.mp3' },
     ],
   },
   {
     name: 'Kleigh Spotlight',
     tracks: [
-      { title: 'Breathing Serenity', artist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
-      { title: 'Nighttime', artist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
-      { title: 'Down (Stripped)', artist: 'Kleigh', src: '/pix/kleigh--down-(stripped)-with-reverb--69bpm-fmaj.mp3' },
+      { title: 'Breathing Serenity', vocalist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
+      { title: 'Nighttime', vocalist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
+      { title: 'Down (Stripped)', vocalist: 'Kleigh', src: '/pix/kleigh--down-(stripped)-with-reverb--69bpm-fmaj.mp3' },
     ],
   },
   {
     name: 'Who is G Putnam Music',
     tracks: [
-      { title: 'I Was Made to Be Awesome', artist: 'G Putnam Music', src: '/pix/i-was-made-to-be-awesome.mp3' },
-      { title: 'Perfect Day', artist: 'G Putnam Music', src: '/pix/perfect-day.mp3' },
-      { title: 'Why Does Life Gotta Be This Hard', artist: 'G Putnam Music', src: '/pix/why-does-life-gotta-be-this-hard.mp3' },
+      { title: 'I Was Made to Be Awesome', vocalist: 'G Putnam Music', src: '/pix/i-was-made-to-be-awesome.mp3' },
+      { title: 'Perfect Day', vocalist: 'G Putnam Music', src: '/pix/perfect-day.mp3' },
+      { title: 'Why Does Life Gotta Be This Hard', vocalist: 'G Putnam Music', src: '/pix/why-does-life-gotta-be-this-hard.mp3' },
     ],
   },
   {
     name: 'The First Note',
     tracks: [
-      { title: 'Dance Party', artist: 'G Putnam Music', src: '/pix/dance-party.mp3' },
-      { title: 'Going Outside', artist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
-      { title: 'I Am a Fighter', artist: 'G Putnam Music', src: '/pix/i-am-a-fighter--el-mix-instro.mp3' },
+      { title: 'Dance Party', vocalist: 'G Putnam Music', src: '/pix/dance-party.mp3' },
+      { title: 'Going Outside', vocalist: 'G Putnam Music', src: '/pix/going-outside.mp3' },
+      { title: 'I Am a Fighter', vocalist: 'G Putnam Music', src: '/pix/i-am-a-fighter--el-mix-instro.mp3' },
     ],
   },
   {
     name: 'The SHIPS Engine',
     tracks: [
-      { title: 'I Live Free', artist: 'G Putnam Music', src: '/pix/i-live-free--instro.mp3' },
-      { title: "We'll Be Free", artist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
-      { title: "Fool's Game", artist: 'G Putnam Music', src: '/pix/fools-game-(master-2).mp3' },
+      { title: 'I Live Free', vocalist: 'G Putnam Music', src: '/pix/i-live-free--instro.mp3' },
+      { title: "We'll Be Free", vocalist: 'G Putnam Music', src: "/pix/we'll-be-free.mp3" },
+      { title: "Fool's Game", vocalist: 'G Putnam Music', src: '/pix/fools-game-(master-2).mp3' },
     ],
       },
       {
     name: 'Eclipse Sessions',
     tracks: [
-      { title: 'Jump', artist: 'Michael Scherer', src: '/pix/jump.mp3' },
-      { title: 'New Orleans Piano Trio', artist: 'Michael Scherer', src: '/pix/new-orleans-piano-trio-1.mp3' },
-      { title: 'Score 3: The End', artist: 'Michael Scherer', src: '/pix/score-3--the-end.mp3' },
+      { title: 'Jump', vocalist: 'Michael Scherer', src: '/pix/jump.mp3' },
+      { title: 'New Orleans Piano Trio', vocalist: 'Michael Scherer', src: '/pix/new-orleans-piano-trio-1.mp3' },
+      { title: 'Score 3: The End', vocalist: 'Michael Scherer', src: '/pix/score-3--the-end.mp3' },
     ],
   },
   {
     name: "Valentine's Day",
     tracks: [
-      { title: 'A Calm Evening', artist: 'Kleigh', src: '/pix/kleigh--a-calm-evening.mp3' },
-      { title: 'Wanna Know You', artist: 'G Putnam Music', src: '/pix/wanna-know-you.mp3' },
-      { title: 'Waterfall', artist: 'Kleigh', src: '/pix/kleigh--waterfall.mp3' },
+      { title: 'A Calm Evening', vocalist: 'Kleigh', src: '/pix/kleigh--a-calm-evening.mp3' },
+      { title: 'Wanna Know You', vocalist: 'G Putnam Music', src: '/pix/wanna-know-you.mp3' },
+      { title: 'Waterfall', vocalist: 'Kleigh', src: '/pix/kleigh--waterfall.mp3' },
           ],
   },
     
@@ -182,7 +182,7 @@ function PlaylistPlayer({ playlist, index }: { playlist: Playlist; index: number
       <div className="px-4 py-4">
         <p className="text-xs text-[#C8A882]/50 uppercase tracking-wider mb-1">Now Playing</p>
         <p className="text-lg font-bold text-[#FFF8E1] truncate">{track.title}</p>
-        <p className="text-sm text-[#D4A017]/70">{track.artist}</p>
+        <p className="text-sm text-[#D4A017]/70">{track.vocalist}</p>
 
         {/* Progress Bar */}
         <div
@@ -243,7 +243,7 @@ function PlaylistPlayer({ playlist, index }: { playlist: Playlist; index: number
               <p className={`text-sm font-semibold truncate ${currentTrack === idx ? 'text-[#D4A017]' : 'text-[#FFF8E1]'}`}>
                 {t.title}
               </p>
-              <p className="text-xs text-[#C8A882]/50 truncate">{t.artist}</p>
+              <p className="text-xs text-[#C8A882]/50 truncate">{t.vocalist}</p>
             </div>
           </button>
         ))}
