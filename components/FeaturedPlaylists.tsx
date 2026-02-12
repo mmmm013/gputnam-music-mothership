@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
-import Image from 'next/image';
 
 /**
  * FEATURED PLAYLISTS - BIG Visual Playlist Cards
@@ -39,7 +38,7 @@ const PLAYLISTS: Playlist[] = [
   {
     name: 'Kleigh Spotlight',
     subtitle: 'Chill & Atmospheric',
-    cover: '/images/kleigh_guitar.png',
+    cover: '/assets/MOON-1[32199].jpg',
     tracks: [
       { title: 'Breathing Serenity', artist: 'Kleigh', src: '/pix/kleigh--breathing-serenity.mp3' },
       { title: 'Nighttime', artist: 'G Putnam Music', src: '/pix/nighttime.mp3' },
@@ -99,7 +98,7 @@ export default function FeaturedPlaylists() {
         <h2 className="text-2xl font-black text-[#D4A017] mb-2 tracking-wider uppercase">Featured Playlists</h2>
         <p className="text-sm text-[#C8A882]/60 mb-8">Curated collections from the GPM catalog</p>
 
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
           {PLAYLISTS.map((playlist, pIdx) => (
             <div
               key={pIdx}
@@ -107,12 +106,11 @@ export default function FeaturedPlaylists() {
             >
               {/* COVER ART - BIG */}
               <div className="relative w-full aspect-square overflow-hidden">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={playlist.cover}
                   alt={playlist.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="300px"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#120c06] via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
@@ -135,9 +133,9 @@ export default function FeaturedPlaylists() {
                           : 'hover:bg-[#ffffff08] border border-transparent'
                         }`}
                     >
-                      {/* Track Number / Play Icon */}
+                      {/* Play Icon */}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
-                        ${isActive ? 'bg-[#D4A017]' : 'bg-[#D4A017]/10 group-hover:bg-[#D4A017]/15'}`}>
+                        ${isActive ? 'bg-[#D4A017]' : 'bg-[#D4A017]/10'}`}>
                         {isActive
                           ? <Pause className="w-4 h-4 text-[#120c06]" fill="currentColor" />
                           : <Play className="w-4 h-4 text-[#D4A017] ml-0.5" fill="currentColor" />
