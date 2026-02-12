@@ -5,39 +5,33 @@ import { Play, Pause, AlertCircle } from 'lucide-react';
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState('');
-  const [track, setTrack] = useState({ title: 'System Check...', artist: 'Connecting...' });
+  const [track, setTrack] = useState({ title: 'PICK AN ACTIVITY', artist: 'Click any T20 box or GPM PIX to stream' });
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // We use a known public URL first to test the engine
-  const STREAM_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
-
-  useEffect(() => {
-    setTrack({ title: 'GPM Audio Test', artist: 'Diagnostic Stream' });
-  }, []);
-
-    // Listen for play-track events from FeaturedPlaylists
+  // Listen for play-track events from FeaturedPlaylists and T20
   useEffect(() => {
     const handlePlayTrack = (event: any) => {
       const trackData = event.detail;
       console.log('[AUDIO PLAYER] Received play-track event:', trackData);
-      
+
       // Update track state
       setTrack({
         title: trackData.title,
         artist: trackData.artist
       });
-      
+
       // Update audio source
       if (audioRef.current) {
         audioRef.current.src = trackData.url;
         audioRef.current.load();
-        
+
         // Auto-play the new track
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
               setIsPlaying(true);
+              setError('');
               console.log('[AUDIO PLAYER] Now playing:', trackData.title);
             })
             .catch((err) => {
@@ -49,15 +43,24 @@ export default function AudioPlayer() {
     };
 
     window.addEventListener('play-track', handlePlayTrack);
-    
+
     return () => {
       window.removeEventListener('play-track', handlePlayTrack);
     };
   }, []);
 
+  // Listen for audio end event
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleEnded = () => setIsPlaying(false);
+    audio.addEventListener('ended', handleEnded);
+    return () => audio.removeEventListener('ended', handleEnded);
+  }, []);
+
   const togglePlay = () => {
     if (!audioRef.current) return;
-    
+
     // Clear previous errors
     setError('');
 
@@ -70,9 +73,9 @@ export default function AudioPlayer() {
         playPromise
           .then(() => setIsPlaying(true))
           .catch((err) => {
-            console.error("Playback failed:", err);
+            console.error('Playback failed:', err);
             setIsPlaying(false);
-            setError('Stream Blocked. Check Permissions.');
+            setError('Select a track from Featured Playlists or T20.');
           });
       }
     }
@@ -87,18 +90,17 @@ export default function AudioPlayer() {
             <AlertCircle size={12} /> {error}
           </div>
         )}
-
         <div className="flex items-center gap-4">
-           <button onClick={togglePlay} className="w-12 h-12 bg-[#FFD54F] rounded-full flex items-center justify-center text-[#2C241B] hover:scale-105 transition shadow-lg shrink-0">
-             {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" className="ml-1" />}
-           </button>
-           <div className="overflow-hidden">
-             <div className="font-bold text-sm text-[#FFD54F] truncate">{track.title}</div>
-             <div className="text-xs opacity-50 uppercase tracking-widest truncate">{track.artist}</div>
-           </div>
+          <button onClick={togglePlay} className="w-12 h-12 bg-[#FFD54F] rounded-full flex items-center justify-center text-[#2C241B] hover:scale-105 transition shadow-lg shrink-0">
+            {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" className="ml-1" />}
+          </button>
+          <div className="overflow-hidden">
+            <div className="font-bold text-sm text-[#FFD54F] truncate">{track.title}</div>
+            <div className="text-xs opacity-50 uppercase tracking-widest truncate">{track.artist}</div>
+          </div>
         </div>
-        {/* Using a generic test file to prove the PLAYER works. Once this plays, we swap back to your bucket. */}
-      <audio ref={audioRef} preload="none" />      </div>
+        <audio ref={audioRef} preload="none" />
+      </div>
     </div>
   );
 }
