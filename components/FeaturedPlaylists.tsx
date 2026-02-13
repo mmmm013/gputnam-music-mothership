@@ -62,7 +62,7 @@ const PLAYLISTS: Playlist[] = [
     ],
       },
       {
-    name: 'Eclipse Sessions',
+    name: 'Scherer Jazz Sessions',
     tracks: [
       { title: 'Jump', vocalist: 'Michael Scherer', src: '/pix/jump.mp3' },
       { title: 'New Orleans Piano Trio', vocalist: 'Michael Scherer', src: '/pix/new-orleans-piano-trio-1.mp3' },
@@ -260,8 +260,8 @@ export default function FeaturedPlaylists() {
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-black text-[#D4A017] mb-2 tracking-wider uppercase">Featured Playlists</h2>
         <p className="text-sm text-[#C8A882]/60 mb-0">Stream now from the GPM catalog</p>
-        <p className="text-sm text-[#FF6B8A] mt-1 font-semibold">Happy Valentine&apos;s Day from G Putnam Music — Caring and Sharing through song.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-6">
+                {new Date().getMonth() === 1 && <p className="text-sm text-[#FF68BA] mt-1 font-semibold">Happy Valentine&apos;s Day from G Putnam Music &mdash; Caring and Sharing through song.</p>}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {PLAYLISTS.map((playlist, idx) => (
             <PlaylistPlayer key={idx} playlist={playlist} index={idx} />
           ))}
