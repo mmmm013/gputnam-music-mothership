@@ -30,6 +30,8 @@ const HERO_IMAGES = [
   '/assets/Blonde Fan.png',                     // 14: blonde fan
   '/assets/cover_tough.jpg',                    // 15: cover tough
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
+    '/assets/Grabbong Sunlasses.jpg',             // 16: grabbong sunlasses
+  '/assets/Heather Heyer Grvesite.jpg',           // 17: Heather Heyer tribute
   
 
 
