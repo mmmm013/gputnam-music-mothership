@@ -53,6 +53,7 @@ export default function WeeklyRace() {
   });
   const [showReplayLink, setShowReplayLink] = useState(false);
 
+    const selectParticipants = useCallback(() => {
     const always = RACERS.filter(r => r.frequency === 'always');
     const sometimes = RACERS.filter(r => r.frequency === 'sometimes');
     const rare = RACERS.filter(r => r.frequency === 'rare');
@@ -67,7 +68,9 @@ export default function WeeklyRace() {
 
     // 30% chance to include each 'rare' racer
     rare.forEach(racer => {
-      if (Math.random() < 0.3) selected.push(racer);
+      i
+            return selected;
+        }, []);f (Math.random() < 0.3) selected.push(racer);
     });
 
   // Run race with animation
