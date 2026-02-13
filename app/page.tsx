@@ -22,19 +22,15 @@ const HERO_IMAGES = [
   '/IMG_7624.JPG',             // 4: studio side working - center
   '/IMG_7720.JPG',             // 5: red blazer portrait - top 20%
   '/assets/MC BW 1.jpeg',     // 6: Michael Clay album cover - center
-  '/assets/MC BW 2.jpeg',     // 7: Michael Clay album cover 2 - center
     '/assets/MC Agnst Stone Wall Knee Bent.jpg',  // 8: MC stone wall portrait
   '/assets/MC by Tree Looking Left.jpg',        // 9: MC by tree
   '/assets/Front Pose.jpg',                     // 10: vocalist front pose
-  '/assets/Grabbing Sunlasses.jpg',             // 11: grabbing sunglasses
   '/assets/Smoking 1.jpg',                      // 12: smoking portrait
   '/assets/MOON-1[32199].jpg',                  // 13: moon shot
   '/assets/Blonde Fan.png',                     // 14: blonde fan
   '/assets/cover_tough.jpg',                    // 15: cover tough
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
-  '/assets/Heather Meyer Grvesile.jpg',         // 17: Heather Meyer tribute
-  '/assets/Jayiny Y Fan.png',                   // 18: Jayiny Y Fan
-];
+  
 
 
 export default function Hero() {
