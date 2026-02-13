@@ -71,7 +71,7 @@ export default function WeeklyRace() {
   });
 
   return selected;
-  }, []);  const runRace = useCallback((participants: Racer[], isReplay = false) => {
+  }, []);  const runRace = useCallback((participants: Racer[], isReplay = false) => ;
     setRaceState({
       isLive: !isReplay,
       isReplay,
