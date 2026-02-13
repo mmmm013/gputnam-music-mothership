@@ -26,6 +26,10 @@ const HERO_IMAGES = [
   '/assets/Front Pose.jpg',                     // 10: vocalist front pose
   '/assets/Smoking 1.jpg',                      // 12: smoking portrait
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
+    '/assets/cover_tough.jpg',          // Michael Clay - Tough People Do
+  '/assets/Hearts.jpg',                // Valentine hearts graphic
+  '/cover_love_renews.jpg',            // Michael Clay - Love Renews
+  '/cover_to_love_me.jpg',             // Michael Clay - To Love Me
   ];
   
 
@@ -35,9 +39,18 @@ export default function Hero() {
   const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
   
+    // Shuffle-based hero rotation: random order each page load
   useEffect(() => {
+    const indices = Array.from({ length: HERO_IMAGES.length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    let pos = 0;
+    setHeroIndex(indices[0]);
     const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+      pos = (pos + 1) % indices.length;
+      setHeroIndex(indices[pos]);
     }, 8000);
     return () => clearInterval(interval);
   }, []);
