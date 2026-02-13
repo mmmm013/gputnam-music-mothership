@@ -70,9 +70,7 @@ export default function WeeklyRace() {
     rare.forEach(racer => {
       i
             return selected;
-        }, []);f (Math.random() < 0.3) selected.push(racer);
-    });
-
+  }, []);
   // Run race with animation
   const runRace = useCallback((participants: Racer[], isReplay = false) => {
     setRaceState({
