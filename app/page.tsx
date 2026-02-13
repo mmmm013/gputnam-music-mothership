@@ -21,14 +21,12 @@ const HERO_IMAGES = [
   '/IMG_7429.JPG',             // 3: studio front - center
   '/IMG_7624.JPG',             // 4: studio side working - center
   '/IMG_7720.JPG',             // 5: red blazer portrait - top 20%
-  '/assets/MC BW 1.jpeg',     // 6: Michael Clay album cover - center
     '/assets/MC Agnst Stone Wall Knee Bent.jpg',  // 8: MC stone wall portrait
   '/assets/MC by Tree Looking Left.jpg',        // 9: MC by tree
   '/assets/Front Pose.jpg',                     // 10: vocalist front pose
   '/assets/Smoking 1.jpg',                      // 12: smoking portrait
   '/assets/MOON-1[32199].jpg',                  // 13: moon shot
   '/assets/Blonde Fan.png',                     // 14: blonde fan
-  '/assets/cover_tough.jpg',                    // 15: cover tough
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
     '/assets/Grabbong Sunlasses.jpg',             // 16: grabbong sunlasses
   '/assets/Heather Heyer Grvesite.jpg',           // 17: Heather Heyer tribute
@@ -131,7 +129,7 @@ export default function Hero() {
             src={src}
             alt="G Putnam Music"
             fill
-            className={`object-cover ${(i === 1 || i === 5) ? 'object-[center_35%]' : 'object-center'} transition-opacity duration-1000 ${heroIndex === i ? 'opacity-100' : 'opacity-0'}`} priority={i === 0}
+              className={`object-cover ${i === 11 ? 'object-[center_20%]' : (i === 1 || i === 5) ? 'object-[center_35%]' : 'object-center'} transition-opacity duration-1000 ${heroIndex === i ? 'opacity-100' : 'opacity-0'}`} priority={i === 0}
           />
         ))}
         <div className="absolute inset-0 bg-[#1a1206]/60" />
