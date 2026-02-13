@@ -53,7 +53,6 @@ export default function WeeklyRace() {
   });
   const [showReplayLink, setShowReplayLink] = useState(false);
 
-  // Select participants = useCallback(() => {
     const always = RACERS.filter(r => r.frequency === 'always');
     const sometimes = RACERS.filter(r => r.frequency === 'sometimes');
     const rare = RACERS.filter(r => r.frequency === 'rare');
@@ -70,9 +69,6 @@ export default function WeeklyRace() {
     rare.forEach(racer => {
       if (Math.random() < 0.3) selected.push(racer);
     });
-
-    return selected;
-  }, []);
 
   // Run race with animation
   const runRace = useCallback((participants: Racer[], isReplay = false) => {
