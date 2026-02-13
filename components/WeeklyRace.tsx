@@ -67,11 +67,12 @@ export default function WeeklyRace() {
     });
 
     // 30% chance to include each 'rare' racer
+    rare.forEach(racer => {
     if (Math.random() < 0.3) selected.push(racer);
   });
 
   return selected;
-  }, []);  const runRace = useCallback((participants: Racer[], isReplay = false) => ;
+  }, []);  const runRace = useCallback((participants: Racer[], isReplay = false) =>  {
     setRaceState({
       isLive: !isReplay,
       isReplay,
