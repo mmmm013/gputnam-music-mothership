@@ -25,7 +25,6 @@ const HERO_IMAGES = [
   '/assets/MC by Tree Looking Left.jpg',        // 9: MC by tree
   '/assets/Front Pose.jpg',                     // 10: vocalist front pose
   '/assets/Smoking 1.jpg',                      // 12: smoking portrait
-  '/assets/MOON-1[32199].jpg',                  // 13: moon shot
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
     '/assets/Grabbong Sunlasses.jpg',             // 16: grabbong sunlasses
   '/assets/Heather Heyer Grvesite.jpg',           // 17: Heather Heyer tribute
