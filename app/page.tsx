@@ -26,11 +26,7 @@ const HERO_IMAGES = [
   '/assets/Front Pose.jpg',                     // 10: vocalist front pose
   '/assets/Smoking 1.jpg',                      // 12: smoking portrait
   '/hero-Music is Feeling.jpg',                 // 16: hero music is feeling
-    '/assets/cover_tough.jpg',          // Michael Clay - Tough People Do
-  '/assets/Hearts.jpg',                // Valentine hearts graphic
-  '/cover_love_renews.jpg',            // Michael Clay - Love Renews
-  '/cover_to_love_me.jpg',             // Michael Clay - To Love Me
-  ];
+    ];
   
 
 
