@@ -14,7 +14,7 @@ const GIFT_OPTIONS = [
     price: '$1.99',
     description: '1 digital sticker or ringtone',
     href: '/gift',
-    emoji: '\u2764\ufe0f',
+    emoji: '❤️',
     tag: 'Perfect starter',
   },
   {
@@ -22,7 +22,7 @@ const GIFT_OPTIONS = [
     price: '$4.99',
     description: '2 items + 1 grand prize entry',
     href: '/gift',
-    emoji: '\ud83d\udc9c',
+    emoji: '💜',
     tag: 'Most gifted',
   },
   {
@@ -30,7 +30,7 @@ const GIFT_OPTIONS = [
     price: '$9.99',
     description: '3 items + unreleased clip + 3 entries',
     href: '/gift',
-    emoji: '\ud83d\udc9c',
+    emoji: '💜',
     tag: 'Fan favorite',
   },
   {
@@ -38,7 +38,7 @@ const GIFT_OPTIONS = [
     price: '$24.99',
     description: '5 items + studio pass + merch code + 10 entries',
     href: '/gift',
-    emoji: '\ud83d\udc9c',
+    emoji: '💜',
     tag: 'Ultimate V-Day gift',
   },
 ];
@@ -75,7 +75,7 @@ export default function ValentinesPage() {
 
       {/* Hero */}
       <section className="pt-24 pb-16 px-4 text-center">
-        <p className="text-5xl mb-4">\u2764\ufe0f</p>
+        <p className="text-5xl mb-4">❤️</p>
         <h1 className="text-4xl md:text-6xl font-black mb-4">
           <span className="bg-gradient-to-r from-red-400 via-pink-400 to-red-500 bg-clip-text text-transparent">
             Valentine&apos;s Day
@@ -93,7 +93,7 @@ export default function ValentinesPage() {
       <section className="px-4 pb-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-2">
-            \u2764\ufe0f Heart-Tap Gifts
+            ❤️ Heart-Tap Gifts
           </h2>
           <p className="text-center text-white/50 text-sm mb-8">
             Digital mixed bags with exclusive stickers, ringtones, unreleased clips, and more.
@@ -120,7 +120,7 @@ export default function ValentinesPage() {
               href="/gift"
               className="inline-block px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold hover:from-red-400 hover:to-pink-400 transition-all"
             >
-              Send a Heart-Tap \u2192
+              Send a Heart-Tap →
             </Link>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function ValentinesPage() {
       <section className="px-4 pb-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-2">
-            \ud83d\udd12 K-KUTs Sovereign Locket
+            🔒 K-KUTs Sovereign Locket
           </h2>
           <p className="text-center text-white/50 text-sm mb-2">
             A patented music-frequency locket. The lock-and-key to creative energy.
@@ -167,7 +167,7 @@ export default function ValentinesPage() {
               href="/kupid"
               className="inline-block px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold hover:from-amber-400 hover:to-orange-400 transition-all"
             >
-              Explore K-KUTs \u2192
+              Explore K-KUTs →
             </Link>
           </div>
         </div>
