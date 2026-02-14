@@ -163,7 +163,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
         {/* Hero text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-[#C8A882] drop-shadow-lg tracking-wide">
+          <h1 className="text-4xl md:text-6xl font-bold text-[#5C3A1E] drop-shadow-lg tracking-wide">
             G Putnam Music
           </h1>
           <p className="text-lg md:text-xl text-[#C8A882]/80 mt-2 tracking-widest">
