@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from '@supabase/supabase-js';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -17,17 +17,17 @@ const supabase = createClient(
 // Brand hero images for rotation
 // MOBILE FIX: Only render the ACTIVE image, not all 11 stacked
 const HERO_IMAGES = [
-  '/assets/hero.jpg',                          // 0: marble/gold abstract - center
-  '/k-hero.jpg',                               // 1: portrait - top 20%
-  '/k-hero-alternate.JPG',                     // 2: sunlight outdoor - center
-  '/IMG_7429.JPG',                             // 3: studio front - center
-  '/IMG_7624.JPG',                             // 4: studio side working - center
-  '/IMG_7720.JPG',                             // 5: red blazer portrait - top 20%
-  '/assets/MC Agnst Stone Wall Knee Bent.jpg', // 8: MC stone wall portrait
-  '/assets/MC by Tree Looking Left.jpg',       // 9: MC by tree
-  '/assets/Front Pose.jpg',                    // 10: vocalist front pose
-  '/assets/Smoking 1.jpg',                     // 12: smoking portrait
-  '/hero-Music is Feeling.jpg',                // 16: hero music is feeling
+  '/assets/hero.jpg',
+  '/k-hero.jpg',
+  '/k-hero-alternate.JPG',
+  '/IMG_7429.JPG',
+  '/IMG_7624.JPG',
+  '/IMG_7720.JPG',
+  '/assets/MC Agnst Stone Wall Knee Bent.jpg',
+  '/assets/MC by Tree Looking Left.jpg',
+  '/assets/Front Pose.jpg',
+  '/assets/Smoking 1.jpg',
+  '/hero-Music is Feeling.jpg',
 ];
 
 // T20: THE TOP 20 ACTIVITIES LISTENERS STREAM TO MOST
@@ -60,9 +60,12 @@ export default function Hero() {
   const [heroIndex, setHeroIndex] = useState(0);
   // MOBILE FIX: Track fade state (only 1 image in DOM at once)
   const [heroFading, setHeroFading] = useState(false);
+  // MOBILE FIX: Ref for timeout cleanup to prevent leaks
+  const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Shuffle-based hero rotation: random order each page load
   // MOBILE FIX: Only 1 image rendered at a time, not all 11
+  // MOBILE FIX: Proper timeout cleanup prevents memory leaks
   useEffect(() => {
     const indices = Array.from({ length: HERO_IMAGES.length }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
@@ -71,18 +74,23 @@ export default function Hero() {
     }
     let pos = 0;
     setHeroIndex(indices[0]);
+
     const interval = setInterval(() => {
       setHeroFading(true);
-      setTimeout(() => {
+      fadeTimeoutRef.current = setTimeout(() => {
         pos = (pos + 1) % indices.length;
         setHeroIndex(indices[pos]);
         setHeroFading(false);
       }, 300);
     }, 8000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
+    };
   }, []);
 
-  // Memoize the active activity details to avoid repeated .find() calls
+  // Memoize the active activity details
   const activeAct = useMemo(
     () => t20.find(a => a.id === activeActivity),
     [activeActivity]
@@ -105,13 +113,10 @@ export default function Hero() {
         .limit(10);
 
       if (error) {
-        console.error('[T20] Supabase error:', error);
         setLoadingActivity(null);
         return;
       }
-
       if (!tracks || tracks.length === 0) {
-        console.warn('[T20] No tracks for:', activityId);
         setLoadingActivity(null);
         return;
       }
@@ -129,8 +134,7 @@ export default function Hero() {
       });
       window.dispatchEvent(playEvent);
       setLoadingActivity(null);
-    } catch (err) {
-      console.error('[T20] Error:', err);
+    } catch {
       setLoadingActivity(null);
     }
   }, []);
@@ -174,7 +178,7 @@ export default function Hero() {
       {/* FEATURED PLAYLISTS - 5-SLOT FP GRID */}
       <FeaturedPlaylists />
 
-      {/* T20 ACTIVITY SELECTOR */}
+      {/* T20 ACTIVITY SELECTOR - MOBILE FIX: 44px+ touch targets */}
       <section className="w-full max-w-5xl mx-auto px-4 py-10">
         <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-1">
           What Are You Doing?
@@ -183,7 +187,8 @@ export default function Hero() {
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
 
-        <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-3 justify-items-center">
+        {/* MOBILE FIX: grid-cols-4 on mobile for bigger touch targets (48px+) */}
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3 justify-items-center">
           {t20.map((act) => (
             <button
               key={act.id}
@@ -191,10 +196,17 @@ export default function Hero() {
                 setActiveActivity(act.id);
                 handleActivityClick(act.id);
               }}
-              className={`flex flex-col items-center gap-1 transition-all duration-200 hover:scale-110 ${
-                activeActivity === act.id ? 'scale-105' : ''
+              className={`flex flex-col items-center justify-center min-w-[48px] min-h-[48px] p-2 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
+                activeActivity === act.id
+                  ? 'scale-105 bg-[#C8A882]/10'
+                  : ''
+              } ${
+                loadingActivity === act.id
+                  ? 'animate-pulse'
+                  : ''
               }`}
               title={act.description}
+              aria-label={`${act.label} - ${act.description}`}
             >
               <span className="text-2xl">{act.emoji}</span>
               <span className="text-[10px] text-[#C4A882]/70 tracking-widest font-medium">
@@ -228,8 +240,8 @@ export default function Hero() {
       {/* FOOTER */}
       <Footer />
 
-      {/* Bottom padding for sticky GlobalPlayer */}
-      <div className="h-24" />
+      {/* Bottom padding for sticky GlobalPlayer + safe area */}
+      <div className="h-24 pb-[env(safe-area-inset-bottom)]" />
 
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
