@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GlobalPlayer from '@/components/GlobalPlayer';
@@ -29,6 +30,13 @@ const HERO_IMAGES: { src: string; objectPosition: string }[] = [
   { src: '/assets/Front Pose.jpg', objectPosition: 'center center' },
   { src: '/assets/Smoking 1.jpg', objectPosition: 'center center' },
 ];
+
+// V-DAY PROMO: Auto-expires after Feb 15, 2026
+function isValentinesPromo(): boolean {
+  const now = new Date();
+  const cutoff = new Date('2026-02-15T23:59:59-06:00');
+  return now <= cutoff;
+}
 
 // T20: THE TOP 20 ACTIVITIES LISTENERS STREAM TO MOST
 const t20 = [
@@ -58,14 +66,16 @@ export default function Hero() {
   const [activeActivity, setActiveActivity] = useState<string>('focus');
   const [loadingActivity, setLoadingActivity] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
-  // MOBILE FIX: Track fade state (only 1 image in DOM at once)
   const [heroFading, setHeroFading] = useState(false);
-  // MOBILE FIX: Ref for timeout cleanup to prevent leaks
   const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showVDay, setShowVDay] = useState(false);
 
-  // Shuffle-based hero rotation: random order each page load
-  // MOBILE FIX: Only 1 image rendered at a time, not all 11
-  // MOBILE FIX: Proper timeout cleanup prevents memory leaks
+  // Check V-Day promo on mount (client-side only)
+  useEffect(() => {
+    setShowVDay(isValentinesPromo());
+  }, []);
+
+  // Shuffle-based hero rotation
   useEffect(() => {
     const indices = Array.from({ length: HERO_IMAGES.length }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
@@ -88,7 +98,6 @@ export default function Hero() {
     };
   }, []);
 
-  // Memoize the active activity details
   const activeAct = useMemo(
     () => t20.find(a => a.id === activeActivity),
     [activeActivity]
@@ -127,17 +136,39 @@ export default function Hero() {
     }
   }, []);
 
-  // Get current hero image data
   const heroImage = HERO_IMAGES[heroIndex];
 
   return (
     <div className="min-h-screen bg-[#1a1207] text-[#C8A882]">
-      {/* HEADER - DARK BROWN */}
       <Header />
 
-      {/* HERO SECTION - MOBILE FIX: Only render current image, not all 11 */}
+      {/* V-DAY PROMO BANNER - auto-expires after Feb 15 */}
+      {showVDay && (
+        <div className="bg-gradient-to-r from-[#8B0000] via-[#C8102E] to-[#8B0000] py-3 px-4 text-center">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+            <span className="text-white text-sm sm:text-base font-semibold animate-pulse">
+              Last-Minute Valentine&apos;s — A Gift to Remember Forever
+            </span>
+            <span className="flex gap-2">
+              <Link
+                href="/gift"
+                className="inline-block bg-white text-[#8B0000] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-[#C8A882] hover:text-[#1a1207] transition-all min-h-[44px] flex items-center"
+              >
+                Gifts from $1.99
+              </Link>
+              <Link
+                href="/kupid"
+                className="inline-block bg-[#C8A882] text-[#1a1207] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-white transition-all min-h-[44px] flex items-center"
+              >
+                K-KUTs Locket
+              </Link>
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* HERO SECTION */}
       <section className="relative w-full h-[70vh] overflow-hidden">
-        {/* Only render the current hero image */}
         <Image
           key={heroImage.src}
           src={heroImage.src}
@@ -150,10 +181,7 @@ export default function Hero() {
           style={{ objectPosition: heroImage.objectPosition }}
           sizes="100vw"
         />
-        {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-black/40" />
-
-        {/* Hero text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
           <h1 className="text-4xl md:text-6xl font-bold tracking-wider" style={{ color: '#5C3A1E' }}>
             G Putnam Music
@@ -167,10 +195,9 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* FEATURED PLAYLISTS - 5-SLOT FP GRID */}
       <FeaturedPlaylists />
 
-      {/* T20 ACTIVITY SELECTOR - MOBILE FIX: 44px+ touch targets */}
+      {/* T20 ACTIVITY SELECTOR */}
       <section className="py-12 px-4 max-w-5xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
           What Are You Doing?
@@ -178,8 +205,6 @@ export default function Hero() {
         <p className="text-center text-[#C8A882]/60 text-sm mb-8">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
-
-        {/* MOBILE FIX: grid-cols-4 on mobile for bigger touch targets (48px+) */}
         <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-3 md:gap-4">
           {t20.map((act) => (
             <button
@@ -202,7 +227,6 @@ export default function Hero() {
           ))}
         </div>
 
-        {/* Active activity info */}
         {activeAct && (
           <div className="mt-8 text-center">
             <h3 className="text-xl font-semibold">
@@ -214,22 +238,14 @@ export default function Hero() {
           </div>
         )}
 
-        {/* Stats - clean text */}
         <div className="mt-8 text-center text-xs text-[#C8A882]/40 tracking-wider">
           1,000+ GPMC Catalog Tracks &middot; T20 Activity Boxes &middot; 2+ Hours No Repeats
         </div>
       </section>
 
-      {/* WEEKLY RACE */}
       <WeeklyRace />
-
-      {/* FOOTER */}
       <Footer />
-
-      {/* Bottom padding for sticky GlobalPlayer + safe area */}
       <div className="h-24" />
-
-      {/* GLOBAL PLAYER */}
       <GlobalPlayer />
     </div>
   );
