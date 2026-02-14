@@ -15,7 +15,7 @@ const GIFT_OPTIONS = [
     price: '$1.99',
     description: '1 digital sticker or ringtone',
     href: '/gift',
-    emoji: '\u2764\uFE0F',
+    emoji: '❤️',
     tag: 'Perfect starter',
   },
   {
@@ -23,7 +23,7 @@ const GIFT_OPTIONS = [
     price: '$4.99',
     description: '2 items + 1 grand prize entry',
     href: '/gift',
-    emoji: '\uD83D\uDC9C',
+    emoji: '💜',
     tag: 'Most gifted',
   },
   {
@@ -31,7 +31,7 @@ const GIFT_OPTIONS = [
     price: '$9.99',
     description: '3 items + unreleased clip + 3 entries',
     href: '/gift',
-    emoji: '\uD83D\uDC9C',
+    emoji: '💜',
     tag: 'Fan favorite',
   },
   {
@@ -39,7 +39,7 @@ const GIFT_OPTIONS = [
     price: '$24.99',
     description: '5 items + studio pass + merch code + 10 entries',
     href: '/gift',
-    emoji: '\uD83D\uDC9C',
+    emoji: '💜',
     tag: 'Ultimate V-Day gift',
   },
 ];
@@ -77,8 +77,8 @@ export default function ValentinesPage() {
 
         {/* Hero */}
         <section className="text-center py-16 px-4">
-          <div className="text-5xl mb-4">\u2764\uFE0F</div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#D4A017] mb-4">Valentine's Day</h1>
+          <div className="text-5xl mb-4">❤️</div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#D4A017] mb-4">Valentine{"'s"} Day</h1>
           <p className="text-neutral-300 max-w-lg mx-auto">
             Give the gift of music. From $1.99 digital gifts to patented K-KUTs lockets.
           </p>
@@ -88,7 +88,7 @@ export default function ValentinesPage() {
         {/* Heart-Tap Section */}
         <section className="max-w-4xl mx-auto px-4 pb-12">
           <h2 className="text-2xl font-bold text-center mb-2">
-            <span className="text-red-400">\u2764\uFE0F</span> Heart-Tap Gifts
+            <span className="text-red-400">❤️</span> Heart-Tap Gifts
           </h2>
           <p className="text-neutral-400 text-center text-sm mb-8">
             Digital mixed bags with exclusive stickers, ringtones, unreleased clips, and more.
@@ -115,7 +115,7 @@ export default function ValentinesPage() {
               href="/gift"
               className="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-opacity min-h-[44px]"
             >
-              Send a Heart-Tap \u2192
+              Send a Heart-Tap →
             </Link>
           </div>
         </section>
@@ -126,12 +126,12 @@ export default function ValentinesPage() {
         {/* K-KUTs Locket Section */}
         <section className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h2 className="text-2xl font-bold mb-2">
-            <span className="text-lg">\uD83D\uDD12</span> K-KUTs Sovereign Locket
+            <span className="text-lg">🔒</span> K-KUTs Sovereign Locket
           </h2>
           <p className="text-neutral-400 text-sm mb-1">
             A patented music-frequency locket. The lock-and-key to creative energy.
           </p>
-          <p className="text-xs text-[#D4A017]/50 mb-8">Patented Invention \u2022 One-Time Purchase</p>
+          <p className="text-xs text-[#D4A017]/50 mb-8">Patented Invention • One-Time Purchase</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {LOCKET_OPTIONS.map((locket) => (
               <Link
@@ -158,7 +158,7 @@ export default function ValentinesPage() {
               href="/kupid"
               className="inline-block px-6 py-3 rounded-full border border-[#D4A017]/40 text-[#D4A017] font-semibold hover:bg-[#D4A017]/10 transition-colors min-h-[44px]"
             >
-              Explore K-KUTs \u2192
+              Explore K-KUTs →
             </Link>
           </div>
         </section>
