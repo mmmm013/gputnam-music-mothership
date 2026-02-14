@@ -1,44 +1,52 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import FPPixBar from '@/components/FPPixBar';
+
+/**
+ * BIC MOBILE-FIRST LAYOUT
+ * Apple Music works on mobile. Spotify works on mobile.
+ * This MUST work on mobile. Under 1,000 tracks = zero excuses.
+ */
 
 export const metadata: Metadata = {
   title: 'G Putnam Music',
   description: 'Dream The Stream',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'G Putnam Music',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
-/**
- * SOVEREIGN RECOVERY LAYOUT
- * Restores the Light Amber/Tan Motif as the primary face.
- * Includes the Safe-Fail Window Error Boundary to prevent "wtf" crashes.
- */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+  themeColor: '#1a1207',
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Global Safety Net: Prevents single-component failures from crashing the flagship
-  if (typeof window !== "undefined") {
-    window.onerror = function() {
-      console.log("Sovereign Recovery Initialized: Preventing Client-Side Exception.");
-      return false; 
-    };
-  }
-
   return (
     <html lang="en">
-      <body 
-        className="bg-[#FFF8E1] text-[#3E2723] antialiased min-h-screen transition-colors duration-500"
-        style={{ backgroundColor: '#FFF8E1', color: '#3E2723' }}
+      <body
+        className="bg-[#1a1207] text-[#F5e6c8] antialiased min-h-screen overflow-x-hidden"
+        style={{ backgroundColor: '#1a1207', color: '#F5e6c8' }}
       >
-        {/* The Brimming Menu and Activity Logic reside within children */}
         <main className="relative w-full">
           {children}
         </main>
-                    <FPPixBar />
-                    <Analytics />
+        <FPPixBar />
+        <Analytics />
       </body>
     </html>
   );
