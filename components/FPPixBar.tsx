@@ -35,8 +35,8 @@ export default function FPPixBar() {
           setPicks(configs.filter((c: any) => c.display_name));
           setReady(true);
         }
-      } catch (err) {
-        console.error('[FPPixBar] Error:', err);
+      } catch {
+        // Silent fail in production
       }
     }
     fetchPicks();
@@ -55,7 +55,9 @@ export default function FPPixBar() {
         .not('audio_url', 'like', '%placeholder%')
         .ilike('mood', `%${moodTag}%`)
         .limit(10);
+
       let finalTracks = tracks || [];
+
       if (finalTracks.length === 0) {
         const { data: fallback } = await supabase
           .from('gpm_tracks')
@@ -67,6 +69,7 @@ export default function FPPixBar() {
           .limit(10);
         finalTracks = fallback || [];
       }
+
       if (finalTracks.length > 0) {
         const randomIdx = Math.floor(Math.random() * finalTracks.length);
         const track = finalTracks[randomIdx];
@@ -79,8 +82,8 @@ export default function FPPixBar() {
           }
         }));
       }
-    } catch (err) {
-      console.error('[FPPixBar] Play error:', err);
+    } catch {
+      // Silent fail in production
     }
   };
 
@@ -93,13 +96,15 @@ export default function FPPixBar() {
           <span className="text-[10px] font-black text-[#D4A017]/60 uppercase tracking-widest shrink-0">
             FP PIX
           </span>
+          {/* MOBILE FIX: 44px min-h touch targets, active:scale-95 feedback */}
           <div className="flex flex-wrap gap-2 justify-center flex-1">
             {picks.slice(0, 5).map((pick) => (
               <button
                 key={pick.id}
                 onClick={() => handlePickClick(pick)}
-                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#2a1f0f] hover:bg-[#D4A017]/20 border border-[#D4A017]/10 hover:border-[#D4A017]/40 transition-all hover:scale-105"
+                className="group flex items-center gap-1.5 px-3 min-h-[44px] rounded-full bg-[#2a1f0f] hover:bg-[#D4A017]/20 border border-[#D4A017]/10 hover:border-[#D4A017]/40 transition-all hover:scale-105 active:scale-95"
                 title={pick.mood_tag || pick.display_name}
+                aria-label={`Play ${pick.display_name} playlist`}
               >
                 {pick.icon && (
                   <span className="text-sm">{pick.icon}</span>
