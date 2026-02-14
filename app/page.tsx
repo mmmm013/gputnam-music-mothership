@@ -16,18 +16,18 @@ const supabase = createClient(
 
 // Brand hero images for rotation
 // MOBILE FIX: Only render the ACTIVE image, not all 11 stacked
-const HERO_IMAGES = [
-  '/assets/hero.jpg',
-  '/k-hero.jpg',
-  '/k-hero-alternate.JPG',
-  '/IMG_7429.JPG',
-  '/IMG_7624.JPG',
-  '/IMG_7720.JPG',
-  '/assets/MC Agnst Stone Wall Knee Bent.jpg',
-  '/assets/MC by Tree Looking Left.jpg',
-  '/assets/Front Pose.jpg',
-  '/assets/Smoking 1.jpg',
-  '/hero-Music is Feeling.jpg',
+// Each image has its own objectPosition for perfect framing
+const HERO_IMAGES: { src: string; objectPosition: string }[] = [
+  { src: '/assets/hero.jpg', objectPosition: 'center center' },
+  { src: '/k-hero.jpg', objectPosition: 'center center' },
+  { src: '/k-hero-alternate.JPG', objectPosition: 'center center' },
+  { src: '/IMG_7429.JPG', objectPosition: '30% center' },
+  { src: '/IMG_7624.JPG', objectPosition: '30% center' },
+  { src: '/IMG_7720.JPG', objectPosition: '30% center' },
+  { src: '/assets/MC Agnst Stone Wall Knee Bent.jpg', objectPosition: 'center center' },
+  { src: '/assets/MC by Tree Looking Left.jpg', objectPosition: 'center center' },
+  { src: '/assets/Front Pose.jpg', objectPosition: 'center center' },
+  { src: '/assets/Smoking 1.jpg', objectPosition: 'center center' },
 ];
 
 // T20: THE TOP 20 ACTIVITIES LISTENERS STREAM TO MOST
@@ -74,7 +74,6 @@ export default function Hero() {
     }
     let pos = 0;
     setHeroIndex(indices[0]);
-
     const interval = setInterval(() => {
       setHeroFading(true);
       fadeTimeoutRef.current = setTimeout(() => {
@@ -83,7 +82,6 @@ export default function Hero() {
         setHeroFading(false);
       }, 300);
     }, 8000);
-
     return () => {
       clearInterval(interval);
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
@@ -101,7 +99,6 @@ export default function Hero() {
       setLoadingActivity(activityId);
       const activity = t20.find(a => a.id === activityId);
       if (!activity) return;
-
       const { data: tracks, error } = await supabase
         .from('gpm_tracks')
         .select('*')
@@ -111,19 +108,10 @@ export default function Hero() {
         .not('audio_url', 'like', '%placeholder%')
         .eq('mood', activity.mood)
         .limit(10);
-
-      if (error) {
-        setLoadingActivity(null);
-        return;
-      }
-      if (!tracks || tracks.length === 0) {
-        setLoadingActivity(null);
-        return;
-      }
-
+      if (error) { setLoadingActivity(null); return; }
+      if (!tracks || tracks.length === 0) { setLoadingActivity(null); return; }
       const randomIndex = Math.floor(Math.random() * tracks.length);
       const track = tracks[randomIndex];
-
       const playEvent = new CustomEvent('play-track', {
         detail: {
           title: track.title || 'Unknown Track',
@@ -139,37 +127,41 @@ export default function Hero() {
     }
   }, []);
 
+  // Get current hero image data
+  const heroImage = HERO_IMAGES[heroIndex];
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#1a100e]">
+    <div className="min-h-screen bg-[#1a1207] text-[#C8A882]">
       {/* HEADER - DARK BROWN */}
       <Header />
 
       {/* HERO SECTION - MOBILE FIX: Only render current image, not all 11 */}
-      <section className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden">
+      <section className="relative w-full h-[70vh] overflow-hidden">
         {/* Only render the current hero image */}
         <Image
-          key={`hero-${heroIndex}`}
-          src={HERO_IMAGES[heroIndex]}
+          key={heroImage.src}
+          src={heroImage.src}
           alt="G Putnam Music"
           fill
-          className={`object-cover transition-opacity duration-500 ${
+          priority
+          className={`object-cover transition-opacity duration-300 ${
             heroFading ? 'opacity-0' : 'opacity-100'
           }`}
-          priority={heroIndex === 0}
+          style={{ objectPosition: heroImage.objectPosition }}
           sizes="100vw"
-          quality={75}
         />
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-black/40" />
+
         {/* Hero text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-[#5C3A1E] drop-shadow-lg tracking-wide">
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-wider" style={{ color: '#5C3A1E' }}>
             G Putnam Music
           </h1>
-          <p className="text-lg md:text-xl text-[#C8A882]/80 mt-2 tracking-widest">
+          <p className="text-lg md:text-xl mt-2 text-[#C8A882]/80 tracking-widest">
             The One Stop Song Shop
           </p>
-          <p className="text-xs md:text-sm text-[#C8A882]/60 mt-1 tracking-wider">
+          <p className="text-sm mt-1 text-[#C8A882]/60">
             Activity-Based, Context-Aware Music Intelligence
           </p>
         </div>
@@ -179,16 +171,16 @@ export default function Hero() {
       <FeaturedPlaylists />
 
       {/* T20 ACTIVITY SELECTOR - MOBILE FIX: 44px+ touch targets */}
-      <section className="w-full max-w-5xl mx-auto px-4 py-10">
-        <h2 className="text-2xl font-bold text-center text-[#C8A882] mb-1">
+      <section className="py-12 px-4 max-w-5xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
           What Are You Doing?
         </h2>
-        <p className="text-center text-sm text-[#C4A882]/60 mb-6">
+        <p className="text-center text-[#C8A882]/60 text-sm mb-8">
           T20 — Top 20 Activities Listeners Stream To Most
         </p>
 
         {/* MOBILE FIX: grid-cols-4 on mobile for bigger touch targets (48px+) */}
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3 justify-items-center">
+        <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-3 md:gap-4">
           {t20.map((act) => (
             <button
               key={act.id}
@@ -197,40 +189,34 @@ export default function Hero() {
                 handleActivityClick(act.id);
               }}
               className={`flex flex-col items-center justify-center min-w-[48px] min-h-[48px] p-2 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
-                activeActivity === act.id
-                  ? 'scale-105 bg-[#C8A882]/10'
-                  : ''
+                activeActivity === act.id ? 'scale-105 bg-[#C8A882]/10' : ''
               } ${
-                loadingActivity === act.id
-                  ? 'animate-pulse'
-                  : ''
+                loadingActivity === act.id ? 'animate-pulse' : ''
               }`}
               title={act.description}
               aria-label={`${act.label} - ${act.description}`}
             >
               <span className="text-2xl">{act.emoji}</span>
-              <span className="text-[10px] text-[#C4A882]/70 tracking-widest font-medium">
-                {act.label}
-              </span>
+              <span className="text-[10px] mt-1 tracking-wider">{act.label}</span>
             </button>
           ))}
         </div>
 
         {/* Active activity info */}
         {activeAct && (
-          <div className="mt-6 text-center">
-            <h3 className="text-sm font-semibold text-[#C8A882]">
+          <div className="mt-8 text-center">
+            <h3 className="text-xl font-semibold">
               {activeAct.label} — {activeAct.description}
             </h3>
-            <p className="text-xs text-[#C4A882]/50 mt-1">
-              Streaming tracks matched to: <span className="text-[#DA8917]">{activeAct.mood}</span> vibe
+            <p className="text-sm text-[#C8A882]/60 mt-1">
+              Streaming tracks matched to: <span className="text-[#C8A882]">{activeAct.mood}</span> vibe
             </p>
           </div>
         )}
 
         {/* Stats - clean text */}
-        <div className="mt-8 text-center text-xs text-[#C4A882]/40 tracking-widest">
-          1,000+ GPMC Catalog Tracks &nbsp;&middot;&nbsp; T20 Activity Boxes &nbsp;&middot;&nbsp; 2+ Hours No Repeats
+        <div className="mt-8 text-center text-xs text-[#C8A882]/40 tracking-wider">
+          1,000+ GPMC Catalog Tracks &middot; T20 Activity Boxes &middot; 2+ Hours No Repeats
         </div>
       </section>
 
@@ -241,7 +227,7 @@ export default function Hero() {
       <Footer />
 
       {/* Bottom padding for sticky GlobalPlayer + safe area */}
-      <div className="h-24 pb-[env(safe-area-inset-bottom)]" />
+      <div className="h-24" />
 
       {/* GLOBAL PLAYER */}
       <GlobalPlayer />
