@@ -70,6 +70,15 @@ export default function Hero() {
   const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showVDay, setShowVDay] = useState(false);
 
+  // MOBILE PERF: Detect mobile for lighter rendering
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   // Check V-Day promo on mount (client-side only)
   useEffect(() => {
     setShowVDay(isValentinesPromo());
@@ -84,6 +93,7 @@ export default function Hero() {
     }
     let pos = 0;
     setHeroIndex(indices[0]);
+
     const interval = setInterval(() => {
       setHeroFading(true);
       fadeTimeoutRef.current = setTimeout(() => {
@@ -92,6 +102,7 @@ export default function Hero() {
         setHeroFading(false);
       }, 300);
     }, 8000);
+
     return () => {
       clearInterval(interval);
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
@@ -108,6 +119,7 @@ export default function Hero() {
       setLoadingActivity(activityId);
       const activity = t20.find(a => a.id === activityId);
       if (!activity) return;
+
       const { data: tracks, error } = await supabase
         .from('gpm_tracks')
         .select('*')
@@ -117,10 +129,20 @@ export default function Hero() {
         .not('audio_url', 'like', '%placeholder%')
         .eq('mood', activity.mood)
         .limit(10);
-      if (error) { setLoadingActivity(null); return; }
-      if (!tracks || tracks.length === 0) { setLoadingActivity(null); return; }
+
+      if (error) {
+        setLoadingActivity(null);
+        return;
+      }
+
+      if (!tracks || tracks.length === 0) {
+        setLoadingActivity(null);
+        return;
+      }
+
       const randomIndex = Math.floor(Math.random() * tracks.length);
       const track = tracks[randomIndex];
+
       const playEvent = new CustomEvent('play-track', {
         detail: {
           title: track.title || 'Unknown Track',
@@ -138,115 +160,83 @@ export default function Hero() {
 
   const heroImage = HERO_IMAGES[heroIndex];
 
+  // MOBILE PERF: Show only top 5 T20 activities on mobile
+  const displayT20 = isMobile ? t20.slice(0, 5) : t20;
+
   return (
-    <div className="min-h-screen bg-[#1a1207] text-[#C8A882]">
+    <>
       <Header />
+      <GlobalPlayer />
 
       {/* V-DAY PROMO BANNER - auto-expires after Feb 15 */}
       {showVDay && (
-        <div className="bg-gradient-to-r from-[#8B0000] via-[#C8102E] to-[#8B0000] py-3 px-4 text-center">
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-            <span className="text-white text-sm sm:text-base font-semibold animate-pulse">
-              HISTORIC Valentine&apos;s — MAKES HISTORY — Patent-Pending Inventions
-            </span>
-            <span className="flex gap-2">
-              <Link
-                href="/gift"
-                className="inline-block bg-white text-[#8B0000] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-[#C8A882] hover:text-[#1a1207] transition-all min-h-[44px] flex items-center"
-              >
-                2 New Inventions
-              </Link>
-              <Link
-                href="/kupid"
-                className="inline-block bg-[#C8A882] text-[#1a1207] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-white transition-all min-h-[44px] flex items-center"
-              >
-                KUPID Locket™
-              </Link>
-            </span>
-          </div>
-        </div>
+        <Link href="/kupid" className="block bg-gradient-to-r from-pink-600 via-red-500 to-pink-600 text-white text-center py-2 px-4 text-sm font-medium hover:from-pink-500 hover:via-red-400 hover:to-pink-500 transition-all">
+          <span className="animate-pulse">💝</span> HISTORIC Valentine's — MAKES HISTORY — Patent-Pending Inventions <span className="hidden sm:inline">💕 2 New Inventions 💕</span> KUPID Locket™ <span className="animate-pulse">💝</span>
+        </Link>
       )}
 
       {/* HERO SECTION */}
-      <section className="relative w-full h-[70vh] overflow-hidden">
+      <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
         <Image
           key={heroImage.src}
           src={heroImage.src}
           alt="G Putnam Music"
           fill
           priority
-          className={`object-cover transition-opacity duration-300 ${
-            heroFading ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`object-cover transition-opacity duration-300 ${heroFading ? 'opacity-0' : 'opacity-100'}`}
           style={{ objectPosition: heroImage.objectPosition }}
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-wider" style={{ color: '#5C3A1E' }}>
-            G Putnam Music
-          </h1>
-          <p className="text-lg md:text-xl mt-2 text-[#C8A882]/80 tracking-widest">
-            The One Stop Song Shop
-          </p>
-          <p className="text-sm mt-1 text-[#C8A882]/60">
-            Activity-Based, Context-Aware Music Intelligence
-          </p>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
+        <div className="absolute bottom-8 left-8 right-8 text-white">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg">G Putnam Music</h1>
+          <p className="mt-2 text-lg md:text-xl text-white/90 drop-shadow">The One Stop Song Shop</p>
+          <p className="mt-1 text-sm md:text-base text-[#C8A882] drop-shadow">Activity-Based, Context-Aware Music Intelligence</p>
+        </div>
+      </section>
+
+      {/* T20 ACTIVITY SELECTOR */}
+      <section className="bg-black py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">What Are You Doing?</h2>
+          <p className="text-[#C8A882] mb-6">T20 — Top {isMobile ? '5' : '20'} Activities Listeners Stream To Most</p>
+          
+          <div className="flex flex-wrap gap-3 justify-center">
+            {displayT20.map((act) => (
+              <button
+                key={act.id}
+                onClick={() => {
+                  setActiveActivity(act.id);
+                  handleActivityClick(act.id);
+                }}
+                className={`flex flex-col items-center justify-center min-w-[48px] min-h-[48px] p-2 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
+                  activeActivity === act.id ? 'scale-105 bg-[#C8A882]/10' : ''
+                } ${
+                  loadingActivity === act.id ? 'animate-pulse' : ''
+                }`}
+                title={act.description}
+                aria-label={`${act.label} - ${act.description}`}
+              >
+                <span className="text-2xl">{act.emoji}</span>
+                <span className="text-xs text-white/70 mt-1">{act.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {activeAct && (
+            <div className="mt-6 text-center">
+              <h3 className="text-xl text-white">{activeAct.label} — {activeAct.description}</h3>
+              <p className="text-white/60 mt-1">Streaming tracks matched to: <span className="text-[#C8A882]">{activeAct.mood}</span> vibe</p>
+            </div>
+          )}
+
+          <p className="text-center text-white/40 text-sm mt-6">1,000+ GPMC Catalog Tracks · T20 Activity Boxes · 2+ Hours No Repeats</p>
         </div>
       </section>
 
       <FeaturedPlaylists />
-
-      {/* T20 ACTIVITY SELECTOR */}
-      <section className="py-12 px-4 max-w-5xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
-          What Are You Doing?
-        </h2>
-        <p className="text-center text-[#C8A882]/60 text-sm mb-8">
-          T20 — Top 20 Activities Listeners Stream To Most
-        </p>
-        <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-3 md:gap-4">
-          {t20.map((act) => (
-            <button
-              key={act.id}
-              onClick={() => {
-                setActiveActivity(act.id);
-                handleActivityClick(act.id);
-              }}
-              className={`flex flex-col items-center justify-center min-w-[48px] min-h-[48px] p-2 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95 ${
-                activeActivity === act.id ? 'scale-105 bg-[#C8A882]/10' : ''
-              } ${
-                loadingActivity === act.id ? 'animate-pulse' : ''
-              }`}
-              title={act.description}
-              aria-label={`${act.label} - ${act.description}`}
-            >
-              <span className="text-2xl">{act.emoji}</span>
-              <span className="text-[10px] mt-1 tracking-wider">{act.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {activeAct && (
-          <div className="mt-8 text-center">
-            <h3 className="text-xl font-semibold">
-              {activeAct.label} — {activeAct.description}
-            </h3>
-            <p className="text-sm text-[#C8A882]/60 mt-1">
-              Streaming tracks matched to: <span className="text-[#C8A882]">{activeAct.mood}</span> vibe
-            </p>
-          </div>
-        )}
-
-        <div className="mt-8 text-center text-xs text-[#C8A882]/40 tracking-wider">
-          1,000+ GPMC Catalog Tracks &middot; T20 Activity Boxes &middot; 2+ Hours No Repeats
-        </div>
-      </section>
-
       <WeeklyRace />
       <Footer />
-      <div className="h-24" />
-      <GlobalPlayer />
-    </div>
+    </>
   );
 }
