@@ -78,11 +78,11 @@ export default function ValentinesPage() {
         {/* Hero */}
         <section className="text-center py-16 px-4">
           <div className="text-5xl mb-4">❤️</div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#D4A017] mb-4">Valentine{"'s"} Day</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#D4A017] mb-4">Valentine&apos;s Day</h1>
           <p className="text-neutral-300 max-w-lg mx-auto">
             Give the gift of music. From $1.99 digital gifts to patented K-KUTs lockets.
           </p>
-          <p className="text-sm text-[#D4A017]/60 mt-3">G Putnam Music \u2022 Limited Time</p>
+          <p className="text-sm text-[#D4A017]/60 mt-3">G Putnam Music • Limited Time</p>
         </section>
 
         {/* Heart-Tap Section */}
