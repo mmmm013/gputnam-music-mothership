@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Pause, Play, AlertCircle, Radio } from 'lucide-react';
+import { Pause, Play, AlertCircle, Radio, Volume2, VolumeX } from 'lucide-react';
 
 /**
  * GLOBAL PLAYER - BIC MC BOT Streaming Player
  * DEPENDABILITY: Proper audio lifecycle, no leaked resources
  * QUALITY: Error handling with user-friendly messages
- * SATISFACTION: Smooth play/pause, loading states, mood colors
+ * SATISFACTION: Smooth play/pause, loading states, mood colors, VOLUME control
+ * SINGLE-SONG: Dispatches 'stop-all-audio' so only ONE player plays at a time
  */
 
 // GPM Master Vault - Standardized bucket URL for all audio
@@ -35,6 +36,8 @@ export default function GlobalPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [volume, setVolume] = useState(0.8);
+  const [isMuted, setIsMuted] = useState(false);
   const [track, setTrack] = useState({
     title: "Pick an Activity",
     vocalist: "Click any T20 box or GPM PIX to stream",
@@ -43,6 +46,13 @@ export default function GlobalPlayer() {
   });
   const [pendingPlay, setPendingPlay] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Keep volume in sync with audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = isMuted ? 0 : volume;
+  }, [volume, isMuted]);
 
   // Listen for track selection events from other components
   useEffect(() => {
@@ -70,9 +80,20 @@ export default function GlobalPlayer() {
       });
     };
 
+    // Listen for stop-all-audio from FeaturedPlaylists
+    const handleStopAll = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      setIsPlaying(false);
+    };
+
     window.addEventListener('play-track', handleTrackSelect as EventListener);
+    window.addEventListener('fp-play', handleStopAll);
+
     return () => {
       window.removeEventListener('play-track', handleTrackSelect as EventListener);
+      window.removeEventListener('fp-play', handleStopAll);
       // DEPENDABILITY: Cleanup audio on unmount
       if (audioRef.current) {
         audioRef.current.pause();
@@ -92,6 +113,9 @@ export default function GlobalPlayer() {
       setIsLoading(false);
       if (pendingPlay) {
         setPendingPlay(false);
+        // SINGLE-SONG: Stop all other audio before we play
+        window.dispatchEvent(new CustomEvent('stop-all-audio', { detail: { source: 'global' } }));
+        audio.volume = isMuted ? 0 : volume;
         audio.play()
           .then(() => setIsPlaying(true))
           .catch(() => {
@@ -143,6 +167,7 @@ export default function GlobalPlayer() {
     if (!audio || !track.url) return;
 
     if (isPlaying) {
+      audio.volume = isMuted ? 0 : volume;
       audio.play().catch(() => {
         setError('Tap play to start streaming');
         setIsPlaying(false);
@@ -152,99 +177,147 @@ export default function GlobalPlayer() {
     }
   }, [isPlaying]);
 
+  // Listen for stop-all-audio from other players
+  useEffect(() => {
+    const handleStopAll = (e: CustomEvent) => {
+      // Don't stop ourselves
+      if (e.detail?.source === 'global') return;
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      setIsPlaying(false);
+    };
+
+    window.addEventListener('stop-all-audio', handleStopAll as EventListener);
+    return () => {
+      window.removeEventListener('stop-all-audio', handleStopAll as EventListener);
+    };
+  }, []);
+
   const togglePlay = () => {
     if (!track.url) {
       setError('No track selected');
       return;
     }
     setError('');
+    if (!isPlaying) {
+      // SINGLE-SONG: Stop all other audio before we play
+      window.dispatchEvent(new CustomEvent('stop-all-audio', { detail: { source: 'global' } }));
+    }
     setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVol = parseFloat(e.target.value);
+    setVolume(newVol);
+    if (newVol > 0 && isMuted) {
+      setIsMuted(false);
+    }
   };
 
   const hasTrack = track.url !== '';
   const activeColor = track.moodColor === "#8B4513" ? "#C8A882" : track.moodColor;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#1a1206] border-t border-[#C8A882]/20">
+    <div className="w-full" role="region" aria-label="MC BOT Streaming Player">
       {/* Error Banner */}
       {error && (
-        <div className="px-4 py-1 bg-red-900/80 text-red-200 text-xs flex items-center gap-2">
-          <AlertCircle size={12} />
-          {error}
+        <div className="flex items-center gap-2 px-4 py-2 bg-red-900/40 border border-red-500/30 rounded-t-xl">
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <span className="text-red-300 text-sm">{error}</span>
         </div>
       )}
 
       {/* MC BOT Player Bar */}
-      <div className="flex items-center px-4 py-2 gap-3">
+      <div
+        className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all"
+        style={{
+          background: `linear-gradient(135deg, ${activeColor}15 0%, #1a0f00 100%)`,
+          borderColor: `${activeColor}30`
+        }}
+      >
         {/* MC BOT Identity Block */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="relative">
-            <Radio
-              className="w-6 h-6 transition-colors duration-500"
-              style={{ color: activeColor }}
-            />
-            {(isPlaying || isLoading) && (
-              <span
-                className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full animate-pulse"
-                style={{ backgroundColor: activeColor }}
-              />
-            )}
-          </div>
-          <div className="flex flex-col">
-            <span
-              className="text-sm font-black uppercase tracking-[0.2em] transition-colors duration-500"
-              style={{ color: activeColor }}
-            >
-              MC BOT
-            </span>
-            <span className="text-[10px] text-[#F5e6c8]/40 font-medium tracking-wide">
+        <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
+          {(isPlaying || isLoading) && (
+            <Radio className="w-4 h-4 animate-pulse" style={{ color: activeColor }} />
+          )}
+          <div>
+            <span className="text-[10px] font-bold tracking-widest" style={{ color: activeColor }}>MC BOT</span>
+            <span className="text-[9px] text-neutral-500 block">
               {isPlaying ? 'NOW STREAMING' : isLoading ? 'LOADING' : 'READY'}
             </span>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="w-px h-10 bg-[#F5e6c8]/10 flex-shrink-0" />
+        <div className="w-px h-8 bg-neutral-700/50 flex-shrink-0" />
 
         {/* Track Info */}
-        <div className="flex flex-col min-w-0 flex-1">
-          <h4
-            className="text-sm font-bold uppercase tracking-widest truncate transition-colors duration-500"
-            style={{ color: hasTrack ? activeColor : '#D7CCC8' }}
-          >
-            {track.title}
-          </h4>
-          <p className="text-xs text-[#F5e6c8]/50 truncate">
-            {track.vocalist}
-          </p>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-white truncate">{track.title}</h4>
+          <p className="text-xs text-neutral-400 truncate">{track.vocalist}</p>
           {isLoading && (
-            <p className="text-[10px] text-yellow-400 mt-0.5 animate-pulse">Loading audio...</p>
+            <p className="text-[10px] text-neutral-500 animate-pulse">Loading audio...</p>
           )}
         </div>
+
+        {/* Volume Control */}
+        {hasTrack && (
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              onClick={toggleMute}
+              className="p-1 rounded-full hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted || volume === 0 ? (
+                <VolumeX className="w-4 h-4 text-neutral-400" />
+              ) : (
+                <Volume2 className="w-4 h-4" style={{ color: activeColor }} />
+              )}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolumeChange}
+              className="w-16 h-1 rounded-full appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, ${activeColor} ${(isMuted ? 0 : volume) * 100}%, #555 ${(isMuted ? 0 : volume) * 100}%)`
+              }}
+              aria-label="Volume"
+            />
+          </div>
+        )}
 
         {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
-          disabled={!track.url && !isLoading}
-          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 transition-all text-[#1a1206] disabled:opacity-30 disabled:cursor-not-allowed flex-shrink-0"
-          style={{ backgroundColor: activeColor }}
+          disabled={!hasTrack || isLoading}
+          className="p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+          style={{
+            background: hasTrack ? activeColor : '#555',
+            opacity: isLoading ? 0.5 : 1
+          }}
           aria-label={isPlaying ? 'Pause' : 'Play'}
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-[#1a1206] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : isPlaying ? (
-            <Pause size={20} fill="currentColor" />
+            <Pause className="w-5 h-5 text-white" fill="white" />
           ) : (
-            <Play size={20} fill="currentColor" className="ml-1" />
+            <Play className="w-5 h-5 text-white" fill="white" />
           )}
         </button>
       </div>
 
       {/* Hidden audio element - DEPENDABILITY: preload none for mobile Safari */}
-      <audio
-        ref={audioRef}
-        preload="none"
-      />
+      <audio ref={audioRef} preload="none" />
     </div>
   );
 }
