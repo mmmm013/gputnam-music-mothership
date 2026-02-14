@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GIFT_TIERS, type TierConfig, type GiftTier, initiateCheckout} from '@/lib/gift-protocol';
 import GiftTierCard from '@/components/GiftTierCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
+import Link from 'next/link';
 
 export default function GiftPage() {
   const [selectedTier, setSelectedTier] = useState<TierConfig | null>(null);
@@ -16,6 +16,14 @@ export default function GiftPage() {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isVDay, setIsVDay] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    const m = now.getMonth();
+    const d = now.getDate();
+    setIsVDay(m === 0 && d >= 20 || m === 1 && d <= 16);
+  }, []);
 
   const handleCheckout = async () => {
     if (!selectedTier) return;
@@ -41,9 +49,9 @@ export default function GiftPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
-            <Header />
+          <Header />
       {/* Hero */}
-      <section className="pt-20 pb-12 px-4 text-center">
+      <section className="pt-20 pb-6 px-4 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
           <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-red-500 bg-clip-text text-transparent">
             Heart-Tap
@@ -53,6 +61,25 @@ export default function GiftPage() {
           Tap to support. Get a Digital Mixed Bag of exclusive gifts.
         </p>
       </section>
+
+      {/* V-Day Banner */}
+      {isVDay && (
+        <section className="px-4 pb-8">
+          <div className="max-w-2xl mx-auto bg-gradient-to-r from-red-900/40 via-pink-900/30 to-red-900/40 border border-red-500/30 rounded-2xl p-6 text-center">
+            <p className="text-3xl mb-2">❤️</p>
+            <h2 className="text-xl font-bold text-red-300 mb-2">Valentine&apos;s Day Special</h2>
+            <p className="text-white/70 text-sm mb-3">
+              Send the gift of music this Valentine&apos;s Day. Every Heart-Tap includes exclusive digital gifts and a personal message.
+            </p>
+            <Link
+              href="/valentines"
+              className="inline-block px-5 py-2 rounded-full bg-red-500/20 border border-red-400/40 text-red-300 text-sm font-medium hover:bg-red-500/30 transition-all"
+            >
+              See Valentine&apos;s Gifts →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Tier Grid */}
       <section className="max-w-3xl mx-auto px-4 pb-12">
@@ -70,14 +97,14 @@ export default function GiftPage() {
 
       {/* Donor Form */}
       {selectedTier && (
-        <section className="max-w-md mx-auto px-4 pb-16">
+        <section className="max-w-lg mx-auto px-4 pb-16">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-center">
+            <h2 className="text-center text-lg font-semibold">
               {selectedTier.emoji} {selectedTier.displayName} - {selectedTier.label}
             </h2>
 
             {/* Anonymous Toggle */}
-            <label className="flex items-center gap-2 text-sm text-white/70 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-white/60">
               <input
                 type="checkbox"
                 checked={isAnonymous}
@@ -114,7 +141,7 @@ export default function GiftPage() {
             />
 
             <textarea
-              placeholder="Leave a message (optional)"
+              placeholder={isVDay ? "Happy Valentine's Day! \u2764\ufe0f" : "Leave a message (optional)"}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
@@ -140,7 +167,7 @@ export default function GiftPage() {
         </section>
       )}
 
-          <Footer />      
+      <Footer />
     </main>
   );
 }
