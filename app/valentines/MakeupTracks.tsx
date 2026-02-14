@@ -180,7 +180,7 @@ export default function MakeupTracks() {
   return (
     <section className="max-w-4xl mx-auto px-4 py-12 text-center">
       <h2 className="text-2xl font-bold mb-2">
-        <span className="text-pink-400">{"\u2764\uFE0F"}</span> Makeup Tracks
+        <span className="text-pink-400">❤️</span> Makeup Tracks
       </h2>
       <p className="text-neutral-400 text-sm mb-8">
         Fresh singles perfect for your Valentine. Preview and fall in love.
