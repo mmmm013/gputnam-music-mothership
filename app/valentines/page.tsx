@@ -63,7 +63,7 @@ const LOCKET_OPTIONS = [
   {
     title: 'Historic Locket',
     price: '$3,300',
-    description: 'Full creative archive. A patented invention with legacy value.',
+    description: 'Makes history. 2 patent-pending inventions. 3 trademarks. The ultimate emotional artifact.',
     href: '/kupid',
     badge: 'HISTORIC',
   },
@@ -72,118 +72,122 @@ const LOCKET_OPTIONS = [
 export default function ValentinesPage() {
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-[#0d0800] text-white">
+      <main className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black text-white">
+        <Header />
 
         {/* Hero */}
-        <section className="text-center py-16 px-4">
-          <div className="text-5xl mb-4">❤️</div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#D4A017] mb-4">Valentine&apos;s Day</h1>
-          <p className="text-neutral-300 max-w-lg mx-auto">
+        <section className="pt-16 pb-8 px-4 text-center">
+          <p className="text-5xl mb-4">&#10084;&#65039;</p>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-red-400 via-pink-400 to-rose-400 bg-clip-text text-transparent">
+            Valentine&apos;s Day
+          </h1>
+          <p className="text-white/60 max-w-md mx-auto">
             Give the gift of music. From $1.99 digital gifts to patented K-KUTs lockets.
           </p>
-          <p className="text-sm text-[#D4A017]/60 mt-3">G Putnam Music • Limited Time</p>
+          <p className="text-white/40 text-sm mt-2">G Putnam Music &bull; Limited Time</p>
         </section>
 
         {/* Heart-Tap Section */}
-        <section className="max-w-4xl mx-auto px-4 pb-12">
+        <section className="px-4 pb-8">
           <h2 className="text-2xl font-bold text-center mb-2">
-            <span className="text-red-400">❤️</span> Heart-Tap Gifts
+            <span>&#10084;&#65039;</span> Heart-Tap Gifts
           </h2>
-          <p className="text-neutral-400 text-center text-sm mb-8">
+          <p className="text-center text-white/50 text-sm mb-6">
             Digital mixed bags with exclusive stickers, ringtones, unreleased clips, and more.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
             {GIFT_OPTIONS.map((gift) => (
-              <Link
-                key={gift.title}
-                href={gift.href}
-                className="bg-[#1a0f00] border border-[#8B4513]/20 rounded-xl p-4 hover:border-[#D4A017]/40 transition-all hover:scale-[1.02] active:scale-95"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xl">{gift.emoji}</span>
-                  <span className="text-[10px] text-[#D4A017]/60">{gift.tag}</span>
+              <Link key={gift.title} href={gift.href} className="group block">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <span>{gift.emoji}</span>
+                    <span className="text-[10px] uppercase tracking-wider text-white/40">{gift.tag}</span>
+                  </div>
+                  <h3 className="font-semibold text-white text-sm">{gift.title}</h3>
+                  <p className="text-amber-400 font-bold">{gift.price}</p>
+                  <p className="text-white/40 text-xs mt-1">{gift.description}</p>
                 </div>
-                <h3 className="font-bold text-white text-sm">{gift.title}</h3>
-                <p className="text-[#D4A017] font-bold text-lg">{gift.price}</p>
-                <p className="text-neutral-500 text-xs mt-1">{gift.description}</p>
               </Link>
             ))}
           </div>
-          <div className="text-center mt-8">
+          <div className="text-center mt-6">
             <Link
               href="/gift"
-              className="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-opacity min-h-[44px]"
+              className="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold hover:from-red-400 hover:to-pink-400 transition-all"
             >
-              Send a Heart-Tap →
+              Send a Heart-Tap &rarr;
             </Link>
           </div>
         </section>
 
         {/* Divider */}
-        <div className="border-t border-[#D4A017]/10 max-w-2xl mx-auto" />
+        <div className="max-w-md mx-auto border-t border-white/10 my-8" />
 
         {/* K-KUTs Locket Section */}
-        <section className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-2">
-            <span className="text-lg">🔒</span> K-KUTs Sovereign Locket
+        <section className="px-4 pb-8">
+          <h2 className="text-2xl font-bold text-center mb-1">
+            <span>&#128274;</span> K-KUTs Sovereign Locket
           </h2>
-          <p className="text-neutral-400 text-sm mb-1">
-            A patented music-frequency locket. The lock-and-key to creative energy.
+          <p className="text-center text-white/50 text-sm mb-1">
+            A patent-pending music-frequency locket. The lock-and-key to creative energy.
           </p>
-          <p className="text-xs text-[#D4A017]/50 mb-8">Patented Invention • One-Time Purchase</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <p className="text-center text-white/30 text-xs mb-6">
+            Patent-Pending &bull; 2 Inventions &bull; 3 Trademarks &bull; One-Time Purchase
+          </p>
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
             {LOCKET_OPTIONS.map((locket) => (
-              <Link
-                key={locket.title}
-                href={locket.href}
-                className={`bg-[#1a0f00] border rounded-xl p-6 text-left hover:scale-[1.02] active:scale-95 transition-all relative ${
-                  locket.featured ? 'border-[#D4A017]/60' : 'border-[#8B4513]/20 hover:border-[#D4A017]/40'
-                }`}
-              >
-                {locket.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#D4A017] text-black text-[10px] font-bold rounded-full">
-                    MOST POPULAR
-                  </div>
-                )}
-                <p className="text-[10px] font-bold text-[#D4A017]/60 tracking-wider mb-1">{locket.badge}</p>
-                <h3 className="font-bold text-white">{locket.title}</h3>
-                <p className="text-[#D4A017] font-bold text-2xl my-1">{locket.price}</p>
-                <p className="text-neutral-500 text-xs">{locket.description}</p>
+              <Link key={locket.title} href={locket.href} className="group block">
+                <div className={`relative rounded-xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors ${
+                  locket.badge === 'HISTORIC' ? 'ring-1 ring-yellow-400/40 bg-gradient-to-b from-yellow-900/10 to-transparent' : ''
+                }`}>
+                  {locket.featured && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-orange-500 text-black">
+                      MOST POPULAR
+                    </div>
+                  )}
+                  {locket.badge === 'HISTORIC' && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-yellow-400 text-black">
+                      MAKES HISTORY
+                    </div>
+                  )}
+                  <span className="text-[10px] font-bold tracking-widest text-amber-400">{locket.badge}</span>
+                  <h3 className="font-semibold text-white mt-1">{locket.title}</h3>
+                  <p className="text-amber-400 font-bold text-xl">{locket.price}</p>
+                  <p className="text-white/50 text-sm mt-1">{locket.description}</p>
+                </div>
               </Link>
             ))}
           </div>
-          <div className="mt-8">
+          <div className="text-center mt-6">
             <Link
               href="/kupid"
-              className="inline-block px-6 py-3 rounded-full border border-[#D4A017]/40 text-[#D4A017] font-semibold hover:bg-[#D4A017]/10 transition-colors min-h-[44px]"
+              className="inline-block px-8 py-3 rounded-full border border-amber-400/40 text-amber-400 font-bold hover:bg-amber-400/10 transition-all"
             >
-              Explore K-KUTs →
+              Explore K-KUTs &rarr;
             </Link>
           </div>
         </section>
 
         {/* Makeup Tracks Section */}
-        <div className="border-t border-[#D4A017]/10 max-w-2xl mx-auto" />
         <MakeupTracks />
 
         {/* CTA */}
-        <section className="max-w-xl mx-auto px-4 py-12 text-center">
-          <div className="bg-[#1a0f00] border border-[#8B4513]/20 rounded-2xl p-8">
-            <h2 className="text-xl font-bold mb-2">Not sure what to give?</h2>
-            <p className="text-neutral-400 text-sm mb-6">
+        <section className="px-4 pb-16">
+          <div className="max-w-lg mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+            <h2 className="text-xl font-bold text-white mb-2">Not sure what to give?</h2>
+            <p className="text-white/50 text-sm mb-6">
               Start with a Heart-Tap at $1.99. Every gift includes exclusive digital content and a personal message.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href="/gift"
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:opacity-90 transition-opacity min-h-[44px]"
+                className="px-6 py-3 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold hover:from-red-400 hover:to-pink-400 transition-all"
               >
                 Heart-Tap from $1.99
               </Link>
               <Link
                 href="/kupid"
-                className="px-6 py-3 rounded-full border border-[#D4A017]/40 text-[#D4A017] font-semibold hover:bg-[#D4A017]/10 transition-colors min-h-[44px]"
+                className="px-6 py-3 rounded-full border border-amber-400/40 text-amber-400 font-bold hover:bg-amber-400/10 transition-all"
               >
                 K-KUTs Lockets from $333
               </Link>
@@ -191,8 +195,8 @@ export default function ValentinesPage() {
           </div>
         </section>
 
+        <Footer />
       </main>
-      <Footer />
     </>
   );
 }
