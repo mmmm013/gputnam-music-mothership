@@ -54,6 +54,7 @@ function TrackCard({ track, index }: { track: MakeupTrack; index: number }) {
         setIsPlaying(false);
       }
     };
+
     const handleGlobalPlay = () => {
       const audio = audioRef.current;
       if (audio && isPlaying) {
@@ -61,6 +62,7 @@ function TrackCard({ track, index }: { track: MakeupTrack; index: number }) {
         setIsPlaying(false);
       }
     };
+
     const handleFPPlay = () => {
       const audio = audioRef.current;
       if (audio && isPlaying) {
@@ -68,9 +70,11 @@ function TrackCard({ track, index }: { track: MakeupTrack; index: number }) {
         setIsPlaying(false);
       }
     };
+
     window.addEventListener('stop-all-audio', handleStopAll as EventListener);
     window.addEventListener('play-track', handleGlobalPlay);
     window.addEventListener('fp-play', handleFPPlay as EventListener);
+
     return () => {
       window.removeEventListener('stop-all-audio', handleStopAll as EventListener);
       window.removeEventListener('play-track', handleGlobalPlay);
@@ -81,14 +85,23 @@ function TrackCard({ track, index }: { track: MakeupTrack; index: number }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => { setIsPlaying(false); setCurrentTime(0); };
-    const onErr = () => { setError('Track unavailable'); setIsPlaying(false); };
+    const onEnd = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+    const onErr = () => {
+      setError('Track unavailable');
+      setIsPlaying(false);
+    };
+
     audio.addEventListener('timeupdate', onTime);
     audio.addEventListener('loadedmetadata', onMeta);
     audio.addEventListener('ended', onEnd);
     audio.addEventListener('error', onErr);
+
     return () => {
       audio.removeEventListener('timeupdate', onTime);
       audio.removeEventListener('loadedmetadata', onMeta);
@@ -102,7 +115,10 @@ function TrackCard({ track, index }: { track: MakeupTrack; index: number }) {
     if (!audio) return;
     if (isPlaying) {
       setError('');
-      audio.play().catch(() => { setIsPlaying(false); setError('Playback failed'); });
+      audio.play().catch(() => {
+        setIsPlaying(false);
+        setError('Playback failed');
+      });
     } else {
       audio.pause();
     }
@@ -164,7 +180,7 @@ export default function MakeupTracks() {
   return (
     <section className="max-w-4xl mx-auto px-4 py-12 text-center">
       <h2 className="text-2xl font-bold mb-2">
-        <span className="text-pink-400">\u2764\uFE0F</span> Makeup Tracks
+        <span className="text-pink-400">{"\u2764\uFE0F"}</span> Makeup Tracks
       </h2>
       <p className="text-neutral-400 text-sm mb-8">
         Fresh singles perfect for your Valentine. Preview and fall in love.
