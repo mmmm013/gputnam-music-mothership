@@ -147,20 +147,20 @@ export default function Hero() {
         <div className="bg-gradient-to-r from-[#8B0000] via-[#C8102E] to-[#8B0000] py-3 px-4 text-center">
           <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
             <span className="text-white text-sm sm:text-base font-semibold animate-pulse">
-              Last-Minute Valentine&apos;s — A Gift to Remember Forever
+              HISTORIC Valentine&apos;s — MAKES HISTORY — Patent-Pending Inventions
             </span>
             <span className="flex gap-2">
               <Link
                 href="/gift"
                 className="inline-block bg-white text-[#8B0000] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-[#C8A882] hover:text-[#1a1207] transition-all min-h-[44px] flex items-center"
               >
-                Gifts from $1.99
+                2 New Inventions
               </Link>
               <Link
                 href="/kupid"
                 className="inline-block bg-[#C8A882] text-[#1a1207] font-bold text-xs sm:text-sm px-4 py-1.5 rounded-full hover:bg-white transition-all min-h-[44px] flex items-center"
               >
-                K-KUTs Locket
+                KUPID Locket™
               </Link>
             </span>
           </div>
